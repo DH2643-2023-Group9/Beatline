@@ -22,6 +22,7 @@
 	const user_token = '';
 	const refresh_token = '';
 	let minimize_card = false;
+	let flipped = false;
 	let selected_track: Track | undefined = {
 		album: 'Cut To The Feeling',
 		artists: ['Carly Rae Jepsen'],
@@ -77,11 +78,13 @@
 			<div>
 				<button class="pointer-events-auto bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50" on:click={async () => await get_song(left, right)}>Get Song</button>
 				<button class="pointer-events-auto bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50" on:click={() => (minimize_card = !minimize_card)}>Minimize Card</button>
+				<button class="pointer-events-auto bg-red-400 text-white py-2 px-4 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50" on:click={() => (flipped = !flipped)}>flip card</button>
+
 			</div>
 		</div>
 	</div>
 	{#if selected_track !== undefined}
-		<TrackCard track={selected_track} minimized={minimize_card} />
+		<TrackCard track={selected_track} minimized={minimize_card} flipped={flipped} />
 	{/if}
 </section>
 
