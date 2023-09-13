@@ -36,6 +36,7 @@
 	:root {
 		--g1: rgb(98, 0, 234);
 		--g2: rgb(236, 64, 122);
+		--g3: rgb(255, 174, 0);
 	}
 
 	@keyframes background-pan {
@@ -48,13 +49,6 @@
 		}
 	}
 
-	.centered {
-		left: 50%;
-		position: absolute;
-		top: 50%;
-		transform: translate(-50%, -50%);
-	}
-
 	#tiles {
 		height: calc(100vh - 1px);
 		width: calc(100vw - 1px);
@@ -64,7 +58,7 @@
 		grid-template-columns: repeat(1fr, 1fr);
 		grid-template-rows: repeat(1fr, 1fr);
 		animation: background-pan 10s linear infinite;
-		background: linear-gradient(to right, var(--g1), var(--g2), var(--g1));
+		background: linear-gradient(to right, var(--g1), var(--g2), var(--g3), var(--g1));
 		background-size: 200%;
 		height: 100vh;
 		overflow: hidden;
@@ -72,6 +66,7 @@
 		position: absolute;
 		z-index: 0;
 		pointer-events: all;
+		--tile-color: rgb(35, 35, 35);
 	}
 
 	.tile {
@@ -80,23 +75,16 @@
 	}
 
 	.tile:hover:before {
-		background-color: rgb(39, 38, 38);
-		inset: 2px;
-		transition: inset 200ms ease;
+		inset: 10%;
+		transition: inset 100ms ease-in-out;
 	}
 
 	.tile:before {
-		background-color: rgb(39, 38, 38);
+		background-color: var(--tile-color);
 		content: '';
-		inset: 0.5px;
+		inset: 2%;
 		position: absolute;
-	}
-	#icon {
-		color: rgba(255, 255, 255, 0.15);
-		font-size: 80vmin;
-		opacity: 0;
-		pointer-events: none;
-		transition: opacity 1200ms ease;
-		z-index: 1;
+		transition: inset 1s ease-in-out;
+		box-shadow: 0 0 5px 1px rgb(0, 0, 0, 0.5);
 	}
 </style>
