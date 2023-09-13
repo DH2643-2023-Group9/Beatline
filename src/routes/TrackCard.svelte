@@ -7,7 +7,7 @@
 
 <section>
 	<div class="container">
-		<h1>Selected Track:</h1>
+		<h1 class="font-bold underline">Selected Track:</h1>
 		<div class="card">
 			<img src={track.image.url} alt="Album Artwork" />
             <div class="track-info">
@@ -16,7 +16,7 @@
 					<p class="text">{track.name} - {track.artists[0]}</p>
 				{/if}
             </div>
-			<audio autoplay style="width: 100%">
+			<audio class=pointer-events-auto controls style="width: 100%">
 				<source src={track.preview} type="audio/mpeg" />
 			</audio>
 		</div>

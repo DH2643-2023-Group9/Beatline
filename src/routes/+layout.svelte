@@ -1,8 +1,13 @@
 <script>
 	import './styles.css';
+	import '../app.css';
+	import Background from './Background.svelte';
 </script>
 
 <div class="app">
+	{#if typeof window !== 'undefined'}
+		<Background />
+	{/if}
 	<main>
 		<slot />
 	</main>
@@ -28,6 +33,7 @@
 		max-width: 64rem;
 		margin: 0 auto;
 		box-sizing: border-box;
+		pointer-events: none;
 	}
 
 	footer {

@@ -62,24 +62,24 @@
 			preview: track.preview_url,
 			uri: track.uri
 		};
+		console.log(selected_track);
 	}
 </script>
 
-<section>
-	<div>
-		<h1>Demo Page for Spotify Stuff</h1>
+<section class=text-white>
+	<div class="p-4">
+		<h1 class="text-4xl font-semibold mb-4">Demo Page for Spotify</h1>
 		<div>
-			<h3>Select a Year Interval</h3>
-			<h4>Left: {left}, Right: {right}</h4>
-			<input bind:value={left} type="range" min="1950" max="2020" step="5" />
-			<input bind:value={right} type="range" min="1950" max="2020" step="5" />
+			<h3 class="text-2xl font-medium mb-2">Select a Year Interval</h3>
+			<h4 class="text-xl mb-4">Left: {left}, Right: {right}</h4>
+			<input class="pointer-events-auto w-full appearance-none h-2 rounded bg-gray-300 mb-2" bind:value={left} type="range" min="1950" max="2020" step="5" />
+			<input class="pointer-events-auto w-full appearance-none h-2 rounded bg-gray-300 mb-4" bind:value={right} type="range" min="1950" max="2020" step="5" />
 			<div>
-				<button on:click={async () => await get_song(left, right)}>Get Song</button>
-				<button on:click={() => (minimize_card = !minimize_card)}>Minimize Card</button>
+				<button class="pointer-events-auto bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50" on:click={async () => await get_song(left, right)}>Get Song</button>
+				<button class="pointer-events-auto bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50" on:click={() => (minimize_card = !minimize_card)}>Minimize Card</button>
 			</div>
 		</div>
 	</div>
-
 	{#if selected_track !== undefined}
 		<TrackCard track={selected_track} minimized={minimize_card} />
 	{/if}
@@ -92,6 +92,7 @@
 		justify-content: center;
 		align-items: center;
 		flex: 0.6;
+		z-index: 1;
 	}
 
 	section > div {
