@@ -25,23 +25,23 @@
 	}
 
 	main {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-		padding: 1rem;
 		width: 100%;
-		max-width: 64rem;
-		margin: 0 auto;
 		box-sizing: border-box;
 		pointer-events: none;
+		z-index: 1;
+		color: white;
 	}
 
 	footer {
+		position: absolute;
+		bottom: 20px;
+		width: 100%;
 		display: flex;
-		flex-direction: column;
 		justify-content: center;
-		align-items: center;
 		padding: 12px;
+		z-index: 1;
+		pointer-events: none;
+		color: white;
 	}
 
 	@media (min-width: 480px) {

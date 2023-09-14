@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
-import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET } from '$env/static/private';
+import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URL } from '$env/static/private';
 
 
 /** @type {import('./$types').PageServerLoad} */
@@ -15,7 +15,7 @@ export async function load({ url, cookies }) {
     }
     const form = {
         code: code,
-        redirect_uri: url.href,
+        redirect_uri: SPOTIFY_REDIRECT_URL,
         grant_type: 'authorization_code',
     };
     // Get access token for the current user

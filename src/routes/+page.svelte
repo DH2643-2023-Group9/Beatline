@@ -79,14 +79,19 @@
 				step="5"
 			/>
 			<div>
-				<button class="pointer-events-auto bg-blue-500 text-white py-2 px-4 rounded mr-2 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50" on:click={async () => await get_song(left, right)}>Get Song</button>
-				<button class="pointer-events-auto bg-gray-400 text-white py-2 px-4 rounded hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50" on:click={() => (minimize_card = !minimize_card)}>Minimize Card</button>
-				<button class="pointer-events-auto bg-red-400 text-white py-2 px-4 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50" on:click={() => (flipped = !flipped)}>flip card</button>
+				<button class="btn btn-primary pointer-events-auto" on:click={async () => await get_song(left, right)}
+					>Get Song</button
+				>
+				<button class="btn btn-secondary pointer-events-auto" on:click={() => (minimize_card = !minimize_card)}
+					>Minimize Card</button
+				>
+				<button class="btn btn-error pointer-events-auto" on:click={() => (flipped = !flipped)}>Flip Card</button>
+				<a data-sveltekit-preload-data="tap" class="btn btn-warning pointer-events-auto" href="/createlobby">Create Lobby</a>
 			</div>
 		</div>
 	</div>
 	{#if selected_track !== undefined}
-		<TrackCard track={selected_track} minimized={minimize_card} flipped={flipped} />
+		<TrackCard track={selected_track} minimized={minimize_card} {flipped} />
 	{/if}
 </section>
 
@@ -97,7 +102,6 @@
 		justify-content: center;
 		align-items: center;
 		flex: 0.6;
-		z-index: 1;
 	}
 
 	section > div {

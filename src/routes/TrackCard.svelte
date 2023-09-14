@@ -32,7 +32,7 @@
 						{/if}
 					</div>
 					{#if !minimized}
-						<audio class="pointer-events-auto w-auto" controls>
+						<audio class="pointer-events-auto w-full" controls>
 							<source src={track.preview} type="audio/mpeg" />
 						</audio>
 					{/if}

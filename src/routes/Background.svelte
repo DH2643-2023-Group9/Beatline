@@ -63,7 +63,7 @@
 		height: 100vh;
 		overflow: hidden;
 		margin: 0px;
-		position: absolute;
+		position: fixed;
 		z-index: 0;
 		pointer-events: all;
 		--tile-color: rgb(35, 35, 35);
@@ -77,6 +77,7 @@
 	.tile:hover:before {
 		inset: 10%;
 		transition: inset 100ms ease-in-out;
+		cursor: default;
 	}
 
 	.tile:before {
