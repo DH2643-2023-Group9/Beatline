@@ -74,7 +74,7 @@
 	}
 
 	.card img {
-		width: 100%;
+		width: inherit;
 		border-radius: var(--radius) var(--radius) 0 0;
 	}
 	.track-info {
