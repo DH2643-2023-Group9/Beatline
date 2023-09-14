@@ -25,7 +25,7 @@
 	let selected_track: Track | undefined = undefined;
 	async function get_song(left: number, right: number) {
 		const year = Math.floor(Math.random() * (right - left) + left);
-		const offset = Math.floor(Math.random() * 800);
+		const offset = Math.floor(Math.random() * 100);
 		let url = `https://api.spotify.com/v1/search?q=year:${year}&type=track&limit=5&offset=${offset}`;
 		let res = await fetch(url, {
 			method: 'GET',
