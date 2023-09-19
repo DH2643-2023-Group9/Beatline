@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Card from "../Card.svelte";
+	import { goto } from "$app/navigation";
 	let lobbyName: string = '';
 	let maxPlayers: number = 2;
 	let loading: boolean = false;
@@ -8,12 +10,14 @@
 		loading = true;
 		setTimeout(() => {
 			loading = false;
+			//navigate to lobby
+			goto('/lobby');
 		}, 2000);
 	}
 </script>
 
 <div class="min-h-screen flex items-center justify-center text-black">
-	<div class="bg-white p-8 rounded-xl shadow-lg w-96 space-y-6">
+	<Card extraClasses="bg-white p-8 rounded-xl shadow-lg w-96 space-y-6">
 		<h1 class="text-xl font-bold text-center">Create a Lobby</h1>
 
 		<div class="form-control">
@@ -55,7 +59,7 @@
 				>Create Lobby</button
 			>
 		{/if}
-	</div>
+	</Card>
 </div>
 
 <style>
