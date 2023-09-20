@@ -21,7 +21,6 @@
 	let left = 1950;
 	let right = 2020;
 	let minimize_card = false;
-	let flipped = false;
 	let selected_track: Track | undefined = undefined;
 	async function get_song(left: number, right: number) {
 		const year = Math.floor(Math.random() * (right - left) + left);
@@ -56,8 +55,8 @@
 	}
 </script>
 
-<section class="text-white">
-	<div class="p-4">
+<section class="text-white flex flex-row min-h-screen">
+	<div class="p-4 m-5 w-1/2 flex flex-col items-center justify-center">
 		<h1 class="text-4xl font-semibold mb-4">Demo Page for Spotify</h1>
 		<div>
 			<h3 class="text-2xl font-medium mb-2">Select a Year Interval</h3>
@@ -85,34 +84,19 @@
 				<button class="btn btn-secondary pointer-events-auto" on:click={() => (minimize_card = !minimize_card)}
 					>Minimize Card</button
 				>
-				<button class="btn btn-error pointer-events-auto" on:click={() => (flipped = !flipped)}>Flip Card</button>
 				<a data-sveltekit-preload-data="tap" class="btn btn-warning pointer-events-auto" href="/createlobby">Create Lobby</a>
 			</div>
 		</div>
 	</div>
+	<div class="flex flex-col items-center justify-center w-1/2">
 	{#if selected_track !== undefined}
-		<TrackCard track={selected_track} minimized={minimize_card} {flipped} />
+		<h1 class="font-bold underline text-center">Selected Track:</h1>
+		<TrackCard track={selected_track} minimized={minimize_card} />
 	{/if}
+	</div>
 </section>
 
 <style>
-	section {
-		display: flex;
-		flex-direction: row;
-		justify-content: center;
-		align-items: center;
-		flex: 0.6;
-	}
-
-	section > div {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		width: fit-content;
-		margin: 5em;
-	}
-
 	h1 {
 		width: 100%;
 	}

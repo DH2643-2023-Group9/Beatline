@@ -1,9 +1,10 @@
+import type { PageServerLoad } from '../$types';
+
 import { error, redirect } from '@sveltejs/kit';
 import { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URL } from '$env/static/private';
 
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ url, cookies }) {
+export const load: PageServerLoad = async ({ url, cookies }) => {
     if (cookies.get('accessToken')) {
         // User is already connected
         throw redirect(303, '/');

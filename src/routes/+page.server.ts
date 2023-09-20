@@ -1,10 +1,11 @@
+import type { PageServerLoad } from './$types';
 import { redirect } from '@sveltejs/kit';
 import { SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URL } from '$env/static/private';
 // The scopes that the application needs from the user 
 // (This will probably need to change)
 const SCOPE = 'user-read-private user-read-email';
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ url, cookies }) {
+
+export const load: PageServerLoad = async ({ url, cookies }) => {
     const accessToken = cookies.get('accessToken');
     if (!accessToken) {
         // User is not connected, redirect to Spotify's authentication page
