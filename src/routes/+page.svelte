@@ -16,21 +16,22 @@
 
 <script lang="ts">
 	import TrackCard from './TrackCard.svelte';
-	export let data: { accessToken: string };
-	const userToken = data.accessToken;
+	import { accessToken } from '$stores/tokenStore';
+
 	let left = 1950;
 	let right = 2020;
 	let minimize_card = false;
 	let selected_track: Track | undefined = undefined;
+
 	async function get_song(left: number, right: number) {
 		const year = Math.floor(Math.random() * (right - left) + left);
-		const offset = Math.floor(Math.random() * 800);
+		const offset = Math.floor(Math.random() * 100);
 		let url = `https://api.spotify.com/v1/search?q=year:${year}&type=track&limit=5&offset=${offset}`;
 		let res = await fetch(url, {
 			method: 'GET',
 			headers: {
 				'content-type': 'application/json',
-				Authorization: `Bearer ${userToken}`
+				Authorization: `Bearer ${$accessToken}`
 			}
 		});
 		if (!res.ok) {
@@ -78,21 +79,40 @@
 				step="5"
 			/>
 			<div>
-				<button class="btn btn-primary pointer-events-auto" on:click={async () => await get_song(left, right)}
-					>Get Song</button
+				<button
+					class="btn btn-primary m-1 pointer-events-auto"
+					class:btn-disabled={!$accessToken}
+					on:click={async () => await get_song(left, right)}>Get Song</button
 				>
-				<button class="btn btn-secondary pointer-events-auto" on:click={() => (minimize_card = !minimize_card)}
-					>Minimize Card</button
+				<button
+					class="btn btn-secondary m-1 pointer-events-auto"
+					on:click={() => (minimize_card = !minimize_card)}>Minimize Card</button
 				>
-				<a data-sveltekit-preload-data="tap" class="btn btn-warning pointer-events-auto" href="/createlobby">Create Lobby</a>
+				<a
+					data-sveltekit-preload-data="tap"
+					class="btn btn-warning m-1 pointer-events-auto"
+					href="/createlobby">Create Lobby</a
+				>
+				{#if !$accessToken}
+					<a
+						data-sveltekit-preload-data="tap"
+						class="btn btn-accent m-1 pointer-events-auto"
+						href="/spotify/newToken"
+						>Connect to Spotify
+					</a>
+				{:else}
+					<button class="btn btn-accent m-1 pointer-events-auto" on:click={accessToken.refresh}>
+						Refresh Token
+					</button>
+				{/if}
 			</div>
 		</div>
 	</div>
 	<div class="flex flex-col items-center justify-center w-1/2">
-	{#if selected_track !== undefined}
-		<h1 class="font-bold underline text-center">Selected Track:</h1>
-		<TrackCard track={selected_track} minimized={minimize_card} />
-	{/if}
+		{#if selected_track !== undefined}
+			<h1 class="font-bold underline text-center">Selected Track:</h1>
+			<TrackCard track={selected_track} minimized={minimize_card} />
+		{/if}
 	</div>
 </section>
 
