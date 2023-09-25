@@ -11,7 +11,7 @@
 		setTimeout(() => {
 			loading = false;
 			//navigate to lobby
-			goto('/lobby');
+			goto('/lobby?name=' + lobbyName + '&maxPlayers=' + maxPlayers);
 		}, 2000);
 	}
 </script>

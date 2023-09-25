@@ -1,11 +1,25 @@
-<script>
-	let players = ['Player1', 'Player2', 'Player3'];
-	let gameCode = 'ABC123';
-	let gameLink = 'https://yourgame.com';
-	let numPlayers = 3;
-	let gameRounds = 5;
+<script lang="ts">
+	import { page } from '$app/stores';
+	import { io } from 'socket.io-client';
 	import Card from '../Card.svelte';
 	import { goto } from '$app/navigation';
+
+	const maxPlayers = parseInt($page.url.searchParams.get('maxPlayers') || '8');
+	const socket = io();
+	let players: string[] = [];
+	let gameCode: string | undefined;
+	let numPlayers: number = 0;
+	let gameRounds: number = 5;
+
+	socket.on('createRoom', (roomId: string) => {
+		gameCode = roomId;
+	});
+
+	socket.on('joinRoom', ({ userId, name }) => {
+		players = [...players, name];
+	});
+
+	socket.emit('createRoom', maxPlayers);
 
 	function startGame() {
 		//navigate to game
@@ -23,7 +37,7 @@
 		<div class="flex justify-center items-center">
 			<!-- Game Code and Link -->
 			<span class="mr-4">Game Code: {gameCode}</span>
-			<span class="mr-4">Go to {gameLink} and enter the code to join</span>
+			<span class="mr-4">Go to hmm and enter the code to join</span>
 		</div>
 	</div>
 
@@ -61,7 +75,7 @@
 							<input
 								id="players"
 								type="number"
-								bind:value={numPlayers}
+								bind:value={players.length}
 								class="mt-1 block w-full rounded-md border-gray-300"
 							/>
 						</div>
