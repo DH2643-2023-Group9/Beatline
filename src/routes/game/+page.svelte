@@ -35,14 +35,14 @@
 	<!-- Team Information -->
 	<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0">
 		<!-- Team Red Information -->
-		<div class="text-white bg-red-500 p-2 rounded">
+		<div class="text-white bg-gradient-to-r from-[#fb923c] to-[#ef4444] p-2 rounded">
 			<h2>{teamRed.name}</h2>
 			<p>Score: {teamRed.score}</p>
 			<!-- Add more details as needed -->
 		</div>
 
 		<!-- Team Blue Information -->
-		<div class="text-white bg-blue-500 p-2 rounded">
+		<div class="text-white bg-gradient-to-r from-[#0891b2] to-[#1e40af] p-2 rounded">
 			<h2>{teamBlue.name}</h2>
 			<p>Score: {teamBlue.score}</p>
 			<!-- Add more details as needed -->
