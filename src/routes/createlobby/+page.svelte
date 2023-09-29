@@ -4,6 +4,9 @@
 	let lobbyName: string = '';
 	let maxPlayers: number = 2;
 	let loading: boolean = false;
+	import Modal from '../Modal.svelte';
+	let showModal = false;
+
 
 	function createLobby() {
 		//just make it so that loading is true for 2 seconds before making it false again
@@ -14,10 +17,36 @@
 			goto('/lobby');
 		}, 2000);
 	}
+
 </script>
 
+<button class="pointer-events-auto btn btn-info flex float-right" on:click={() => (showModal = true)}> How-to-play </button>
+
+<Modal bind:showModal>
+	<Card extraClasses="p-8  rounded-xl shadow-lg w-96 space-y-6 box-content border-[#6200EA]">
+		<h1 class="text-centre box-decoration-clone bg-gradient-to-r from-indigo-600 to-pink-500 text-5xl">
+			How do you play Beatline?
+		</h1>
+		<div>
+			Only one person needs to 
+		</div>
+		<h2 class="text-2xl">
+			Step 1. Create a lobby and connect your friends via their phones
+		</h2>
+		<div>
+			After dividing yourselves into teams, press start on the website.
+			Your goal is to accurately place the song being played, after 30 seconds the song stops and you're asked to input your answer
+
+		</div>
+		<div>
+			yadda yadda vi skriver det här när vi vet exakt hur allt funkar
+		</div>
+	</Card>
+
+</Modal>
+
 <div class="min-h-screen flex items-center justify-center text-white">
-	<Card extraClasses=" p-8 rounded-xl shadow-lg w-96 space-y-6 ">
+	<Card extraClasses=" p-8 rounded-xl shadow-lg w-96 space-y-6 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
 		<h1 class="text-xl font-bold text-center">Create a Lobby</h1>
 
 		<div class="form-control">
