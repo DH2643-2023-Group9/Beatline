@@ -27,6 +27,9 @@ export function configureServer(server: ViteDevServer) {
 
 	const openRooms = new Map<string, number>();
 
+	const socketsInRooms = new Map<string, Set<string>>(); // roomId -> Set of socket ids
+
+
 	io.on('connection', (socket) => {
 		console.log(`Socket ${socket.id} connected`);
 
@@ -43,24 +46,43 @@ export function configureServer(server: ViteDevServer) {
 
 		socket.on(SocketEvents.JoinRoom, ({ roomId, name }: { roomId: string; name: string }) => {
 			const capacity = openRooms.get(roomId);
+		
+			// Initialize the room in socketsInRooms if it's not already there
+			if (!socketsInRooms.has(roomId)) {
+				socketsInRooms.set(roomId, new Set());
+			}
+			
+			const socketsInRoom = socketsInRooms.get(roomId);
+		
 			if (capacity === undefined) {
 				socket.emit(SocketEvents.Error, { error: 'Room not found' });
 				return;
 			} else if (capacity === 0) {
 				socket.emit(SocketEvents.Error, { error: 'Room is full' });
 				return;
+			} else if (socketsInRoom && socketsInRoom.has(socket.id)) {
+				socket.emit(SocketEvents.Error, { error: 'You have already joined this room' });
+				return;
 			}
-			// TODO: This check can break if two people join at the same time
+		
 			console.log(`Socket ${socket.id} joined room ${roomId}`);
-			openRooms.set(roomId, capacity - 1);
+			openRooms.set(roomId, capacity - 1); // Decrease the available capacity
+			if (socketsInRoom) {
+				socketsInRoom.add(socket.id); // Add the socket to the room's set
+			}
 			socket.join(roomId);
 			socket.to(roomId).emit(SocketEvents.JoinRoom, { userId: socket.id, name });
 		});
+		
 
-		socket.on(SocketEvents.StartGame, (roomId: string) => {
+		socket.on(SocketEvents.StartGame, (roomId: string|undefined) => {
+			if (roomId === undefined) {
+				socket.emit(SocketEvents.Error, { error: 'Room not found' });
+				return;
+			}
 			console.log(`Room ${roomId} started game`);
 			openRooms.delete(roomId);
-			socket.to(roomId).emit(SocketEvents.StartGame);
+			io.to(roomId).emit(SocketEvents.StartGame);
 		});
 
 		socket.on(SocketEvents.AssignTurn, (roomId: string, userId: string) => {

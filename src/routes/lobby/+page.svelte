@@ -16,6 +16,7 @@
 	});
 
 	socket.on('joinRoom', ({ userId, name }) => {
+		console.log('User joined', userId, name);
 		players = [...players, name];
 	});
 
@@ -23,6 +24,7 @@
 
 	function startGame() {
 		//navigate to game
+		socket.emit('startGame', { gameCode });
 		goto('/game');
 	}
 </script>
