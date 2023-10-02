@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Track } from './+page.svelte';
+	import type { Track } from './FetchSong.svelte';
 	export let track: Track;
 	export let minimized: boolean;
 </script>
