@@ -24,7 +24,9 @@
 
 	function startGame() {
 		//navigate to game
-		socket.emit('startGame', { gameCode });
+		if (gameCode) {
+			socket.emit('startGame', { roomId: gameCode });
+		}
 		goto('/game');
 	}
 </script>

@@ -75,14 +75,10 @@ export function configureServer(server: ViteDevServer) {
 		});
 		
 
-		socket.on(SocketEvents.StartGame, (roomId: string|undefined) => {
-			if (roomId === undefined) {
-				socket.emit(SocketEvents.Error, { error: 'Room not found' });
-				return;
-			}
+		socket.on(SocketEvents.StartGame, ({ roomId }: { roomId: string }) => {
 			console.log(`Room ${roomId} started game`);
-			openRooms.delete(roomId);
 			io.to(roomId).emit(SocketEvents.StartGame);
+			openRooms.delete(roomId);
 		});
 
 		socket.on(SocketEvents.AssignTurn, (roomId: string, userId: string) => {

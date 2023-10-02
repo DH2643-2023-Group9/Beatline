@@ -19,6 +19,13 @@
 		socket.emit('joinRoom', { roomId, name });
 	}
 
+	
+
+	socket.on('startGame', () => {
+		console.log('Game started!');
+		startGame();
+	});
+
 	socket.on('error', (data: { error: string }) => {
 		alert(data.error);
 	});
@@ -26,11 +33,6 @@
 	socket.on('joinRoom', (data: { roomId: string; name: string }) => {
 		// Handle successful join. Might update some UI or set some internal state.
 		console.log(data);
-	});
-
-	socket.on('startGame', () => {
-		console.log('Game started!');
-		startGame();
 	});
 </script>
 
