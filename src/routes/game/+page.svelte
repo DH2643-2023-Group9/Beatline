@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { writable } from 'svelte/store';
 	import Card from '../Card.svelte';
+	import Profile from '../Profile.svelte'
+	let redPlayer = ['Player1', 'Player2', 'Player3'];
+	let bluePlayer = ['Player1', 'Player2', 'Player3'];
+
 
 	// Define the cards store
 	const cards = writable<Card[]>([]);
@@ -33,18 +37,36 @@
 
 <div class="min-h-screen flex flex-col">
 	<!-- Team Information -->
-	<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0">
+	<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0 text-3xl text-center">
 		<!-- Team Red Information -->
 		<div class="text-white bg-gradient-to-r from-[#fb923c] to-[#ef4444] p-2 rounded">
 			<h2>{teamRed.name}</h2>
 			<p>Score: {teamRed.score}</p>
+			<Profile extraClasses="mb-2 border-[#303638] bg-gradient-to-r from-[#ef4444] to-[#fb923c]"> 
+				{#each redPlayer as player}
+				<div>{player}</div>
+			{/each}
+
+			</Profile>
 			<!-- Add more details as needed -->
 		</div>
 
 		<!-- Team Blue Information -->
-		<div class="text-white bg-gradient-to-r from-[#0891b2] to-[#1e40af] p-2 rounded">
+		<div class="text-white bg-gradient-to-r from-[#0891b2] to-[#1e40af] px-8 rounded">
 			<h2>{teamBlue.name}</h2>
 			<p>Score: {teamBlue.score}</p>
+			<!-- 
+			{#each bluePlayer as player}
+			<Profile ">{player}</Profile>
+			{/each}
+			-->
+			<Profile extraClasses="mb-2 border-[#303638] bg-gradient-to-r from-[#1e40af] to-[#0891b2]">
+			{#each bluePlayer as player}
+			<div class="flex flex-wrap content-end"> {player}</div>
+			{/each}
+		</Profile>
+			
+
 			<!-- Add more details as needed -->
 		</div>
 	</div>
