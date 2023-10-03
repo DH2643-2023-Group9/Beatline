@@ -81,16 +81,16 @@ export function configureServer(server: ViteDevServer) {
 			openRooms.delete(roomId);
 		});
 
-		socket.on(SocketEvents.AssignTurn, (roomId: string, userId: string) => {
+		socket.on(SocketEvents.AssignTurn, ({ roomId, userId }: { roomId: string; userId: string }) => {
 			console.log(`Room ${roomId} assigned turn to ${userId}`);
-			socket.to(roomId).emit(SocketEvents.AssignTurn, userId);
+			socket.to(roomId).emit(SocketEvents.AssignTurn, { userId });
 		});
 
 		socket.on(
 			SocketEvents.SubmitAnswer,
-			({ roomId, answer }: { roomId: string; answer: number }) => {
+			({ roomId, answer, name }: { roomId: string; answer: Number, name: string }) => {
 				console.log(`Room ${roomId} submitted answer ${answer}`);
-				socket.to(roomId).emit(SocketEvents.SubmitAnswer, { userId: socket.id, answer });
+				socket.to(roomId).emit(SocketEvents.SubmitAnswer, { answer, name });
 			}
 		);
 

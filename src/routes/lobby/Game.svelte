@@ -1,24 +1,12 @@
+
+
+
 <script lang="ts">
-	import { writable } from 'svelte/store';
 	import Card from '../Card.svelte';
-	import { io } from 'socket.io-client';
-
-	// Define the cards store
-	const cards = writable<Card[]>([]);
-	const socket = io();
-
-	socket.on('submitAnswer', (data: { userid : string, answer : string }) => {
-		// Use the update method of the writable store to push new card data
-		console.log(data);
-		cards.update((currentCards: Card[]) => {
-			return [
-				...currentCards,
-				{
-					text: data.answer
-				}
-			];
-		});
-	});
+	export let gameCode: string | undefined;
+	export let players: string[];
+    export let messageHistory: string[];
+	export let currentTurnPlayer: string;
 	
 	let teamRed = {
 		name: 'Team Red',
@@ -32,21 +20,14 @@
 	interface Card {
   text: string;
 }
-
-	function addCard() {
-		// Use the update method of the writable store to push new card data
-		cards.update((currentCards: Card[]) => {
-			return [
-				...currentCards,
-				{
-					text: 'Sample text'
-				}
-			];
-		});
-	}
 </script>
 
 <div class="min-h-screen flex flex-col">
+	<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
+		<div class="text-black bg-yellow-300 p-2 rounded">
+			<h2>It's {currentTurnPlayer}'s turn!</h2>
+		</div>
+	</div>
 	<!-- Team Information -->
 	<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0">
 		<!-- Team Red Information -->
@@ -68,9 +49,9 @@
 	<div class="flex-grow flex items-center justify-center">
 			<div class="flex space-x-4 overflow-x-auto p-4">
 				<!-- Cards on the timeline -->
-				{#each $cards as card}
+				{#each messageHistory as card}
 					<Card>
-						<p>{card.text}</p>
+						<p>{card}</p>
 					</Card>
 				{/each}
 			</div>
@@ -79,7 +60,6 @@
 	<!-- Interactivity -->
 	<div class="fixed bottom-4 right-4">
 		<!-- Button to add a new card -->
-		<button class="btn btn-primary pointer-events-auto" on:click={addCard}>Add Card</button>
 		<!-- Utilizing DaisyUI's predefined 'btn' component for a modern aesthetic. -->
 	</div>
 </div>

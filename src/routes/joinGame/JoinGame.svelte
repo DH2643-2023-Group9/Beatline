@@ -15,11 +15,11 @@
 	<h1>Join a Game Room</h1>
 	<label>
 		Room ID:
-		<input type="text" bind:value={roomId} class="pointer-events-auto input input-primary m-2 text-black"/>
+		<input type="text" bind:value={roomId} class="pointer-events-auto input input-primary m-2"/>
 	</label>
 	<label>
 		Your Name:
-		<input type="text" bind:value={name} class="pointer-events-auto input input-secondary m-2 text-black"/>
+		<input type="text" bind:value={name} class="pointer-events-auto input input-secondary m-2"/>
 	</label>
 	<button on:click={() => sendAnswer(name,roomId)} class="pointer-events-auto btn btn-accent w-fit">Join</button>
 </div>
