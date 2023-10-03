@@ -29,6 +29,8 @@
 
 		<div class="flex justify-center items-center">
 			<!-- Game Code and Link -->
+			<!-- svelte-ignore a11y-click-events-have-key-events -->
+			<!-- svelte-ignore a11y-no-static-element-interactions -->
 			<span class="mr-4 pointer-events-auto" on:click={copyGameCode}>
 				Game Code: {gameCode} {#if copied}<span class="text-green-500">(Copied!)</span>{/if}
 			</span>
@@ -67,12 +69,20 @@
 							<label for="players" class="block text-sm font-medium text-gray-700"
 								>Number of Players</label
 							>
-							<input
+							<input 
+							type="range" 
+							min="0" 
+							max="10" 
+							bind:value={players.length} 
+							class="mt-1 block w-full rounded-md border-gray-300" 
+							step="1" />
+						
+							<!--<input
 								id="players"
 								type="number"
 								bind:value={players.length}
 								class="mt-1 block w-full rounded-md border-gray-300"
-							/>
+							/>-->
 						</div>
 						<div>
 							<label for="rounds" class="block text-sm font-medium text-gray-700"
