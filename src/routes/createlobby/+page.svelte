@@ -18,9 +18,12 @@
 		}, 2000);
 	}
 
+
+
 </script>
 
 <button class="pointer-events-auto btn btn-info flex float-right" on:click={() => (showModal = true)}> How-to-play </button>
+
 
 <Modal bind:showModal>
 	<Card extraClasses="p-8  rounded-xl shadow-lg w-96 space-y-6 box-content border-[#6200EA]">
@@ -42,7 +45,6 @@
 			yadda yadda vi skriver det här när vi vet exakt hur allt funkar
 		</div>
 	</Card>
-
 </Modal>
 
 <div class="min-h-screen flex items-center justify-center text-white">
