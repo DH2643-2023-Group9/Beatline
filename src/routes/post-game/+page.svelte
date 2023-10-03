@@ -12,7 +12,8 @@
 		//navigate to game
 		goto('/game');
 	};
-	function goToLobby() {
+
+	function goToMain() {
 		goto('/')
 	}
 
@@ -31,29 +32,28 @@
 	}
 </script>
 
-<div class="min-h-screen flex items-center justify-center text-white">
-	<Card extraClasses=" p-8 rounded-xl shadow-lg w-96 space-y-6 ">
+<div class="min-h-screen flex items-center justify-center text-white ">
+	<Card extraClasses=" p-8 rounded-xl shadow-lg w-96 space-y-6 flex items-center flex-1">
 
+		<h1 class="justify-center text-xl">
+			Post-Game
+			
+		</h1>
+	 <!-- svelte-ignore a11y-missing-attribute -->
+	 <ul class="menu menu-horizontal bg-base-200 bg-[#303638] ">
+		<li><button on:click={startGame} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
+		<li><button on:click={createLobby} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
+		<li><button on:click={goToMain} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
+	  </ul>
+	  
+		  
 
-		{#if loading}
-        <div class="flex justify-center w-full">
-			<span class="loading loading-spinner loading-lg text-secondary" />
-        </div>
-		{:else}
-			<button on:click={goToLobby} class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#ffae00] via-[#EC407A] to-[#6200EA] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-				>Go back to Home Screen</button
-			>
-		{/if}
-
-		{#if loading}
-        <div class="flex justify-center w-full">
-			<span class="loading loading-spinner loading-lg text-secondary" />
-        </div>
-		{:else}
-			<button on:click={createLobby} class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#ffae00] via-[#EC407A] to-[#6200EA] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-				>Restart Game with the same Settings</button
-			>
-		{/if}
 	</Card>
 </div>
 
