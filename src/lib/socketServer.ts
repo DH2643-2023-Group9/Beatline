@@ -8,6 +8,7 @@ export enum SocketEvents {
 	AssignTurn = 'assignTurn',
 	UpdateAnswer = 'updateAnswer',
 	SubmitAnswer = 'submitAnswer',
+	EndGame = 'endGame',
 	Error = 'error'
 }
 
@@ -79,6 +80,11 @@ export function configureServer(server: ViteDevServer) {
 			console.log(`Room ${roomId} started game`);
 			io.to(roomId).emit(SocketEvents.StartGame);
 			openRooms.delete(roomId);
+		});
+
+		socket.on(SocketEvents.EndGame, ({ roomId }: { roomId: string }) => {
+			console.log(`Room ${roomId} ended game`);
+			io.to(roomId).emit(SocketEvents.EndGame);
 		});
 
 		socket.on(SocketEvents.AssignTurn, ({ roomId, userId }: { roomId: string; userId: string }) => {
