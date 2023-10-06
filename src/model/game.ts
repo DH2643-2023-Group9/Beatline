@@ -1,9 +1,11 @@
 import { getTrackData, type TrackData } from '$lib/spotify';
 
+export type Ability = 'shuffle' | 'nope!' | 'continue';
+
 export type Player = {
 	name: string;
-	score: number;
-	isLeader: boolean;
+	id: string;
+	abilities: Ability[];
 };
 
 export type Team = {
@@ -22,6 +24,13 @@ export type Guess = {
 
 export type LimitType = 'rounds' | 'score';
 
+export type Turn = {
+	player: Player;
+	team: Team;
+	track: TrackData;
+	turn: number;
+};
+
 function createTeam(name: string): Team {
 	return {
 		name,
@@ -32,6 +41,9 @@ function createTeam(name: string): Team {
 	};
 }
 
+/**
+ * Base class/model for the game.
+ */
 export class Game {
 	limit: number;
 	limitType: LimitType;
@@ -40,11 +52,17 @@ export class Game {
 	currentTrack?: TrackData;
 	teams = [createTeam('Red'), createTeam('Blue')];
 	interval: number[];
+	scoreBuffer = 0;
 
+	/**
+	 * @param interval The year interval to sample tracks from
+	 * @param limit The limit for turns/score
+	 * @param limitType The type for the limit. Either 'rounds' or 'score'
+	 */
 	constructor(interval: number[], limit: number, limitType: LimitType) {
+        if (interval.length !== 2) throw new Error('Interval must be an array of length 2');
 		this.limit = limit;
 		this.limitType = limitType;
-		if (interval.length !== 2) throw new Error('Interval must be an array of length 2');
 		this.interval = interval;
 	}
 
@@ -56,58 +74,83 @@ export class Game {
 		this.teams[team].name = name;
 	}
 
-	async getNextTurn(accessToken: string): Promise<{ player: Player; team: Team, track: TrackData }> {
+    /**
+     * @returns The winning team, if any
+     */
+	getWinner(): Team | undefined {
+		if (this.limitType === 'score') {
+			return this.teams.find((team) => team.score >= this.limit);
+		} else if (this.limitType === 'rounds' && this.currentRound >= this.limit) {
+			if (this.teams[0].score < this.teams[1].score) {
+				return this.teams[1];
+			} else {
+				return this.teams[0];
+			}
+		}
+	}
+
+	/**
+	 * @param accessToken Spotify access token to use for API calls
+	 * @returns Information about the current turn
+	 */
+	async getCurrentTurn(accessToken: string): Promise<Turn> {
 		this.currentTrack = await getTrackData(this.interval[0], this.interval[1], accessToken);
 		const { players, currentPlayerIndex } = this.teams[this.currentTeam];
 		const player = players[currentPlayerIndex];
 		const team = this.teams[this.currentTeam];
-		return { player, team, track:this.currentTrack };
+		return { player, team, track: this.currentTrack, turn: this.currentRound };
 	}
 
-    calculateScore(year: number): boolean {
-        if (!this.currentTrack) throw new Error('No track selected');
-        const actualYear = this.currentTrack.year;
-        const timeline = this.teams[this.currentTeam].timeline;
+	/**
+	 * Submit a guess for the current turn and user.
+	 * This will also advance the turn to the next player.
+	 *
+	 * @param year The guessed year
+	 * @returns Whether the guess was correct
+	 */
+	submitGuess(year: number): boolean {
+		const currentTrack = this.currentTrack;
+		if (!currentTrack) throw new Error('No track selected');
+		const team = this.teams[this.currentTeam];
+		const timeline = team.timeline;
+		const guess = {
+			player: team.players[team.currentPlayerIndex],
+			guessedYear: year,
+			track: currentTrack
+		};
 
-        if (actualYear <= timeline[0].track.year) {
-            const res = year <= timeline[0].track.year;
-            if (res) {
-                this.teams[this.currentTeam].score++;
-            }
-            return res;
-        }
+		// Determine where the guess should be inserted
+		const expectedIndex = timeline.findIndex((g) => currentTrack.year <= g.track.year);
+		const actualIndex = timeline.findIndex((g) => year <= g.track.year);
 
-        if (actualYear >= timeline[timeline.length-1].track.year) {
-            const res = year >= timeline[timeline.length-1].track.year;
-            if (res) {
-                this.teams[this.currentTeam].score++;
-            }
-            return res;
-        }
+		// Check if the guess was correct
+		const isCorrect = expectedIndex === actualIndex;
+		if (isCorrect) {
+			// Don't add points yet, wait for the next turn
+			this.scoreBuffer++;
+			// Insert guess at expected index
+			if (expectedIndex === -1) {
+				timeline.push(guess);
+			} else {
+				timeline.splice(expectedIndex, 0, guess);
+			}
+		} else {
+			// If the user has guessed correctly before
+			// but played a `continue` card and guessed wrong, they lose all their points.
+			this.scoreBuffer = 0;
+		}
+		return isCorrect;
+	}
 
-        for (let i = 0; i < this.teams.length-1; i++) {
-            const low = timeline[i].track.year;
-            const high = timeline[i+1].track.year;
-            if (low <= actualYear && actualYear <= high) {
-                const res = low <= year && year <= high;
-                if (res) {
-                    this.teams[this.currentTeam].score++;
-                }
-                return res;
-            }
-        }
-        return false;
-    }
-        
-
-    submitGuess(year: number) {
-        if (!this.currentTrack) throw new Error('No track selected');
-        const { players, currentPlayerIndex } = this.teams[this.currentTeam];
-
-        this.teams[this.currentTeam].timeline.push({player: players[currentPlayerIndex], guessedYear: year, track: this.currentTrack});
-
-        const nextPlayerIndex = (currentPlayerIndex + 1) % players.length;
-		this.teams[this.currentTeam].currentPlayerIndex = nextPlayerIndex;
+	/**
+	 * Advance to the next turn.
+	 */
+	advance() {
+		const team = this.teams[this.currentTeam];
+		const { players, currentPlayerIndex } = team;
+		team.currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+		team.score += this.scoreBuffer;
+		this.scoreBuffer = 0;
 		this.currentTeam = (this.currentTeam + 1) % this.teams.length;
-    }
+	}
 }
