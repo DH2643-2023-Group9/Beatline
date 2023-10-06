@@ -1,5 +1,6 @@
 import type { ViteDevServer } from 'vite';
 import { Server } from 'socket.io';
+import { Socket } from 'socket.io-client';
 
 export enum SocketEvents {
 	CreateRoom = 'createRoom',
@@ -9,7 +10,8 @@ export enum SocketEvents {
 	UpdateAnswer = 'updateAnswer',
 	SubmitAnswer = 'submitAnswer',
 	EndGame = 'endGame',
-	Error = 'error'
+	Error = 'error',
+	JoinTeam = 'joinTeam',
 }
 
 export type JoinPayload = {
@@ -99,6 +101,14 @@ export function configureServer(server: ViteDevServer) {
 				socket.to(roomId).emit(SocketEvents.SubmitAnswer, { answer, name });
 			}
 		);
+
+		socket.on(
+			SocketEvents.JoinTeam, ({ roomId, team }: { roomId: string; team: number }) => {
+				const userId = socket.id;
+				console.log(`Room ${roomId}: User ${userId} joined team ${team}`);
+				socket.to(roomId).emit(SocketEvents.JoinTeam, { userId, team });
+			}
+		)
 
 		socket.on('disconnect', () => {
 			console.log(`Socket ${socket.id}  disconnected`);

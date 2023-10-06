@@ -44,7 +44,7 @@ function createTeam(name: string): Team {
 /**
  * Base class/model for the game.
  */
-export class Game {
+export class GameModel {
 	limit: number;
 	limitType: LimitType;
 	currentRound = 0;
@@ -87,6 +87,10 @@ export class Game {
 				return this.teams[0];
 			}
 		}
+	}
+
+	getCurrentTeam(): Team {
+		return this.teams[this.currentTeam];
 	}
 
 	/**
@@ -152,5 +156,6 @@ export class Game {
 		team.score += this.scoreBuffer;
 		this.scoreBuffer = 0;
 		this.currentTeam = (this.currentTeam + 1) % this.teams.length;
+		if (this.currentTeam === 0) this.currentRound++;
 	}
 }

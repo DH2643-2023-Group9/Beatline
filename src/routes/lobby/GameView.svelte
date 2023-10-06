@@ -1,35 +1,21 @@
 <script lang="ts">
-	interface Team {
-		name: string;
-		players: string[];
-		score: number;
-	}
-
-	interface MessageHistory {
-		sender: string;
-		answer: number;
-		actualYear: number;
-	}
-
 	import Card from '../Card.svelte';
 	import { fly } from 'svelte/transition';
-	export let gameCode: string | undefined;
-	export let players: string[];
-	export let messageHistory: MessageHistory[];
-	export let currentTurnPlayer: string;
+	export let timeline: Guess[];
+	export let currentPlayer: Player;
 	export let currentTrack: TrackData;
-	export let teamRed: Team;
-	export let teamBlue: Team;
+	export let teams: Team[];
 	import Profile from '../Profile.svelte';
 	import type { TrackData } from '$lib/spotify';
 	import TrackCard from './TrackCard.svelte';
+	import type { Guess, Player, Team } from '$models/game';
 	let minimized: boolean = false;
 </script>
 
 <div class="min-h-screen flex flex-col overflow-hidden">
 	<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
 		<div class="text-black bg-yellow-300 p-2 rounded">
-			<h2>It's {currentTurnPlayer}'s turn!</h2>
+			<h2>It's {currentPlayer.name}'s turn!</h2>
 		</div>
 		<TrackCard track={currentTrack} {minimized} />
 	</div>
@@ -38,11 +24,11 @@
 		<!-- Team Red Information -->
 		<div class="rounded-md bg-gradient-to-r from-red-800 via-sky-200 to-red-600 p-1">
 			<div class=" h-full w-full bg-gray-800">
-				<h2>{teamRed.name}</h2>
-				<p>Score: {teamRed.score}</p>
+				<h2>{teams[0].name}</h2>
+				<p>Score: {teams[0].score}</p>
 
 				<Profile extraClasses="mb-2 border-none">
-					{#each teamRed.players as player}
+					{#each teams[0].players as player}
 						<div class="flex flex-wrap content-end">{player}</div>
 					{/each}
 				</Profile>
@@ -52,11 +38,11 @@
 		<!-- Team Blue Information -->
 		<div class="rounded-md bg-gradient-to-r from-blue-800 via-sky-200 to-cyan-600 p-1">
 			<div class=" h-full w-full bg-gray-800">
-				<h2>{teamBlue.name}</h2>
-				<p>Score: {teamBlue.score}</p>
+				<h2>{teams[1].name}</h2>
+				<p>Score: {teams[1].score}</p>
 
 				<Profile extraClasses="mb-2 border-none">
-					{#each teamBlue.players as player}
+					{#each teams[1].players as player}
 						<div class="flex flex-wrap content-end">{player}</div>
 					{/each}
 				</Profile>
@@ -88,16 +74,16 @@
 			{/each}
 
 			<!-- Cards on the timeline -->
-			{#each messageHistory as { sender, answer, actualYear }}
+			{#each timeline as { player, guessedYear, track }}
 				<div
 					in:fly={{ y: 300, duration: 1000 }}
 					class="absolute -top-10 transform -translate-y-full"
-					style="left: {((actualYear - 1950) / 70) * 100}%"
+					style="left: {((track.year - 1950) / 70) * 100}%"
 				>
 					<div class="flex items-center">
 						<div class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10" />
 						<Card>
-							<p>{sender} guessed {answer}.</p>
+							<p>{player.name} guessed {guessedYear}.</p>
 						</Card>
 					</div>
 				</div>

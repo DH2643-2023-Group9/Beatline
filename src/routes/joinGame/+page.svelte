@@ -31,6 +31,7 @@ import JoinGame from './JoinGame.svelte';
 		socket.emit('joinRoom', { roomId, name });
 		joined = true;  // Set joined to true when the user joins a room
 	}
+
 	function setMyTurn( bool: boolean) {
 		myTurn = bool;
 	}
@@ -39,6 +40,7 @@ import JoinGame from './JoinGame.svelte';
 		console.log('Game started!');
 		startGame();
 	});
+
 	socket.on('endGame', () => {
 		console.log('Game ended!');
 		endGame();
@@ -55,7 +57,7 @@ import JoinGame from './JoinGame.svelte';
 	socket.on('assignTurn', (data: { userId: string }) => {
 		console.log(nameVariable);
 		console.log(data.userId);
-		if (data.userId === nameVariable) {
+		if (data.userId === socket.id) {
 			console.log('my turn');
 			setMyTurn(true);
 		} else {

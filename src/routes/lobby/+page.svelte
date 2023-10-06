@@ -1,174 +1,95 @@
+<script context="module" lang="ts">
+	export type PlayerInfo = {
+		name: string;
+		id: string;
+		team?: number;
+	};
+</script>
+
+
 <script lang="ts">
-	import Game from './Game.svelte';
+	import GameView from './GameView.svelte';
 	import Lobby from './Lobby.svelte';
 	import { io } from 'socket.io-client';
 	import { page } from '$app/stores';
 	import PostGame from './PostGame.svelte';
-	import { getTrackData } from '$lib/spotify';
-	import type { TrackData } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
 	import { goto } from '$app/navigation';
+	import { GameModel, type Team, type Turn } from '$models/game';
+	import { error } from '@sveltejs/kit';
+	import type { TrackData } from '$lib/spotify';
 
-	if (!$accessToken) {
-		goto('/');
-	}
-
-	type Team = {
-		name: string;
-		players: string[];
-		score: number;
-		currentPlayerIndex: number;
-	};
-
-	type MessageHistory = {
-		sender: string;
-		answer: number;
-		actualYear: number;
-	};
+	if (!$accessToken) throw error(401, 'Lacks access token');
 
 	const maxPlayers = parseInt($page.url.searchParams.get('maxPlayers') || '8');
 	const socket = io();
-	let gameCode: string | undefined;
-	let players: string[] = [];
+	let roomId: string | undefined;
+	let players: PlayerInfo[] = [];
 	let isGameStarted = false; // Added this state to manage the view to be displayed
-	let messageHistory: MessageHistory[] = [];
-	let currentTurnIndex: number = -1;
-	let currentTurnPlayer: string = '';
 	let isGameOver: boolean = false;
 	const maxRounds = 2; // For example, 3 rounds. Adjust as needed.
-	let currentRound: number = 0;
-	let currentTeam: 'red' | 'blue' = 'blue';
 
-	let trackData: TrackData | undefined;
-
-	let teamRed: Team = {
-		name: 'Team Red',
-		players: [],
-		score: 0,
-		currentPlayerIndex: 0,
-	};
-
-	let teamBlue: Team = {
-		name: 'Team Blue',
-		players: [],
-		score: 0,
-		currentPlayerIndex: 0,
-	};
-
-	function calculateScore(guessedYear: number, actualYear: number): number {
-		// Determine the absolute difference
-		const difference = Math.abs(guessedYear - actualYear);
-
-		// Award points based on the difference
-		if (difference === 0) {
-			return 5; // Exact guess
-		} else if (difference <= 2) {
-			return 4; // Very close guess
-		} else if (difference <= 5) {
-			return 3; // Close guess
-		} else if (difference <= 10) {
-			return 2; // Off by a bit
-		} else {
-			return 1; // Far off guess
-		}
-	}
-
-	function addToTeam(name: string): void {
-		if (teamRed.players.length <= teamBlue.players.length) {
-			teamRed.players.push(name);
-		} else {
-			teamBlue.players.push(name);
-		}
-	}
+	const gameModel = new GameModel([1950, 2020], maxRounds, 'rounds');
+	let currentTurn: Turn | undefined;
 
 	async function nextTurn() {
-		// Alternate between the teams for the next turn
-		currentTeam = currentTeam === 'red' ? 'blue' : 'red';
-		let nextPlayer = getNextPlayer(currentTeam);
-
-		if (currentTeam === 'red') {
-			console.log('red');
-			currentRound++;
-		}
-
-		currentTurnPlayer = nextPlayer;
-		if ($accessToken) {
-			trackData = await getTrackData(1950, 2020, $accessToken);
-		}
+		if (!roomId) throw error(500, 'Game code is not defined');
+		if (!$accessToken) throw error(500, 'Access token is not defined');
+		currentTurn = await gameModel.getCurrentTurn($accessToken);
+		console.log('currentTurn', currentTurn);
+		socket.emit('assignTurn', { roomId: roomId, userId: currentTurn.player.id });
 	}
 
-	function getNextPlayer(team: 'red' | 'blue'): string {
-		if (team === 'red') {
-			teamRed.currentPlayerIndex++;
-			teamRed.currentPlayerIndex = teamRed.currentPlayerIndex % teamRed.players.length;
-			return teamRed.players[teamRed.currentPlayerIndex];
-		} else {
-			teamBlue.currentPlayerIndex++;
-			teamBlue.currentPlayerIndex = teamBlue.currentPlayerIndex % teamBlue.players.length;
-			return teamBlue.players[teamBlue.currentPlayerIndex];
-		}
-	}
-
-	socket.on('createRoom', (roomId: string) => {
-		gameCode = roomId;
+	socket.on('createRoom', (id: string) => {
+		roomId = id;
 	});
 
 	socket.on('joinRoom', ({ userId, name }) => {
-		players = [...players, name];
-		addToTeam(name);
+		let team;
+		if (gameModel.teams[0].players.length <= gameModel.teams[1].players.length) {
+			team = 0;
+		} else {
+			team = 1;
+		}
+		gameModel.teams[team].players.push({ name, id: userId, abilities: [] });
+		players = [...players, { name, id: userId, team }];
 	});
 
 	socket.emit('createRoom', maxPlayers);
 
-	socket.on('submitAnswer', (data: { roomId: string; name: string; answer: string }) => {
-		if (!trackData) {
-			console.log('No track data');
-			return;
-		}
-		messageHistory = [
-			...messageHistory,
-			{ sender: data.name, answer: parseInt(data.answer), actualYear: trackData.year }
-		];
-		if (currentRound === maxRounds) {
-			isGameStarted = false; // End the game
-			isGameOver = true; // Indicate that the game is over
-			socket.emit('endGame', { roomId: gameCode });
+	socket.on('submitAnswer', (data: { roomId: string; name: string; answer: number }) => {
+		gameModel.submitGuess(data.answer);
+		gameModel.advance();
+		const winner = gameModel.getWinner();
+		if (winner) {
+			isGameStarted = false;
+			isGameOver = true;
+			socket.emit('endGame', { roomId });
 		} else {
-			const score = calculateScore(parseInt(data.answer), trackData.year);
-			if (teamRed.players.includes(data.name)) {
-				teamRed.score += score;
-			} else if (teamBlue.players.includes(data.name)) {
-				teamBlue.score += score;
-			}
 			nextTurn();
-			socket.emit('assignTurn', { roomId: gameCode, userId: currentTurnPlayer });
 		}
 	});
 
-	function startGame() {
-		if (gameCode) {
-			socket.emit('startGame', { roomId: gameCode });
+	async function startGame() {
+		if (roomId) {
+
+			socket.emit('startGame', { roomId });
 			isGameStarted = true; // Update the state to true once the game starts
-			console.log(currentTurnPlayer);
-			nextTurn();
-			socket.emit('assignTurn', { roomId: gameCode, userId: currentTurnPlayer });
+			await nextTurn();
 		}
 	}
 </script>
 
-{#if isGameStarted && trackData}
-	<Game
-		{gameCode}
-		{players}
-		{messageHistory}
-		{currentTurnPlayer}
-		currentTrack={trackData}
-		{teamRed}
-		{teamBlue}
+{#if isGameStarted && currentTurn}
+	<GameView
+		timeline={currentTurn.team.timeline}
+		currentPlayer={currentTurn.player}
+		currentTrack={currentTurn.track}
+		teams={gameModel.teams}
 	/>
 {:else if isGameOver}
 	<!-- Post-game screen -->
-	<PostGame {teamRed} {teamBlue} />
+	<PostGame teams={gameModel.teams} />
 {:else}
-	<Lobby {gameCode} {players} {startGame} />
+	<Lobby gameCode={roomId} {players} {startGame} />
 {/if}

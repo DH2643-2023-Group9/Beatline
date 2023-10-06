@@ -1,17 +1,13 @@
 <script lang="ts">
-    interface Team {
-		name: string;
-		players: string[];
-		score: number;
-	}
-    export let teamRed: Team;
-    export let teamBlue: Team;
+	import type { Team } from "$models/game";
+
+    export let teams: Team[];
 
     let winner = '';
-    if (teamRed.score > teamBlue.score) {
-        winner = teamRed.name;
-    } else if (teamBlue.score > teamRed.score) {
-        winner = teamBlue.name;
+    if (teams[0].score > teams[1].score) {
+        winner = teams[0].name;
+    } else if (teams[1].score > teams[0].score) {
+        winner = teams[1].name;
     } else {
         winner = 'It\'s a tie!';
     }
@@ -32,20 +28,20 @@
         <!-- Team Red Score -->
         <div class="flex flex-col items-center p-4 bg-slate-600 rounded-lg shadow-md space-y-4">
             <div class="text-xl font-semibold text-red-500">
-                {teamRed.name}
+                {teams[0].name}
             </div>
             <div class="text-2xl">
-                Score: {teamRed.score}
+                Score: {teams[0].score}
             </div>
         </div>
 
         <!-- Team Blue Score -->
         <div class="flex flex-col items-center p-4 bg-slate-600 rounded-lg shadow-md space-y-4">
             <div class="text-xl font-semibold text-blue-500">
-                {teamBlue.name}
+                {teams[1].name}
             </div>
             <div class="text-2xl">
-                Score: {teamBlue.score}
+                Score: {teams[1].score}
             </div>
         </div>
     </div>
