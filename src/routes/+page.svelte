@@ -1,123 +1,59 @@
-<script lang="ts" context="module">
-	export type Track = {
-		name: string;
-		artists: string[];
-		album: string;
-		year: number;
-		image: {
-			height: number;
-			width: number;
-			url: string;
-		};
-		preview: string | null;
-		uri: string;
-	};
-</script>
-
-<script lang="ts">
-	import TrackCard from './TrackCard.svelte';
+<script>
 	import { accessToken } from '$stores/tokenStore';
+	let dropdownOpen = false;
 
-	let left = 1950;
-	let right = 2020;
-	let minimize_card = false;
-	let selected_track: Track | undefined = undefined;
-
-	async function get_song(left: number, right: number) {
-		const year = Math.floor(Math.random() * (right - left) + left);
-		const offset = Math.floor(Math.random() * 100);
-		let url = `https://api.spotify.com/v1/search?q=year:${year}&type=track&limit=5&offset=${offset}`;
-		let res = await fetch(url, {
-			method: 'GET',
-			headers: {
-				'content-type': 'application/json',
-				Authorization: `Bearer ${$accessToken}`
-			}
-		});
-		if (!res.ok) {
-			console.log(await res.text());
-			return;
-		}
-		const data = await res.json();
-		const track = data.tracks.items.find((track: any) => track.preview_url != null);
-		if (track == undefined) {
-			console.log('No track found');
-			return;
-		}
-		selected_track = {
-			name: track.name,
-			artists: track.artists.map((artist: any) => artist.name),
-			album: track.album.name,
-			year: year,
-			image: track.album.images[0],
-			preview: track.preview_url,
-			uri: track.uri
-		};
+	function toggleDropdown() {
+		dropdownOpen = !dropdownOpen;
 	}
 </script>
 
-<section class="text-white flex flex-row min-h-screen">
-	<div class="p-4 m-5 w-1/2 flex flex-col items-center justify-center">
-		<h1 class="text-4xl font-semibold mb-4">Demo Page for Spotify</h1>
-		<div>
-			<h3 class="text-2xl font-medium mb-2">Select a Year Interval</h3>
-			<h4 class="text-xl mb-4">Left: {left}, Right: {right}</h4>
-			<input
-				class="pointer-events-auto w-full appearance-none h-2 rounded bg-gray-300 mb-2"
-				bind:value={left}
-				type="range"
-				min="1950"
-				max="2020"
-				step="5"
-			/>
-			<input
-				class="pointer-events-auto w-full appearance-none h-2 rounded bg-gray-300 mb-4"
-				bind:value={right}
-				type="range"
-				min="1950"
-				max="2020"
-				step="5"
-			/>
-			<div>
-				<button
-					class="btn btn-primary m-1 pointer-events-auto"
-					class:btn-disabled={!$accessToken}
-					on:click={async () => await get_song(left, right)}>Get Song</button
-				>
-				<button
-					class="btn btn-secondary m-1 pointer-events-auto"
-					on:click={() => (minimize_card = !minimize_card)}>Minimize Card</button
-				>
-				<a
-					data-sveltekit-preload-data="tap"
-					class="btn btn-warning m-1 pointer-events-auto"
-					href="/createlobby">Create Lobby</a
-				>
-				{#if !$accessToken}
-					<a
-						data-sveltekit-preload-data="tap"
-						class="btn btn-accent m-1 pointer-events-auto"
-						href="/spotify/newToken"
-						>Connect to Spotify
-					</a>
-				{:else}
-					<button class="btn btn-accent m-1 pointer-events-auto" on:click={accessToken.refresh}>
-						Refresh Token
-					</button>
-				{/if}
-			</div>
+<div class="background relative">
+	<!-- Centered Create Lobby button -->
+	<a
+		data-sveltekit-preload-data="tap"
+		class="btn btn-warning m-1 pointer-events-auto transform transition-transform hover:scale-105"
+		href="/createlobby">Create Lobby</a
+	>
+	{#if !$accessToken}
+		<a
+			data-sveltekit-preload-data="tap"
+			class="btn btn-accent m-1 pointer-events-auto"
+			href="/spotify/newToken"
+			>Connect to Spotify
+		</a>
+	{:else}
+		<button class="btn btn-accent m-1 pointer-events-auto" on:click={accessToken.refresh}>
+			Refresh Token
+		</button>
+	{/if}
+
+	<!-- User profile button -->
+	<div class="flex items-start justify-end pointer-events-auto w-full absolute top-0 right-0">
+		<div class="dropdown dropdown-end m-6">
+			<label tabindex="0" class="mb-3 cursor-pointer">
+				<div class="avatar transform transition-transform hover:scale-105 hover:shadow-lg">
+					<div class="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
+						<img src="favicon.png" alt="User Avatar" />
+					</div>
+				</div>
+			</label>
+			<ul
+				tabindex="0"
+				class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-black"
+			>
+				<li><a>Item 1</a></li>
+				<li><a>Item 2</a></li>
+			</ul>
 		</div>
 	</div>
-	<div class="flex flex-col items-center justify-center w-1/2">
-		{#if selected_track !== undefined}
-			<h1 class="font-bold underline text-center">Selected Track:</h1>
-			<TrackCard track={selected_track} minimized={minimize_card} />
-		{/if}
-	</div>
-</section>
+</div>
 
 <style>
-	h1 {
-		width: 100%;
+	.background {
+		height: 100vh;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 	}
 </style>

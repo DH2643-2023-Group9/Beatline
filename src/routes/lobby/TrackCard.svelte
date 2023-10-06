@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Track } from './+page.svelte';
-	export let track: Track;
+	import type { TrackData } from "$lib/spotify";
+	export let track: TrackData;
 	export let minimized: boolean;
 </script>
 

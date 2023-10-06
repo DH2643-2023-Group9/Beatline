@@ -4,18 +4,27 @@
 	import { io } from 'socket.io-client';
 	import { page } from '$app/stores';
 	import PostGame from './PostGame.svelte';
+	import { getTrackData } from '$lib/spotify';
+	import type { TrackData } from '$lib/spotify';
+	import { accessToken } from '$stores/tokenStore';
+	import { goto } from '$app/navigation';
 
-	interface Team {
+	if (!$accessToken) {
+		goto('/');
+	}
+
+	type Team = {
 		name: string;
 		players: string[];
 		score: number;
-	}
+		currentPlayerIndex: number;
+	};
 
-	interface MessageHistory {
+	type MessageHistory = {
 		sender: string;
 		answer: number;
 		actualYear: number;
-	}
+	};
 
 	const maxPlayers = parseInt($page.url.searchParams.get('maxPlayers') || '8');
 	const socket = io();
@@ -23,26 +32,27 @@
 	let players: string[] = [];
 	let isGameStarted = false; // Added this state to manage the view to be displayed
 	let messageHistory: MessageHistory[] = [];
-	let currentTurnIndex: number = 0;
+	let currentTurnIndex: number = -1;
 	let currentTurnPlayer: string = '';
-	let currentTurnYear: number;
 	let isGameOver: boolean = false;
 	const maxRounds = 2; // For example, 3 rounds. Adjust as needed.
 	let currentRound: number = 0;
-	let currentTeam: 'red' | 'blue' = 'red';
-	let redTeamIndex: number = 0;
-	let blueTeamIndex: number = 0;
+	let currentTeam: 'red' | 'blue' = 'blue';
+
+	let trackData: TrackData | undefined;
 
 	let teamRed: Team = {
 		name: 'Team Red',
 		players: [],
-		score: 0
+		score: 0,
+		currentPlayerIndex: 0,
 	};
 
 	let teamBlue: Team = {
 		name: 'Team Blue',
 		players: [],
-		score: 0
+		score: 0,
+		currentPlayerIndex: 0,
 	};
 
 	function calculateScore(guessedYear: number, actualYear: number): number {
@@ -71,11 +81,7 @@
 		}
 	}
 
-	function assignYear() {
-		currentTurnYear = Math.floor(Math.random() * (2021 - 1950) + 1950);
-	}
-
-	function nextTurn() {
+	async function nextTurn() {
 		// Alternate between the teams for the next turn
 		currentTeam = currentTeam === 'red' ? 'blue' : 'red';
 		let nextPlayer = getNextPlayer(currentTeam);
@@ -86,18 +92,20 @@
 		}
 
 		currentTurnPlayer = nextPlayer;
-		assignYear();
+		if ($accessToken) {
+			trackData = await getTrackData(1950, 2020, $accessToken);
+		}
 	}
 
 	function getNextPlayer(team: 'red' | 'blue'): string {
 		if (team === 'red') {
-			redTeamIndex++;
-			redTeamIndex = redTeamIndex % teamRed.players.length;
-			return teamRed.players[redTeamIndex];
+			teamRed.currentPlayerIndex++;
+			teamRed.currentPlayerIndex = teamRed.currentPlayerIndex % teamRed.players.length;
+			return teamRed.players[teamRed.currentPlayerIndex];
 		} else {
-			blueTeamIndex++;
-			blueTeamIndex = blueTeamIndex % teamBlue.players.length;
-			return teamBlue.players[blueTeamIndex];
+			teamBlue.currentPlayerIndex++;
+			teamBlue.currentPlayerIndex = teamBlue.currentPlayerIndex % teamBlue.players.length;
+			return teamBlue.players[teamBlue.currentPlayerIndex];
 		}
 	}
 
@@ -113,16 +121,20 @@
 	socket.emit('createRoom', maxPlayers);
 
 	socket.on('submitAnswer', (data: { roomId: string; name: string; answer: string }) => {
+		if (!trackData) {
+			console.log('No track data');
+			return;
+		}
 		messageHistory = [
 			...messageHistory,
-			{ sender: data.name, answer: parseInt(data.answer), actualYear: currentTurnYear }
+			{ sender: data.name, answer: parseInt(data.answer), actualYear: trackData.year }
 		];
 		if (currentRound === maxRounds) {
 			isGameStarted = false; // End the game
 			isGameOver = true; // Indicate that the game is over
 			socket.emit('endGame', { roomId: gameCode });
 		} else {
-			const score = calculateScore(parseInt(data.answer), currentTurnYear);
+			const score = calculateScore(parseInt(data.answer), trackData.year);
 			if (teamRed.players.includes(data.name)) {
 				teamRed.score += score;
 			} else if (teamBlue.players.includes(data.name)) {
@@ -138,20 +150,19 @@
 			socket.emit('startGame', { roomId: gameCode });
 			isGameStarted = true; // Update the state to true once the game starts
 			console.log(currentTurnPlayer);
-			currentTurnPlayer = players[currentTurnIndex];
+			nextTurn();
 			socket.emit('assignTurn', { roomId: gameCode, userId: currentTurnPlayer });
-			assignYear();
 		}
 	}
 </script>
 
-{#if isGameStarted}
+{#if isGameStarted && trackData}
 	<Game
 		{gameCode}
 		{players}
 		{messageHistory}
 		{currentTurnPlayer}
-		{currentTurnYear}
+		currentTrack={trackData}
 		{teamRed}
 		{teamBlue}
 	/>

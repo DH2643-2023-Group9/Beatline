@@ -1,5 +1,5 @@
 import { SPOTIFY_CLIENT_ID } from '$env/static/private';
-import { requestToken } from '$lib/server/spotifyUtils';
+import { requestToken } from '$lib/server/spotify';
 import { error, json, type RequestHandler } from '@sveltejs/kit';
 
 export const GET: RequestHandler = async ({ url }) => {

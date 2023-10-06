@@ -94,7 +94,7 @@ export function configureServer(server: ViteDevServer) {
 
 		socket.on(
 			SocketEvents.SubmitAnswer,
-			({ roomId, answer, name }: { roomId: string; answer: Number, name: string }) => {
+			({ roomId, answer, name }: { roomId: string; answer: number, name: string }) => {
 				console.log(`Room ${roomId} submitted answer ${answer}`);
 				socket.to(roomId).emit(SocketEvents.SubmitAnswer, { answer, name });
 			}
