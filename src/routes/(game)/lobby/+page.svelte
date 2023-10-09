@@ -1,27 +1,65 @@
 <script lang="ts">
-	export let gameCode: string | undefined;
-	export let players: PlayerInfo[];
-	export let startGame: () => void;
-
-	import Card from '../Card.svelte';
-	import type { PlayerInfo } from './+page.svelte';
+	import { getContext } from 'svelte';
+	import type { MainContext, PlayerInfo } from '../+layout.svelte';
+	import { goto } from '$app/navigation';
+	import Card from '../../Card.svelte';
 	import { PUBLIC_BASE_URL } from '$env/static/public';
+	import type { LimitType } from '$models/game';
+	import { error } from '@sveltejs/kit';
 
-	let numPlayers: number = 0;
-	let gameRounds: number = 5;
-	let copied = false;
+	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 
+	if (gameModel.isActive) {
+		const msg = 'You dun goofed. The game is already start'
+		alert(msg);
+		error(500, msg);
+	}
+	
 	const joinURL = `${PUBLIC_BASE_URL}/joinGame`;
+	let maxPlayers = 5;
+	let limit = 5;
+	let limitType: LimitType = 'rounds';
+	let players: PlayerInfo[] = [];
+	let copied = false;
+	let interval = [1950, 2023];
+
+	socket.on('createRoom', (id: string) => {
+		roomId.set(id);
+	});
+
+	socket.on('joinRoom', ({ userId, name }) => {
+		players = [...players, { name, id: userId }];
+	});
+
+	socket.on('joinTeam', ({ userId, team }) => {
+		players = players.map((player) => {
+			if (player.id === userId) {
+				return { ...player, team };
+			}
+			return player;
+		});
+	});
+
+	function startGame() {
+		socket.emit('startGame', { $roomId });
+		gameModel.interval = interval;
+		gameModel.setLimit(limit, limitType);
+		players.forEach((p) => gameModel.addToTeam(p.team || 0, { ...p, abilities: [] }));
+		gameModel.isActive = true;
+		goto('/game');
+	}
 
 	async function copyGameCode() {
 		try {
-			await navigator.clipboard.writeText(gameCode || '');
+			await navigator.clipboard.writeText($roomId || '');
 			copied = true;
 			setTimeout(() => (copied = false), 2000);
 		} catch (error) {
 			console.error('Failed to copy:', error);
 		}
 	}
+
+	socket.emit('createRoom', { maxPlayers, $roomId });
 </script>
 
 <div class="min-h-screen flex flex-col">
@@ -34,10 +72,10 @@
 		<div class="flex justify-center items-center">
 			<!-- Game Code and Link -->
 			<span class="mr-4 pointer-events-auto" on:click={copyGameCode}>
-				Game Code: {gameCode}
+				Game Code: {$roomId}
 				{#if copied}<span class="text-green-500">(Copied!)</span>{/if}
 			</span>
-			<span class="mr-4">Go to <a href="{joinURL}">{joinURL}</a> and enter the code to join</span>
+			<span class="mr-4">Go to <a href={joinURL}>{joinURL}</a> and enter the code to join</span>
 		</div>
 	</div>
 
@@ -84,9 +122,9 @@
 								>Number of Rounds</label
 							>
 							<input
-								id="rounds"
+								id="limit"
 								type="number"
-								bind:value={gameRounds}
+								bind:value={limit}
 								class="mt-1 block w-full rounded-md border-gray-300 pointer-events-auto"
 							/>
 						</div>

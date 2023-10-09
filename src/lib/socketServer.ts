@@ -1,6 +1,7 @@
 import type { ViteDevServer } from 'vite';
 import { Server } from 'socket.io';
 import { Socket } from 'socket.io-client';
+import { randomRoomId } from './misc';
 
 export enum SocketEvents {
 	CreateRoom = 'createRoom',
@@ -19,10 +20,6 @@ export type JoinPayload = {
     name: string;
 };
 
-function randomRoomId() {
-	return (Math.random() + 1).toString(36).substring(2, 7);
-}
-
 export function configureServer(server: ViteDevServer) {
 	if (!server.httpServer) return;
 
@@ -36,15 +33,15 @@ export function configureServer(server: ViteDevServer) {
 	io.on('connection', (socket) => {
 		console.log(`Socket ${socket.id} connected`);
 
-		socket.on(SocketEvents.CreateRoom, (capacity: number) => {
-			let roomId = randomRoomId();
+		socket.on(SocketEvents.CreateRoom, (capacity: number, roomId: string) => {
+			let tempRoomId : string = roomId;
 			while (openRooms.has(roomId)) {
-				roomId = randomRoomId();
+				tempRoomId = randomRoomId();
 			}
-			console.log(`Socket ${socket.id} created room ${roomId}`);
-			openRooms.set(roomId, capacity);
-			socket.join(roomId);
-			socket.emit(SocketEvents.CreateRoom, roomId);
+			console.log(`Socket ${socket.id} created room ${tempRoomId}`);
+			openRooms.set(tempRoomId, capacity);
+			socket.join(tempRoomId);
+			socket.emit(SocketEvents.CreateRoom, tempRoomId);
 		});
 
 		socket.on(SocketEvents.JoinRoom, ({ roomId, name }: { roomId: string; name: string }) => {

@@ -1,9 +1,18 @@
 <script lang="ts">
-	import type { Team } from "$models/game";
+	import { getContext } from "svelte";
+	import type { MainContext } from "../+layout.svelte";
+	import { goto } from "$app/navigation";
+	import { error } from "@sveltejs/kit";
+    const {socket, roomId, gameModel} = getContext<MainContext>('main');
 
-    export let teams: Team[];
-
-    let winner = '';
+    if (gameModel.isActive) {
+        const msg = 'Game is currently active. Please wait for the game to end.';
+        alert(msg);
+        error(500, msg);
+    }
+    
+    const teams = gameModel.getTeams();
+    let winner: string;
     if (teams[0].score > teams[1].score) {
         winner = teams[0].name;
     } else if (teams[1].score > teams[0].score) {
@@ -48,6 +57,6 @@
 
     <!-- Restart Button -->
     <button class="btn btn-primary">
-        Restart Game
+        Back to Lobby
     </button>
 </div>

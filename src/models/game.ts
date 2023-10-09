@@ -53,6 +53,7 @@ export class GameModel {
 	teams = [createTeam('Red'), createTeam('Blue')];
 	interval: number[];
 	scoreBuffer = 0;
+	isActive = false;
 
 
 	/**
@@ -75,6 +76,11 @@ export class GameModel {
 		this.teams[team].name = name;
 	}
 
+	setLimit(limit: number, type: LimitType) {
+		this.limit = limit;
+		this.limitType = type
+	}
+
     /**
      * @returns The winning team, if any
      */
@@ -88,6 +94,9 @@ export class GameModel {
 				return this.teams[0];
 			}
 		}
+	}
+	getTeams(): Team[] {
+		return this.teams;
 	}
 
 	getCurrentTeam(): Team {

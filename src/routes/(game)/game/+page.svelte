@@ -1,24 +1,55 @@
 <script lang="ts">
-	import Card from '../Card.svelte';
+    import { getContext } from 'svelte';
+	import Card from '../../Card.svelte';
 	import { fly } from 'svelte/transition';
-	export let timeline: Guess[];
-	export let prevTimeline: Guess[] | undefined;
-	export let currentPlayer: Player;
-	export let currentTrack: TrackData;
-	export let teams: Team[];
-	import Profile from '../Profile.svelte';
-	import type { TrackData } from '$lib/spotify';
+	import Profile from '../../Profile.svelte';
 	import TrackCard from './TrackCard.svelte';
-	import type { Guess, Player, Team } from '$models/game';
-	let minimized: boolean = false;
-</script>
+	import type { Team, Turn } from '$models/game';
+    import { accessToken } from '$stores/tokenStore';
+	import { error } from '@sveltejs/kit';
+	import { goto } from '$app/navigation';
+	import type { MainContext } from '../+layout.svelte';
+	if (!$accessToken) throw error(401, 'Lacks access token')
+	let currentTurn: Turn | undefined;
 
+	const {socket, roomId, gameModel} = getContext<MainContext>('main');
+
+	// The user went to the `/game` page before starting a game. 
+	// Send them to the lobby.
+	if (!gameModel.isActive) goto('/lobby') 
+	let teams: Team[] = gameModel.getTeams();
+
+	if (!$accessToken) throw error(401, 'Lacks access token');
+
+    async function nextTurn() {
+		if (!$accessToken) throw error(500, 'Access token is not defined');
+		currentTurn = await gameModel.getCurrentTurn($accessToken);
+		teams = gameModel.getTeams();
+		console.log('currentTurn', currentTurn);
+		socket.emit('assignTurn', { roomId: roomId, userId: currentTurn.player.id });
+	}
+
+	socket.on('submitAnswer', (data: { roomId: string; name: string; answer: number }) => {
+		gameModel.submitGuess(data.answer);
+		gameModel.advance();
+		const winner = gameModel.getWinner();
+		if (winner) {
+			gameModel.isActive = false;
+			socket.emit('endGame', { roomId });
+			goto('/postGame')
+		} else {
+			nextTurn();
+		}
+	});
+
+</script>
+{#if currentTurn}
 <div class="min-h-screen flex flex-col overflow-hidden">
 	<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
 		<div class="text-black bg-yellow-300 p-2 rounded">
-			<h2>It's {currentPlayer.name}'s turn!</h2>
+			<h2>It's {currentTurn?.player.name}'s turn!</h2>
 		</div>
-		<TrackCard track={currentTrack} {minimized} />
+		<TrackCard track={currentTurn?.track} minimized={false} />
 	</div>
 	<!-- Team Information -->
 	<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0 text-3xl text-center">
@@ -52,7 +83,6 @@
 	</div>
 
 	<!-- Timeline -->
-	<!-- Timeline -->
 	<div class="flex-grow flex items-center justify-center p-4">
 		<div class="relative w-3/4 h-full mx-auto">
 			<!-- Adjusted the width to 3/4 and centered it -->
@@ -75,8 +105,8 @@
 			{/each}
 
 			<!-- Cards on the timeline -->
-			<!-- Outer loop to iterate over each timeline -->
-			{#each timeline as { player, guessedYear, track }}
+			{#each teams as team}
+				{#each team.timeline as { player, guessedYear, track }}
 				<div
 					class="absolute -top-10 transform -translate-y-full"
 					style="left: {((track.year - 1950) / 70) * 100}%"
@@ -88,24 +118,8 @@
 						</Card>
 					</div>
 				</div>
-			{/each}
-			{#if prevTimeline}
-				{#each prevTimeline as { player, guessedYear, track }}
-					<div
-						class="absolute -top-10 transform -translate-y-full opacity-50"
-						style="left: {((track.year - 1950) / 70) * 100}%"
-					>
-						<div class="flex items-center">
-							<div
-								class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
-							/>
-							<Card>
-								<p>{player.name} guessed {guessedYear}.</p>
-							</Card>
-						</div>
-					</div>
 				{/each}
-			{/if}
+			{/each}
 		</div>
 	</div>
 
@@ -115,6 +129,14 @@
 		<!-- Utilizing DaisyUI's predefined 'btn' component for a modern aesthetic. -->
 	</div>
 </div>
+
+{:else}
+
+<div class="flex justify-center w-full">
+	<span class="loading loading-spinner loading-lg text-secondary" />
+</div>
+
+{/if}
 
 <style>
 	/* Additional styling if needed beyond what's provided by Tailwind and DaisyUI. */
