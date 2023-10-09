@@ -1,11 +1,12 @@
 <script lang="ts">
+	import type { ClientToServerEvents, ServerToClientEvents } from '$lib/socketServer';
 	import EndGame from './EndGame.svelte';
 import JoinGame from './JoinGame.svelte';
 	import SendAnswer from './SendAnswer.svelte';
 	import WaitingScreen from './WaitingScreen.svelte';
-	import { io } from 'socket.io-client';
+	import { Socket, io } from 'socket.io-client';
 
-	const socket = io();
+	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
 
 	let gameStarted = false;
 	let gameEnded = false;
@@ -28,7 +29,7 @@ import JoinGame from './JoinGame.svelte';
 		}
 		roomIdVariable = roomId;
 		nameVariable = name;
-		socket.emit('joinRoom', { roomId, name });
+		socket.emit('joinRoom', {roomId, name});
 		joined = true;  // Set joined to true when the user joins a room
 	}
 
@@ -46,24 +47,22 @@ import JoinGame from './JoinGame.svelte';
 		endGame();
 	});
 
-	socket.on('error', (data: { error: string }) => {
-		alert(data.error);
+	socket.on('error', (error) => {
+		alert(error);
 	});
 
-	socket.on('joinRoom', (data: { roomId: string; name: string }) => {
+	socket.on('joinRoom', ({name, userId}) => {
 		// Handle successful join. Might update some UI or set some internal state.
-		console.log(data);
+		console.log(`Recieved 'joinRoom' event with name ${name} and userId ${userId}`);
 	});
-	socket.on('assignTurn', (data: { userId: string }) => {
-		console.log(nameVariable);
-		console.log(data.userId);
-		if (data.userId === socket.id) {
-			console.log('my turn');
+
+	socket.on('assignTurn', ({userId}) => {
+		if (userId === socket.id) {
+			console.log('My turn');
 			setMyTurn(true);
 		} else {
 			setMyTurn(false);
 		}
-		console.log(data);
 	});
 
 </script>

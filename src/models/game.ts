@@ -68,6 +68,14 @@ export class GameModel {
 		this.interval = interval;
 	}
 
+	/**
+	 * Initialize a new game with default values.
+	 * These values will need to be set manually later.
+	 */
+	static initDefault(): GameModel {
+		return new GameModel([0, 0], 0, 'rounds');
+	}
+
 	addToTeam(team: number, player: Player) {
 		this.teams[team].players.push(player);
 	}

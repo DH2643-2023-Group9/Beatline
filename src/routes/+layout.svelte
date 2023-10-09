@@ -5,11 +5,12 @@
 	import Background from './Background.svelte';
 
 	onMount(() => {
-		if (typeof window !== 'undefined' 
-			&& window.innerWidth <= 768 
-			&& window.location.pathname !== '/joinGame') {
-			window.location.href = '/joinGame';
-		}
+		// TODO: Find a better way to redirect mobile visitors to the join game page
+		// if (typeof window !== 'undefined' 
+		// 	&& window.innerWidth <= 768 
+		// 	&& window.location.pathname !== '/joinGame') {
+		// 	window.location.href = '/joinGame';
+		// }
 	});
 </script>
 

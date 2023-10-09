@@ -3,9 +3,10 @@
 		name: string;
 		id: string;
 		team?: number;
+		host: boolean;
 	};
 	export type MainContext = {
-		socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+		socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 		roomId: Writable<string>;
 		gameModel: GameModel;
 	};
@@ -18,12 +19,12 @@
 	import { Socket, io } from 'socket.io-client';
 	import { randomRoomId } from '$lib/misc';
 	import { GameModel } from '$models/game';
-	import type { DefaultEventsMap } from 'socket.io/dist/typed-events';
+	import type { ClientToServerEvents, ServerToClientEvents } from '$lib/socketServer';
 
 	setContext<MainContext>('main', {
 		socket: io(),
 		roomId: writable<string>(randomRoomId()),
-		gameModel: new GameModel([0, 0], 0, 'rounds'),
+		gameModel: GameModel.initDefault(),
 	})
 
 </script>

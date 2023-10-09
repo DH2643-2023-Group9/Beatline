@@ -10,11 +10,11 @@
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 
 	if (gameModel.isActive) {
-		const msg = 'You dun goofed. The game is already start'
+		const msg = 'You dun goofed. The game is already start';
 		alert(msg);
 		error(500, msg);
 	}
-	
+
 	const joinURL = `${PUBLIC_BASE_URL}/joinGame`;
 	let maxPlayers = 5;
 	let limit = 5;
@@ -22,16 +22,18 @@
 	let players: PlayerInfo[] = [];
 	let copied = false;
 	let interval = [1950, 2023];
+	let autoAssign = true;
 
-	socket.on('createRoom', (id: string) => {
-		roomId.set(id);
+	socket.on('createRoom', (data) => {
+		roomId.set(data.roomId);
 	});
 
-	socket.on('joinRoom', ({ userId, name }) => {
-		players = [...players, { name, id: userId }];
+	socket.on('joinRoom', ({ name, userId }) => {
+		console.log('In `joinRoom`, userId=', userId);
+		players = [...players, { name, id: userId, host: players.length === 0 }];
 	});
 
-	socket.on('joinTeam', ({ userId, team }) => {
+	socket.on('joinTeam', ({ team, userId }) => {
 		players = players.map((player) => {
 			if (player.id === userId) {
 				return { ...player, team };
@@ -41,11 +43,30 @@
 	});
 
 	function startGame() {
-		socket.emit('startGame', { $roomId });
+		if (players.length < 2) {
+			alert('You need at least 2 players to start the game');
+			return;
+		}
+		if (!autoAssign && gameModel.teams.some((t) => t.players.length < 1)) {
+			alert('You need at least 1 players per team to start the game');
+			return;
+		}
 		gameModel.interval = interval;
 		gameModel.setLimit(limit, limitType);
-		players.forEach((p) => gameModel.addToTeam(p.team || 0, { ...p, abilities: [] }));
+		const teams = gameModel.teams;
+		players.forEach((p) => {
+			console.log('Adding player', p);
+			if (autoAssign) {
+				p.team = teams[0].players.length <= teams[1].players.length ? 0 : 1;
+			}
+			if (p.team === undefined) {
+				alert(`Player ${p.name} is not assigned to a team`);
+				return;
+			}
+			gameModel.addToTeam(p.team || 0, { ...p, abilities: [] });
+		});
 		gameModel.isActive = true;
+		socket.emit('startGame');
 		goto('/game');
 	}
 
@@ -59,7 +80,7 @@
 		}
 	}
 
-	socket.emit('createRoom', { maxPlayers, $roomId });
+	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
 </script>
 
 <div class="min-h-screen flex flex-col">
