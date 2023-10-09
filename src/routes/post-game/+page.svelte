@@ -32,28 +32,39 @@
 	}
 </script>
 
-<div class="min-h-screen flex items-center justify-center text-white ">
-	<Card extraClasses=" p-8 rounded-xl shadow-lg w-96 space-y-6 flex items-center flex-1">
+<div class="min-h-screen flex items-center justify-center text-white">
+	<Card extraClasses="rounded-xl shadow-lg space-y-6 flex items-center">
 
 		<h1 class="justify-center text-xl">
 			Post-Game
-			
 		</h1>
+
+		<div>
+			 Winner - Team 1
+		</div>
+
+		<div>
+			player1a, player2b
+		</div>
+
+		<div>
+			Bästa gissning: Player1b 1982
+		</div>
+
 	 <!-- svelte-ignore a11y-missing-attribute -->
-	 <ul class="menu menu-horizontal bg-base-200 bg-[#303638] ">
-		<li><button on:click={startGame} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
-			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
-			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
-		<li><button on:click={createLobby} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
-			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
-			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
-		<li><button on:click={goToMain} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
-			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
-			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
+	 <ul class="justify-center menu-horizontal bg-[#303638] bg-transparent space-x-10">
+		<li><button on:click={startGame} class="pointer-events-auto btn btn-info text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 hover:text-white dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:border-[#6200EA]">Restart Game</button></li>
+		<li><button on:click={createLobby} class="pointer-events-auto btn btn-info text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 hover:text-white shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:border-[#6200EA]">Change Settings</button></li>
+		<li><button on:click={goToMain} class="pointer-events-auto btn btn-info text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 hover:text-white dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center hover:border-[#6200EA]">Quit</button></li>
 	  </ul>
 	  
-		  
-
+	  
 	</Card>
 </div>
 

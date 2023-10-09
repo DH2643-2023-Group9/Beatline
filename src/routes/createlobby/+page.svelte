@@ -22,11 +22,10 @@
 
 </script>
 
-<button class="pointer-events-auto btn btn-info flex float-right" on:click={() => (showModal = true)}> How-to-play </button>
+<button class="pointer-events-auto btn btn-circle flex float-right h-1/5" on:click={() => (showModal = true)}> ? </button>
 
 
-<Modal bind:showModal>
-	<Card extraClasses="p-8  rounded-xl shadow-lg w-96 space-y-6 box-content border-[#6200EA]">
+<Modal bind:showModal extraClasses="min-h-full space-y-6 box-content text-center">
 		<h1 class="text-centre box-decoration-clone bg-gradient-to-r from-indigo-600 to-pink-500 text-5xl">
 			How do you play Beatline?
 		</h1>
@@ -44,7 +43,9 @@
 		<div>
 			yadda yadda vi skriver det här när vi vet exakt hur allt funkar
 		</div>
-	</Card>
+		<div>
+			test
+		</div>
 </Modal>
 
 <div class="min-h-screen flex items-center justify-center text-white">
