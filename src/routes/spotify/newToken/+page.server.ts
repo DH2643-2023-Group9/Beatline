@@ -1,7 +1,7 @@
 import { SPOTIFY_CLIENT_ID, SPOTIFY_REDIRECT_URL } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { requestToken } from '$lib/server/spotifyUtils';
+import { requestToken } from '$lib/server/spotify';
 
 const SCOPE = 'user-read-private user-read-email';
 

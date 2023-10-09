@@ -1,53 +1,98 @@
+<script context="module" lang="ts">
+	export type PlayerInfo = {
+		name: string;
+		id: string;
+		team?: number;
+	};
+</script>
+
+
 <script lang="ts">
-	import Game from './Game.svelte';
+	import GameView from './GameView.svelte';
 	import Lobby from './Lobby.svelte';
 	import { io } from 'socket.io-client';
 	import { page } from '$app/stores';
+	import PostGame from './PostGame.svelte';
+	import { accessToken } from '$stores/tokenStore';
+	import { goto } from '$app/navigation';
+	import { GameModel, type Team, type Turn } from '$models/game';
+	import { error } from '@sveltejs/kit';
+	import type { TrackData } from '$lib/spotify';
+
+	if (!$accessToken) throw error(401, 'Lacks access token');
 
 	const maxPlayers = parseInt($page.url.searchParams.get('maxPlayers') || '8');
 	const socket = io();
-	let gameCode: string | undefined;
-	let players: string[] = [];
+	let roomId: string | undefined;
+	let players: PlayerInfo[] = [];
 	let isGameStarted = false; // Added this state to manage the view to be displayed
-	let messageHistory: string[] = [];
-	let currentTurnIndex = 0;
-	let currentTurnPlayer = "";
+	let isGameOver: boolean = false;
+	const maxRounds = 4; // For example, 3 rounds. Adjust as needed.
 
-	function nextTurn() {
-		currentTurnIndex = (currentTurnIndex + 1) % players.length;
-		currentTurnPlayer = players[currentTurnIndex];
+	const gameModel = new GameModel([1950, 2020], maxRounds, 'rounds');
+	let currentTurn: Turn | undefined;
+	let previousTurn: Turn | undefined;
+
+	async function nextTurn() {
+		if (!roomId) throw error(500, 'Game code is not defined');
+		if (!$accessToken) throw error(500, 'Access token is not defined');
+		previousTurn = currentTurn;
+		currentTurn = await gameModel.getCurrentTurn($accessToken);
+		console.log('currentTurn', currentTurn);
+		socket.emit('assignTurn', { roomId: roomId, userId: currentTurn.player.id });
 	}
 
-	socket.on('createRoom', (roomId: string) => {
-		gameCode = roomId;
+	socket.on('createRoom', (id: string) => {
+		roomId = id;
 	});
 
 	socket.on('joinRoom', ({ userId, name }) => {
-		players = [...players, name];
+		let team;
+		if (gameModel.teams[0].players.length <= gameModel.teams[1].players.length) {
+			team = 0;
+		} else {
+			team = 1;
+		}
+		gameModel.teams[team].players.push({ name, id: userId, abilities: [] });
+		players = [...players, { name, id: userId, team }];
 	});
 
 	socket.emit('createRoom', maxPlayers);
 
-	socket.on('submitAnswer', (data: { roomId: string; name: string; answer: string }) => {
-		messageHistory = [...messageHistory, `${data.name}: ${data.answer}`];
-		nextTurn();
-		socket.emit('assignTurn', { roomId: gameCode, userId: currentTurnPlayer });
+	socket.on('submitAnswer', (data: { roomId: string; name: string; answer: number }) => {
+		gameModel.submitGuess(data.answer);
+		gameModel.advance();
+		const winner = gameModel.getWinner();
+		if (winner) {
+			isGameStarted = false;
+			isGameOver = true;
+			socket.emit('endGame', { roomId });
+		} else {
+			nextTurn();
+		}
 	});
 
-	function startGame() {
-		if (gameCode) {
-			socket.emit('startGame', { roomId: gameCode });
+	async function startGame() {
+		if (roomId) {
+
+			socket.emit('startGame', { roomId });
 			isGameStarted = true; // Update the state to true once the game starts
-			console.log(currentTurnPlayer);
-			currentTurnPlayer = players[currentTurnIndex];
-			socket.emit('assignTurn', { roomId: gameCode, userId: currentTurnPlayer });
+			await nextTurn();
 		}
 	}
 </script>
 
-
-{#if isGameStarted}
-	<Game {gameCode} {players} {messageHistory} {currentTurnPlayer} />
+{#if isGameStarted && currentTurn}
+	<GameView
+		timeline={currentTurn.team.timeline}
+		prevTimeline={previousTurn?.team.timeline}
+		currentPlayer={currentTurn.player}
+		currentTrack={currentTurn.track}
+		teams={gameModel.teams}
+	/>
+{:else if isGameOver}
+	<!-- Post-game screen -->
+	<PostGame teams={gameModel.teams} />
 {:else}
-	<Lobby {gameCode} {players} {startGame} />
+	<Lobby gameCode={roomId} {players} {startGame} />
 {/if}

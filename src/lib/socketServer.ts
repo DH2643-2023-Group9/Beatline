@@ -1,5 +1,6 @@
 import type { ViteDevServer } from 'vite';
 import { Server } from 'socket.io';
+import { Socket } from 'socket.io-client';
 
 export enum SocketEvents {
 	CreateRoom = 'createRoom',
@@ -8,7 +9,9 @@ export enum SocketEvents {
 	AssignTurn = 'assignTurn',
 	UpdateAnswer = 'updateAnswer',
 	SubmitAnswer = 'submitAnswer',
-	Error = 'error'
+	EndGame = 'endGame',
+	Error = 'error',
+	JoinTeam = 'joinTeam',
 }
 
 export type JoinPayload = {
@@ -81,6 +84,11 @@ export function configureServer(server: ViteDevServer) {
 			openRooms.delete(roomId);
 		});
 
+		socket.on(SocketEvents.EndGame, ({ roomId }: { roomId: string }) => {
+			console.log(`Room ${roomId} ended game`);
+			io.to(roomId).emit(SocketEvents.EndGame);
+		});
+
 		socket.on(SocketEvents.AssignTurn, ({ roomId, userId }: { roomId: string; userId: string }) => {
 			console.log(`Room ${roomId} assigned turn to ${userId}`);
 			socket.to(roomId).emit(SocketEvents.AssignTurn, { userId });
@@ -88,11 +96,19 @@ export function configureServer(server: ViteDevServer) {
 
 		socket.on(
 			SocketEvents.SubmitAnswer,
-			({ roomId, answer, name }: { roomId: string; answer: Number, name: string }) => {
+			({ roomId, answer, name }: { roomId: string; answer: number, name: string }) => {
 				console.log(`Room ${roomId} submitted answer ${answer}`);
 				socket.to(roomId).emit(SocketEvents.SubmitAnswer, { answer, name });
 			}
 		);
+
+		socket.on(
+			SocketEvents.JoinTeam, ({ roomId, team }: { roomId: string; team: number }) => {
+				const userId = socket.id;
+				console.log(`Room ${roomId}: User ${userId} joined team ${team}`);
+				socket.to(roomId).emit(SocketEvents.JoinTeam, { userId, team });
+			}
+		)
 
 		socket.on('disconnect', () => {
 			console.log(`Socket ${socket.id}  disconnected`);

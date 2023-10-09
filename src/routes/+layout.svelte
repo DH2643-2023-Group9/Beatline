@@ -1,13 +1,23 @@
 <script>
+	import { onMount } from 'svelte';
 	import './styles.css';
 	import '../app.css';
 	import Background from './Background.svelte';
+
+	onMount(() => {
+		if (typeof window !== 'undefined' 
+			&& window.innerWidth <= 768 
+			&& window.location.pathname !== '/joinGame') {
+			window.location.href = '/joinGame';
+		}
+	});
 </script>
 
 <div class="app">
-	{#if typeof window !== 'undefined'}
+	{#if typeof window !== 'undefined' && window.location.pathname !== '/joinGame'}
 		<Background />
 	{/if}
+
 	<main>
 		<slot />
 	</main>

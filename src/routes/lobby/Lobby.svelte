@@ -1,25 +1,29 @@
 <script lang="ts">
 	export let gameCode: string | undefined;
-	export let players: string[];
-    export let startGame: () => void;
+	export let players: PlayerInfo[];
+	export let startGame: () => void;
 
 	import Card from '../Card.svelte';
-	import { goto } from '$app/navigation';
+	import type { PlayerInfo } from './+page.svelte';
+	import { PUBLIC_BASE_URL } from '$env/static/public';
 
 	let numPlayers: number = 0;
 	let gameRounds: number = 5;
 	let copied = false;
 
+	const joinURL = `${PUBLIC_BASE_URL}/joinGame`;
+
 	async function copyGameCode() {
 		try {
-			await navigator.clipboard.writeText(gameCode || "");
+			await navigator.clipboard.writeText(gameCode || '');
 			copied = true;
-			setTimeout(() => copied = false, 2000);
+			setTimeout(() => (copied = false), 2000);
 		} catch (error) {
-			console.error("Failed to copy:", error);
+			console.error('Failed to copy:', error);
 		}
 	}
 </script>
+
 <div class="min-h-screen flex flex-col">
 	<!-- Add flex and flex-col to this container -->
 
@@ -30,9 +34,10 @@
 		<div class="flex justify-center items-center">
 			<!-- Game Code and Link -->
 			<span class="mr-4 pointer-events-auto" on:click={copyGameCode}>
-				Game Code: {gameCode} {#if copied}<span class="text-green-500">(Copied!)</span>{/if}
+				Game Code: {gameCode}
+				{#if copied}<span class="text-green-500">(Copied!)</span>{/if}
 			</span>
-			<span class="mr-4">Go to hmm and enter the code to join</span>
+			<span class="mr-4">Go to <a href="{joinURL}">{joinURL}</a> and enter the code to join</span>
 		</div>
 	</div>
 
@@ -48,7 +53,7 @@
 					<h2 class="text-xl font-semibold mb-4">Players</h2>
 					<ul>
 						{#each players as player}
-							<li class="mb-2">{player}</li>
+							<li class="mb-2">{player.name}</li>
 						{/each}
 					</ul>
 					<button on:click={startGame} class="pointer-events-auto btn btn-info w-full mt-4"
@@ -82,7 +87,7 @@
 								id="rounds"
 								type="number"
 								bind:value={gameRounds}
-								class="mt-1 block w-full rounded-md border-gray-300"
+								class="mt-1 block w-full rounded-md border-gray-300 pointer-events-auto"
 							/>
 						</div>
 					</div>
