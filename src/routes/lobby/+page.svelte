@@ -27,14 +27,16 @@
 	let players: PlayerInfo[] = [];
 	let isGameStarted = false; // Added this state to manage the view to be displayed
 	let isGameOver: boolean = false;
-	const maxRounds = 2; // For example, 3 rounds. Adjust as needed.
+	const maxRounds = 4; // For example, 3 rounds. Adjust as needed.
 
 	const gameModel = new GameModel([1950, 2020], maxRounds, 'rounds');
 	let currentTurn: Turn | undefined;
+	let previousTurn: Turn | undefined;
 
 	async function nextTurn() {
 		if (!roomId) throw error(500, 'Game code is not defined');
 		if (!$accessToken) throw error(500, 'Access token is not defined');
+		previousTurn = currentTurn;
 		currentTurn = await gameModel.getCurrentTurn($accessToken);
 		console.log('currentTurn', currentTurn);
 		socket.emit('assignTurn', { roomId: roomId, userId: currentTurn.player.id });
@@ -83,6 +85,7 @@
 {#if isGameStarted && currentTurn}
 	<GameView
 		timeline={currentTurn.team.timeline}
+		prevTimeline={previousTurn?.team.timeline}
 		currentPlayer={currentTurn.player}
 		currentTrack={currentTurn.track}
 		teams={gameModel.teams}

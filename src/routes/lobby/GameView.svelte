@@ -2,6 +2,7 @@
 	import Card from '../Card.svelte';
 	import { fly } from 'svelte/transition';
 	export let timeline: Guess[];
+	export let prevTimeline: Guess[] | undefined;
 	export let currentPlayer: Player;
 	export let currentTrack: TrackData;
 	export let teams: Team[];
@@ -29,7 +30,7 @@
 
 				<Profile extraClasses="mb-2 border-none">
 					{#each teams[0].players as player}
-						<div class="flex flex-wrap content-end">{player}</div>
+						<div class="flex flex-wrap content-end">{player.name}</div>
 					{/each}
 				</Profile>
 			</div>
@@ -43,7 +44,7 @@
 
 				<Profile extraClasses="mb-2 border-none">
 					{#each teams[1].players as player}
-						<div class="flex flex-wrap content-end">{player}</div>
+						<div class="flex flex-wrap content-end">{player.name}</div>
 					{/each}
 				</Profile>
 			</div>
@@ -74,9 +75,9 @@
 			{/each}
 
 			<!-- Cards on the timeline -->
+			<!-- Outer loop to iterate over each timeline -->
 			{#each timeline as { player, guessedYear, track }}
 				<div
-					in:fly={{ y: 300, duration: 1000 }}
 					class="absolute -top-10 transform -translate-y-full"
 					style="left: {((track.year - 1950) / 70) * 100}%"
 				>
@@ -88,6 +89,23 @@
 					</div>
 				</div>
 			{/each}
+			{#if prevTimeline}
+				{#each prevTimeline as { player, guessedYear, track }}
+					<div
+						class="absolute -top-10 transform -translate-y-full opacity-50"
+						style="left: {((track.year - 1950) / 70) * 100}%"
+					>
+						<div class="flex items-center">
+							<div
+								class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
+							/>
+							<Card>
+								<p>{player.name} guessed {guessedYear}.</p>
+							</Card>
+						</div>
+					</div>
+				{/each}
+			{/if}
 		</div>
 	</div>
 

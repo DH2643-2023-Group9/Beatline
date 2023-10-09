@@ -54,6 +54,7 @@ export class GameModel {
 	interval: number[];
 	scoreBuffer = 0;
 
+
 	/**
 	 * @param interval The year interval to sample tracks from
 	 * @param limit The limit for turns/score
