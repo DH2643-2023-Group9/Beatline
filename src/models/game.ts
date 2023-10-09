@@ -53,6 +53,7 @@ export class GameModel {
 	teams = [createTeam('Red'), createTeam('Blue')];
 	interval: number[];
 	scoreBuffer = 0;
+	isActive = false;
 
 
 	/**
@@ -67,12 +68,25 @@ export class GameModel {
 		this.interval = interval;
 	}
 
+	/**
+	 * Initialize a new game with default values.
+	 * These values will need to be set manually later.
+	 */
+	static initDefault(): GameModel {
+		return new GameModel([0, 0], 0, 'rounds');
+	}
+
 	addToTeam(team: number, player: Player) {
 		this.teams[team].players.push(player);
 	}
 
 	setTeamName(team: number, name: string) {
 		this.teams[team].name = name;
+	}
+
+	setLimit(limit: number, type: LimitType) {
+		this.limit = limit;
+		this.limitType = type
 	}
 
     /**
@@ -88,6 +102,9 @@ export class GameModel {
 				return this.teams[0];
 			}
 		}
+	}
+	getTeams(): Team[] {
+		return this.teams;
 	}
 
 	getCurrentTeam(): Team {

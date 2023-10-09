@@ -1,114 +1,123 @@
 import type { ViteDevServer } from 'vite';
 import { Server } from 'socket.io';
-import { Socket } from 'socket.io-client';
+import { randomRoomId } from './misc';
 
-export enum SocketEvents {
-	CreateRoom = 'createRoom',
-	JoinRoom = 'joinRoom',
-	StartGame = 'startGame',
-	AssignTurn = 'assignTurn',
-	UpdateAnswer = 'updateAnswer',
-	SubmitAnswer = 'submitAnswer',
-	EndGame = 'endGame',
-	Error = 'error',
-	JoinTeam = 'joinTeam',
+type Event<T> = (data: T) => void;
+
+export interface ClientToServerEvents {
+	createRoom: Event<{ capacity: number; roomId: string }>;
+	joinRoom: Event<{ roomId: string; name: string }>;
+	startGame: () => void;
+	assignTurn: Event<{ userId: string }>;
+	submitAnswer: Event<{ answer: number }>;
+	endGame: () => void;
+	joinTeam: Event<{ team: number }>;
+	error: Event<{ error: string }>;
 }
 
-export type JoinPayload = {
-    roomId: string;
-    name: string;
-};
-
-function randomRoomId() {
-	return (Math.random() + 1).toString(36).substring(2, 7);
+export interface ServerToClientEvents {
+	createRoom: Event<{ roomId: string }>;
+	joinRoom: Event<{ userId: string; name: string }>;
+	startGame: () => void;
+	assignTurn: Event<{ userId: string }>;
+	submitAnswer: Event<{ answer: number; userId: string }>;
+	endGame: () => void;
+	joinTeam: Event<{ team: number, userId: string }>;
+	error: Event<{ error: string }>;
 }
 
 export function configureServer(server: ViteDevServer) {
 	if (!server.httpServer) return;
 
-	const io = new Server(server.httpServer);
+	const io = new Server<ClientToServerEvents, ServerToClientEvents>(server.httpServer);
 
 	const openRooms = new Map<string, number>();
 
 	const socketsInRooms = new Map<string, Set<string>>(); // roomId -> Set of socket ids
 
-
 	io.on('connection', (socket) => {
 		console.log(`Socket ${socket.id} connected`);
 
-		socket.on(SocketEvents.CreateRoom, (capacity: number) => {
-			let roomId = randomRoomId();
+		const userId = socket.id;
+		let roomId: string | undefined;
+
+		function noRoomId(): void {
+			console.log('User tried to perform action while not being in a room');
+			socket.emit('error', { error: 'Not in a room' });
+		}
+
+		socket.on('createRoom', (data) => {
+			roomId = data.roomId;
 			while (openRooms.has(roomId)) {
 				roomId = randomRoomId();
 			}
-			console.log(`Socket ${socket.id} created room ${roomId}`);
-			openRooms.set(roomId, capacity);
+			console.log(`Socket ${userId} created room ${roomId}`);
+			openRooms.set(roomId, data.capacity);
 			socket.join(roomId);
-			socket.emit(SocketEvents.CreateRoom, roomId);
+			socket.emit('createRoom', { roomId });
 		});
 
-		socket.on(SocketEvents.JoinRoom, ({ roomId, name }: { roomId: string; name: string }) => {
-			const capacity = openRooms.get(roomId);
-		
+		socket.on('joinRoom', (data) => {
+			const capacity = openRooms.get(data.roomId);
+
 			// Initialize the room in socketsInRooms if it's not already there
-			if (!socketsInRooms.has(roomId)) {
-				socketsInRooms.set(roomId, new Set());
+			if (!socketsInRooms.has(data.roomId)) {
+				socketsInRooms.set(data.roomId, new Set());
 			}
-			
-			const socketsInRoom = socketsInRooms.get(roomId);
-		
+
+			const socketsInRoom = socketsInRooms.get(data.roomId);
+
 			if (capacity === undefined) {
-				socket.emit(SocketEvents.Error, { error: 'Room not found' });
+				socket.emit('error', { error: 'Room not found' });
 				return;
 			} else if (capacity === 0) {
-				socket.emit(SocketEvents.Error, { error: 'Room is full' });
+				socket.emit('error', { error: 'Room is full' });
 				return;
-			} else if (socketsInRoom && socketsInRoom.has(socket.id)) {
-				socket.emit(SocketEvents.Error, { error: 'You have already joined this room' });
+			} else if (socketsInRoom && socketsInRoom.has(userId)) {
+				socket.emit('error', { error: 'You have already joined this room' });
 				return;
 			}
-		
-			console.log(`Socket ${socket.id} joined room ${roomId}`);
-			openRooms.set(roomId, capacity - 1); // Decrease the available capacity
+
+			console.log(`Socket ${socket.id} joined room ${data.roomId}`);
+			openRooms.set(data.roomId, capacity - 1); // Decrease the available capacity
 			if (socketsInRoom) {
 				socketsInRoom.add(socket.id); // Add the socket to the room's set
 			}
+			roomId = data.roomId;
 			socket.join(roomId);
-			socket.to(roomId).emit(SocketEvents.JoinRoom, { userId: socket.id, name });
+			socket.to(roomId).emit('joinRoom', { userId, name: data.name });
 		});
-		
 
-		socket.on(SocketEvents.StartGame, ({ roomId }: { roomId: string }) => {
+		socket.on('startGame', () => {
+			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId} started game`);
-			io.to(roomId).emit(SocketEvents.StartGame);
+			io.to(roomId).emit('startGame');
 			openRooms.delete(roomId);
 		});
 
-		socket.on(SocketEvents.EndGame, ({ roomId }: { roomId: string }) => {
+		socket.on('endGame', () => {
+			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId} ended game`);
-			io.to(roomId).emit(SocketEvents.EndGame);
+			io.to(roomId).emit('endGame');
 		});
 
-		socket.on(SocketEvents.AssignTurn, ({ roomId, userId }: { roomId: string; userId: string }) => {
+		socket.on('assignTurn', ({ userId }) => {
+			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId} assigned turn to ${userId}`);
-			socket.to(roomId).emit(SocketEvents.AssignTurn, { userId });
+			socket.to(roomId).emit('assignTurn', { userId });
 		});
 
-		socket.on(
-			SocketEvents.SubmitAnswer,
-			({ roomId, answer, name }: { roomId: string; answer: number, name: string }) => {
-				console.log(`Room ${roomId} submitted answer ${answer}`);
-				socket.to(roomId).emit(SocketEvents.SubmitAnswer, { answer, name });
-			}
-		);
+		socket.on('submitAnswer', ({ answer }) => {
+			if (!roomId) return noRoomId();
+			console.log(`Room ${roomId} submitted answer ${answer}`);
+			socket.to(roomId).emit('submitAnswer', { answer, userId });
+		});
 
-		socket.on(
-			SocketEvents.JoinTeam, ({ roomId, team }: { roomId: string; team: number }) => {
-				const userId = socket.id;
-				console.log(`Room ${roomId}: User ${userId} joined team ${team}`);
-				socket.to(roomId).emit(SocketEvents.JoinTeam, { userId, team });
-			}
-		)
+		socket.on('joinTeam', ({team}) => {
+			if (!roomId) return noRoomId();
+			console.log(`Room ${roomId}: User ${userId} joined team ${team}`);
+			socket.to(roomId).emit('joinTeam', {team, userId});
+		});
 
 		socket.on('disconnect', () => {
 			console.log(`Socket ${socket.id}  disconnected`);
