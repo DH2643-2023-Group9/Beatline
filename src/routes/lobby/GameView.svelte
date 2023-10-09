@@ -14,12 +14,15 @@
 </script>
 
 <div class="min-h-screen flex flex-col overflow-hidden">
-	<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
-		<div class="text-black bg-yellow-300 p-2 rounded">
-			<h2>It's {currentPlayer.name}'s turn!</h2>
-		</div>
-		<TrackCard track={currentTrack} {minimized} />
+	
+	<div class="text-white p-2 rounded text-5xl absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+		<h2>It's {currentPlayer.name}'s turn!</h2>
 	</div>
+	<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
+		<TrackCard extraclasses='w-64 h-fit' track={currentTrack} {minimized} />
+	</div>
+
+	
 	<!-- Team Information -->
 	<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0 text-3xl text-center">
 		<!-- Team Red Information -->
@@ -67,7 +70,7 @@
 					style="left: {(i / 7) * 100}%"
 				>
 					<!-- Display the year above the marker -->
-					<div class="absolute bottom-full mb-1 text-sm text-gray-700">{1950 + i * 10}</div>
+					<div class="absolute bottom-full mb-1 text-sm text-white-700">{1950 + i * 10}</div>
 
 					<!-- Marker for the year -->
 					<div class="w-1 h-4 bg-gray-300 dark:bg-gray-700 rounded-full" />
@@ -99,9 +102,7 @@
 							<div
 								class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
 							/>
-							<Card>
-								<p>{player.name} guessed {guessedYear}.</p>
-							</Card>
+							<TrackCard extraclasses='w-32 h-24' track={currentTrack} {minimized} />
 						</div>
 					</div>
 				{/each}

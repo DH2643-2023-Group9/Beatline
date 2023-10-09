@@ -56,12 +56,13 @@
 							<li class="mb-2">{player.name}</li>
 						{/each}
 					</ul>
-					<button on:click={startGame} class="pointer-events-auto btn btn-info w-full mt-4"
+					<button on:click={startGame} class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2	 "
 						>Start Game</button
 					>
 				</Card>
 			</div>
 
+			<!-- Right Side (Settings) -->
 			<!-- Right Side (Settings) -->
 			<div class="w-2/3 flex flex-col justify-between p-6">
 				<!-- Settings -->
@@ -69,26 +70,27 @@
 					<h3 class="text-lg font-semibold mb-4">Settings</h3>
 					<div class="space-y-4">
 						<div>
-							<label for="players" class="block text-sm font-medium text-gray-700"
+							<label for="players" class="block text-sm font-medium"
 								>Number of Players</label
 							>
 							<input
 								id="players"
 								type="number"
-								bind:value={players.length}
-								class="mt-1 block w-full rounded-md border-gray-300"
+								bind:value={numPlayers}
+								class="mt-1 block w-full rounded-md border-gray-300 bg-inherit"
 							/>
 						</div>
 						<div>
-							<label for="rounds" class="block text-sm font-medium text-gray-700"
-								>Number of Rounds</label
-							>
-							<input
-								id="rounds"
-								type="number"
-								bind:value={gameRounds}
-								class="mt-1 block w-full rounded-md border-gray-300 pointer-events-auto"
-							/>
+							<label for="players" class="block text-sm font-medium"> Number of Rounds </label>
+							<input type="range" class="pointer-events-auto range range-secondary" min="6" max="12" step="2" bind:value={gameRounds}>
+							<div class="w-full flex justify-between text-xs px-2">
+								<span>6</span>
+								<span>8</span>
+								<span>10</span>
+								<span>12</span>
+							  </div>
+							  
+
 						</div>
 					</div>
 				</Card>
