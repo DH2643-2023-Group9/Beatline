@@ -12,6 +12,28 @@ export type TrackData = {
 	uri: string;
 };
 
+/**
+ * Validates a track object from the Spotify API.
+ */
+function validateTrack(track: any): boolean {
+	return (
+		track.name != undefined &&
+		track.artists != undefined &&
+		track.album != undefined &&
+		track.album.images != undefined &&
+		track.album.images.length > 0 &&
+		track.album.images[0].url != undefined &&
+		track.preview_url != undefined &&
+		track.uri != undefined
+	);
+}
+
+/**
+ * Gets a random track from the Spotify API.
+ * @param left Lower bound for the year interval
+ * @param right Upper bound for the year interval
+ * @param accessToken Spotify access token
+ */
 export async function getTrackData(left: number, right: number, accessToken: string): Promise<TrackData> {
 	const year = Math.floor(Math.random() * (right - left) + left);
 	const offset = Math.floor(Math.random() * 100);
@@ -28,7 +50,7 @@ export async function getTrackData(left: number, right: number, accessToken: str
 		throw new Error('Failed to fetch song');
 	}
 	const data = await res.json();
-	const track = data.tracks.items.find((track: any) => track.preview_url != null);
+	const track = data.tracks.items.find(validateTrack);
 	if (track == undefined) {
 		console.log('No track found');
 		throw new Error('No track found');
