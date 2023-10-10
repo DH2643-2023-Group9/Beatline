@@ -1,11 +1,35 @@
 <script lang="ts">
 	import type { TrackData } from '$lib/spotify';
+	import { afterUpdate } from 'svelte';
 	export let track: TrackData;
 	export let minimized: boolean;
 	export let extraClasses = '';
+
+
+	export let playFor10Seconds: boolean = false;
+
+	let audio: HTMLAudioElement;
+
+	afterUpdate(() => {
+		if (track && audio) {
+			audio.pause();
+			audio.currentTime = 0; // Reset to the beginning
+			audio.load();
+			if (playFor10Seconds) {
+				playAudioFor10Seconds();
+			}
+		}
+	});
+	
+	function playAudioFor10Seconds() {
+		audio.play();
+		setTimeout(() => {
+			audio.pause();
+		}, 10000); // pause after 10 seconds
+	}
 </script>
 
-<label class="m-2 h-fit swap swap-flip text-9xl pointer-events-auto {extraClasses}">
+<label class="m-2 h-fit swap swap-flip text-9xl pointer-events-none {extraClasses}">
 	<input type="checkbox" class="hidden" />
 	<!-- This is hidden assuming you do not want the checkbox to show -->
 	<div class="swap-on w-full h-full rounded-xl overflow-hidden bg-neutral-900">
@@ -19,7 +43,7 @@
 			{/if}
 		</div>
 		{#if !minimized}
-			<audio class="pointer-events-auto w-full">
+			<audio bind:this={audio} class="pointer-events-auto w-full">
 				<source src={track.preview} type="audio/mpeg" />
 			</audio>
 		{/if}
@@ -28,3 +52,4 @@
 		<img src={'https://i.imgur.com/GCiers3.png'} alt="Beatline" class="w-full h-full" />
 	</div>
 </label>
+
