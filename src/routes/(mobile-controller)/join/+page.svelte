@@ -15,7 +15,7 @@
 		socket.emit('joinRoom', { roomId, name });
 	}
 
-	socket.on('error', (error) => {
+	socket.on('error', ({error}) => {
 		alert(error);
 	});
 

@@ -21,7 +21,7 @@
 		gameEnded = true;
 	});
 
-	socket.on('error', (error) => {
+	socket.on('error', ({error}) => {
 		alert(error);
 	});
 
