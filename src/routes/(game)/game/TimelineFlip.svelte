@@ -3,10 +3,16 @@
 	import NoFlipCard from "./NoFlipCard.svelte";
 
 	export let teams: Team[];
+	export let currentTeam: number;
+	let team1: boolean = true;
+
+	$: {
+		team1 = currentTeam === 0;
+	}
 </script>
 
-<label class="w-full p-4 swap swap-rotate pointer-events-auto flex flex-col">
-	<input type="checkbox" class="hidden" />
+<label class="w-full p-4 swap swap-flip-h pointer-events-auto flex flex-col items-center justify-center">
+	<input type="checkbox" class="hidden" checked={team1} />
   
 	<!-- Default Timeline View (assuming for Team 1 or main view) -->
 	<div class="swap-off relative w-full h-auto mx-auto">
@@ -22,30 +28,25 @@
 					</div>
 				{/each}
 
-				{#each teams as team}
-					{#each team.timeline as { player, guessedYear, track }}
+					{#each teams[0].timeline as { player, guessedYear, track }}
 						<div
 							class="absolute -top-10 transform -translate-y-full"
 							style="left: {((track.year - 1950) / 70) * 100}%"
 						>
 							<div class="flex items-center">
-								<div
-									class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
-								/>
 								<NoFlipCard extraClasses='w-40' minimized={true} track={track}>
 									<p>{player.name} guessed {guessedYear}.</p>
 								</NoFlipCard>
 							</div>
 						</div>
 					{/each}
-				{/each}
 			</div>
 		</div>
 	</div>
   
 	<!-- Flipped Timeline View (essentially the same for this example) -->
 	<div class="swap-on relative w-full h-auto mx-auto">
-		<div class="flex items-center justify-center p-4">
+		<div class="flex items-center justify-center p-4 -translate-y-8">
 			<div class="relative w-3/4 h-auto mx-auto">
 				<div class="absolute top-1/2 left-0 w-full h-1 bg-gray-300" />
 				{#each Array(8) as _, i}
@@ -57,23 +58,18 @@
 					</div>
 				{/each}
 
-				{#each teams as team}
-					{#each team.timeline as { player, guessedYear, track }}
+					{#each teams[1].timeline as { player, guessedYear, track }}
 						<div
 							class="absolute -top-10 transform -translate-y-full"
 							style="left: {((track.year - 1950) / 70) * 100}%"
 						>
 							<div class="flex items-center">
-								<div
-									class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
-								/>
 								<NoFlipCard extraClasses='w-40' minimized={true} track={track}>
 									<p>{player.name} guessed {guessedYear}.</p>
 								</NoFlipCard>
 							</div>
 						</div>
 					{/each}
-				{/each}
 			</div>
 		</div>
 	</div>

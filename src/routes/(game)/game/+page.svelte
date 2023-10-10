@@ -13,6 +13,7 @@
 	import TimelineFlip from './TimelineFlip.svelte';
 	if (!$accessToken) throw error(401, 'Lacks access token');
 	let currentTurn: Turn | undefined;
+	let currentTeam: number = 0;
 
 	const { socket, gameModel } = getContext<MainContext>('main');
 
@@ -26,6 +27,8 @@
 	async function nextTurn() {
 		if (!$accessToken) throw error(500, 'Access token is not defined');
 		currentTurn = await gameModel.getCurrentTurn($accessToken);
+		console.log('currentTurn', currentTurn.turn);
+		currentTeam = (currentTeam + 1) % 2
 		teams = gameModel.getTeams();
 		console.log('currentTurn', currentTurn);
 		socket.emit('assignTurn', { userId: currentTurn.player.id });
@@ -94,7 +97,7 @@
 			</div>
 		</div>
 
-		<TimelineFlip teams={teams} />
+		<TimelineFlip teams={teams} currentTeam={currentTeam} />
 
 
 		<!-- Interactivity -->
