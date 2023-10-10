@@ -65,6 +65,15 @@
 								class="mt-1 block w-full rounded-md border-gray-300 bg-inherit"
 							/>
 						</div>
+
+						<details class="pointer-events-auto dropdown mb-32">
+							<summary class="m-1 btn">open or close</summary>
+							<ul class="p-2 shadow menu dropdown-content z-[1] bg-base-100 rounded-box w-52">
+							  <li><a>Item 1</a></li>
+							  <li><a>Item 2</a></li>
+							</ul>
+						  </details>
+
 						<div>
 							<label for="players" class="block text-sm font-medium"> Number of Rounds </label>
 							<input type="range" class="pointer-events-auto range range-secondary" min="6" max="12" step="2" bind:value>
@@ -74,7 +83,9 @@
 								<span>10</span>
 								<span>12</span>
 							  </div>
-							  
+							  <label for="players" class="block text-sm font-medium"> Difficulty </label>
+							  <input type="radio" name="radio-2" class="pointer-events-auto radio radio-primary" checked />
+							  <input type="radio" name="radio-2" class="pointer-events-auto radio radio-primary" />
 
 						</div>
 					</div>
