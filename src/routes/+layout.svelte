@@ -15,7 +15,7 @@
 </script>
 
 <div class="app">
-	{#if typeof window !== 'undefined' && window.location.pathname !== '/joinGame'}
+	{#if typeof window !== 'undefined' && !['/join', '/play'].includes(window.location.pathname)}
 		<Background />
 	{/if}
 

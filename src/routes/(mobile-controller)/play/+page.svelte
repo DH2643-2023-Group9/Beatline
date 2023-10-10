@@ -40,5 +40,5 @@
 {:else if gameStarted}
     <ControllerScreen {socket} {myTurn}/>
 {:else}
-    <WaitingScreen {myName}/>
+    <WaitingScreen myName={$myName}/>
 {/if}

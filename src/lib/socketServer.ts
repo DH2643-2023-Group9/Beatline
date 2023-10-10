@@ -85,7 +85,7 @@ export function configureServer(server: ViteDevServer) {
 			}
 			roomId = data.roomId;
 			socket.join(roomId);
-			socket.in(roomId).emit('joinRoom', { userId, name: data.name });
+			io.sockets.in(roomId).emit('joinRoom', { userId, name: data.name });
 		});
 
 		socket.on('startGame', () => {
