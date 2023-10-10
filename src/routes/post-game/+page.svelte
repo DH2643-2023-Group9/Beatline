@@ -7,6 +7,7 @@
 	import Card from '../Card.svelte';
 	import { goto } from '$app/navigation';
 	import Profile from '../Profile.svelte';
+	import TrackCard from '../(game)/game/TrackCard.svelte';
 
 	function startGame() {
 		//navigate to game
@@ -32,24 +33,34 @@
 	}
 </script>
 
-<div class="min-h-screen flex items-center justify-center text-white ">
-	<Card extraClasses=" p-8 rounded-xl shadow-lg w-96 space-y-6 flex items-center flex-1">
+<div class="min-h-screen flex items-center justify-center text-white min-w-1/2 text-2xl text-center">
+	<Card extraClasses="">
+		<div class="space-y-7">
+			<h1 class="justify-center text-5xl">
+				Post-Game
+			</h1>
+			<div>
+				hej här kommer lite statistik från spelen
+			</div>
 
-		<h1 class="justify-center text-xl">
-			Post-Game
-			
-		</h1>
+			<div> jonas vann! med poäng</div>
+
+			<div> och det är rätt coolt!</div>
+
+			<div> det här är personen med bäst gissningar! </div>
+		</div>
+
 	 <!-- svelte-ignore a11y-missing-attribute -->
-	 <ul class="menu menu-horizontal bg-base-200 bg-[#303638] ">
+	 <ul class="menu menu-horizontal bg-transparent justify-between p-6 bg-[#303638] ">
 		<li><button on:click={startGame} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
 			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
 			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
 		<li><button on:click={createLobby} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
 			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
-			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Change Settings</button></li>
 		<li><button on:click={goToMain} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
 			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
-			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Back to Menu</button></li>
 	  </ul>
 	  
 		  
