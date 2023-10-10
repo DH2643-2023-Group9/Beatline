@@ -88,7 +88,7 @@
 	<!-- Add flex and flex-col to this container -->
 
 	<!-- Content above the fixed div (stays at the top) -->
-	<div class="position-fixed top-0 left-0 right-0 p-6 flex justify-between items-center">
+	<div class="position-fixed top-0 left-0 right-0 p-6 flex justify-between">
 		<div class="text-2xl font-bold">Your Game Logo</div>
 
 		<div class="flex justify-center items-center">
@@ -104,12 +104,12 @@
 	<!-- Center the content vertically -->
 	<div class="flex-grow flex items-center justify-center">
 			<!-- Added w-full and items-start -->
-			<div class="flex justify-center items-start w-full">
+			<div class="flex justify-center items-start ">
 
 			<!-- Left Side (Players List) -->
-			<div class="w-1/3 flex flex-col justify-between p-6 max-w-[100px]">
+			<div class=" flex justify-between p-6">
 				<!-- Logo -->
-				<Card>
+				<Card extraClasses="min-w-[300px]">
 					<h2 class="text-xl font-semibold mb-4">Players</h2>
 						{#each players as player}
 							<li class="mb-2">{player}</li>
@@ -121,9 +121,9 @@
 			</div>
 
 			<!-- Right Side (Settings) -->
-			<div class="w-2/3 flex flex-col justify-between p-6">
+			<div class="w-2/3 flex p-6">
 				<!-- Settings -->
-				<Card>
+				<Card extraClasses="min-w-[700px]">
 					<h3 class="text-lg font-semibold mb-4">Settings</h3>
 					<div class="space-y-4">
 						<div>
@@ -149,15 +149,17 @@
 						-->
 
 						<div>
-							<label for="players" class="block text-sm font-medium"> Game Settings </label>
-							  <input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" checked />
-							  <input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" />
-							  <span>
-								<label for="radio-1" class="block text-sm font-medium">By rounds</label>
+							<label for="players" class="block text-lg font-bold"> Game Settings: </label>
+							  <span class="flex items-center justify-evenly">
+								<input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" checked />
+								<input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" />
 							  </span>
-							  <span>
-								<label for="radio-1" class="block text-sm font-medium">By score</label>
+							  <span class="flex items-center justify-evenly">
+								<label for="radio-1" class="block text-sm font-medium ">By rounds</label>
+								<label for="radio-1" class="block text-sm font-medium ">By score</label>
 							  </span>
+							  
+							  
 						</div>
 						
 						<div>
