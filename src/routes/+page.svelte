@@ -1,6 +1,8 @@
 <script>
 	import { accessToken } from '$stores/tokenStore';
 	let dropdownOpen = false;
+	import Modal from './Modal.svelte';
+	let showModal = false;
 
 	function toggleDropdown() {
 		dropdownOpen = !dropdownOpen;
@@ -14,6 +16,10 @@
 		class="btn btn-warning m-1 pointer-events-auto transform transition-transform hover:scale-105"
 		href="/createlobby">Create Lobby</a
 	>
+	<button class="pointer-events-auto btn btn-info flex float-right" on:click={() => (showModal = true)}> How-to-play </button>
+
+	<Modal bind:showModal>
+	</Modal>
 	{#if !$accessToken}
 		<a
 			data-sveltekit-preload-data="tap"
