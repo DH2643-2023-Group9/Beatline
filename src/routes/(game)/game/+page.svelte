@@ -4,6 +4,7 @@
 	import { fly } from 'svelte/transition';
 	import Profile from '../../Profile.svelte';
 	import TrackCard from './TrackCard.svelte';
+	import NoFlipCard from './NoFlipCard.svelte'
 	import type { Team, Turn } from '$models/game';
 	import { accessToken } from '$stores/tokenStore';
 	import { error } from '@sveltejs/kit';
@@ -106,8 +107,6 @@
 						class="absolute top-1/2 transform -translate-y-1/2 text-center"
 						style="left: {(i / 7) * 100}%"
 					>
-						<!-- Display the year above the marker -->
-						<div class="absolute bottom-full mb-1 text-sm text-gray-700">{1950 + i * 10}</div>
 
 						<!-- Marker for the year -->
 						<div class="w-1 h-4 bg-gray-300 dark:bg-gray-700 rounded-full" />
@@ -125,9 +124,9 @@
 								<div
 									class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
 								/>
-								<TrackCard extraClasses='w-40' minimized={true} track={track}>
+								<NoFlipCard extraClasses='w-40' minimized={true} track={track}>
 									<p>{player.name} guessed {guessedYear}.</p>
-								</TrackCard>
+								</NoFlipCard>
 							</div>
 						</div>
 					{/each}
