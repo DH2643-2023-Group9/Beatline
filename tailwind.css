@@ -1901,7 +1901,7 @@ html {
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.swap-flip {
+.swap-flip, .swap-flip-h {
   transform-style: preserve-3d;
   perspective: 16em;
 }
@@ -1926,6 +1926,28 @@ html {
 .swap-active:where(.swap-flip) .swap-on,
 .swap-flip input:indeterminate ~ .swap-indeterminate {
   transform: rotateY(0deg);
+}
+
+.swap-flip-h .swap-on,
+.swap-flip-h .swap-indeterminate,
+.swap-flip-h input:indeterminate ~ .swap-on {
+  transform: rotateX(180deg);
+  backface-visibility: hidden;
+  opacity: 1;
+}
+
+.swap-flip-h input:checked ~ .swap-off,
+.swap-active:where(.swap-flip-h) .swap-off,
+.swap-flip-h input:indeterminate ~ .swap-off {
+  transform: rotateX(-180deg);
+  backface-visibility: hidden;
+  opacity: 1;
+}
+
+.swap-flip-h input:checked ~ .swap-on,
+.swap-active:where(.swap-flip-h) .swap-on,
+.swap-flip-h input:indeterminate ~ .swap-indeterminate {
+  transform: rotateX(0deg);
 }
 
 @keyframes toast-pop {
