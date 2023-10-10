@@ -23,6 +23,7 @@
 	let copied = false;
 	let interval = [1950, 2023];
 	let autoAssign = true;
+	let maxScore = 20;
 
 	socket.on('createRoom', (data) => {
 		roomId.set(data.roomId);
@@ -102,20 +103,18 @@
 
 	<!-- Center the content vertically -->
 	<div class="flex-grow flex items-center justify-center">
-		<div class="flex justify-center items-start w-full">
 			<!-- Added w-full and items-start -->
+			<div class="flex justify-center items-start w-full">
 
 			<!-- Left Side (Players List) -->
-			<div class="w-1/3 flex flex-col justify-between p-6">
+			<div class="w-1/3 flex flex-col justify-between p-6 max-w-[100px]">
 				<!-- Logo -->
 				<Card>
 					<h2 class="text-xl font-semibold mb-4">Players</h2>
-					<ul>
 						{#each players as player}
-							<li class="mb-2">{player.name}</li>
+							<li class="mb-2">{player}</li>
 						{/each}
-					</ul>
-					<button on:click={startGame} class="pointer-events-auto btn btn-info w-full mt-4"
+					<button on:click={startGame} class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2	 "
 						>Start Game</button
 					>
 				</Card>
@@ -128,32 +127,72 @@
 					<h3 class="text-lg font-semibold mb-4">Settings</h3>
 					<div class="space-y-4">
 						<div>
-							<label for="players" class="block text-sm font-medium text-gray-700"
+							<label for="players" class="block text-sm font-medium"
 								>Number of Players</label
 							>
 							<input
 								id="players"
 								type="number"
-								bind:value={players.length}
-								class="mt-1 block w-full rounded-md border-gray-300"
+								bind:value={maxPlayers}
+								class="mt-1 block w-full rounded-md border-gray-300 bg-inherit"
 							/>
 						</div>
+						
+						<!-- 
+							<div class="pointer-events-auto dropdown">
+							<label tabindex="0" class="btn m-1">Game Settings</label>
+							<ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 text-black rounded-box w-52">
+							  <li><a>Play by rounds</a></li>
+							  <li><a>Play by score</a></li>
+							</ul>
+						  </div>
+						-->
+
 						<div>
-							<label for="rounds" class="block text-sm font-medium text-gray-700"
-								>Number of Rounds</label
-							>
-							<input
-								id="limit"
-								type="number"
-								bind:value={limit}
-								class="mt-1 block w-full rounded-md border-gray-300 pointer-events-auto"
-							/>
+							<label for="players" class="block text-sm font-medium"> Game Settings </label>
+							  <input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" checked />
+							  <input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" />
+							  <span>
+								<label for="radio-1" class="block text-sm font-medium">By rounds</label>
+							  </span>
+							  <span>
+								<label for="radio-1" class="block text-sm font-medium">By score</label>
+							  </span>
 						</div>
+						
+						<div>
+							<label for="players" class="block text-sm font-medium"> Number of Rounds </label>
+							<input type="range" class="pointer-events-auto range range-secondary bg-neutral" min="6" max="12" step="2" bind:value={limit}>
+							<div class="w-full flex justify-between text-xs px-2">
+								<span>6</span>
+								<span>8</span>
+								<span>10</span>
+								<span>12</span>
+							  </div>							  
+						</div>
+
+						<div>
+							<label for="players" class="block text-sm font-medium"> Max Score </label>
+							<input type="range" class="pointer-events-auto range range-secondary bg-neutral" min="5" max="20" step="5" bind:value={maxScore}>
+							<div class="w-full flex justify-between text-xs px-2">
+								<span>5</span>
+								<span>10</span>
+								<span>15</span>
+								<span>20</span>
+							  </div>
+						</div>
+
+						<div>
+							<label for="players" class="block text-sm font-medium"> Difficulty </label>
+							  <input type="radio" name="radio-2" class="pointer-events-auto radio radio-secondary" checked />
+							  <input type="radio" name="radio-2" class="pointer-events-auto radio radio-secondary" />
+						</div>
+						
 					</div>
 				</Card>
 			</div>
 		</div>
-	</div>
+		</div>
 
 	<!-- Other content below the flex container -->
 	<!-- ... your other content ... -->
