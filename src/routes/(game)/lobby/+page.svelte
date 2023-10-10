@@ -17,9 +17,9 @@
 
 	const joinURL = `${PUBLIC_BASE_URL}/joinGame`;
 	let maxPlayers = 5;
-	let limit = 5;
-	let limitType: LimitType = 'rounds';
-	let players: PlayerInfo[] = [];
+	let limit = gameModel.limit;
+	let limitType: LimitType = gameModel.limitType;
+	let players: PlayerInfo[] = gameModel.getAllPlayerInfo();
 	let copied = false;
 	let interval = [1950, 2023];
 	let autoAssign = true;
