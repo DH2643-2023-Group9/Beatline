@@ -4,6 +4,9 @@
 	import { goto } from '$app/navigation';
 	import { error } from '@sveltejs/kit';
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
+	import Card from '../../Card.svelte'
+	let loading: boolean = false;
+
 
 	if (gameModel.isActive) {
 		const msg = 'Game is currently active. Please wait for the game to end.';
@@ -20,7 +23,69 @@
 	} else {
 		winner = "It's a tie!";
 	}
+	function startGame() {
+		//navigate to game
+		goto('/game');
+	};
+
+	function goToMain() {
+		goto('/')
+	}
+
+	function createLobby() {
+		//just make it so that loading is true for 2 seconds before making it false again
+		loading = true;
+		setTimeout(() => {
+			loading = false;
+			//navigate to lobby
+			goto('/lobby');
+		}, 2000);
+	}
 </script>
+
+<div class="min-h-screen flex items-center justify-center text-white min-w-1/2 text-2xl text-center">
+	<Card extraClasses="">
+		<div class="space-y-7">
+			<h1 class="justify-center text-5xl">
+				Post-Game
+			</h1>
+
+			<div class="text-3xl font-bold text-cyan-600">
+				{#if winner !== "It's a tie!"}
+					Winner: {winner} 🎉
+				{:else}
+					{winner}
+				{/if}
+			</div>
+		
+				<!-- Team Red Score -->
+					<div class="text-4xl font-semibold text-red-500 text-center">
+						{teams[0].name} team's score: {teams[1].score}
+					</div>
+		
+				<!-- Team Blue Score -->
+					<div class="text-4xl font-semibold text-blue-500">
+						{teams[1].name} team's score: {teams[1].score}
+					</div>
+		</div>
+
+	 <!-- svelte-ignore a11y-missing-attribute -->
+	 <ul class="menu menu-horizontal bg-transparent justify-between p-6 bg-[#303638] ">
+		<li><button on:click={startGame} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Restart Game</button></li>
+		<li><button on:click={createLobby} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Change Settings</button></li>
+		<li><button on:click={goToMain} class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
+			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg 
+			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:border-[#6200EA]">Back to Menu</button></li>
+	  </ul>
+	  
+		  
+
+	</Card>
+</div>
 
 <div class="flex flex-col items-center justify-center min-h-screen space-y-8">
 	<!-- Winner Announcement -->
