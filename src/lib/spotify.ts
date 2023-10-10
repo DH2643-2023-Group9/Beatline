@@ -34,26 +34,39 @@ function validateTrack(track: any): boolean {
  * @param right Upper bound for the year interval
  * @param accessToken Spotify access token
  */
-export async function getTrackData(left: number, right: number, accessToken: string): Promise<TrackData> {
-	const year = Math.floor(Math.random() * (right - left) + left);
-	const offset = Math.floor(Math.random() * 100);
-	const url = `https://api.spotify.com/v1/search?q=year:${year}&type=track&limit=5&offset=${offset}`;
-	const res = await fetch(url, {
-		method: 'GET',
-		headers: {
-			'content-type': 'application/json',
-			Authorization: `Bearer ${accessToken}`
+export async function getTrackData(
+	left: number,
+	right: number,
+	accessToken: string
+): Promise<TrackData> {
+	const maxTries = 4;
+	let track: any | undefined;
+	let year = 0;
+	for (let i = 0; i < maxTries && track !== undefined; i++) {
+		year = Math.floor(Math.random() * (right - left) + left);
+		const offset = Math.floor(Math.random() * 100);
+		const url = `https://api.spotify.com/v1/search?q=year:${year}&type=track&limit=5&offset=${offset}`;
+		const res = await fetch(url, {
+			method: 'GET',
+			headers: {
+				'content-type': 'application/json',
+				Authorization: `Bearer ${accessToken}`
+			}
+		});
+		if (!res.ok) {
+			console.log('error when getting tracks: ', await res.text());
+			throw new Error('Error when getting tracks');
 		}
-	});
-	if (!res.ok) {
-		console.log(await res.text());
-		throw new Error('Failed to fetch song');
+		const data = await res.json();
+		track = data.tracks.items.find(validateTrack);
+		if (track === undefined) {
+			console.log('No track found, got', data);
+		}
 	}
-	const data = await res.json();
-	const track = data.tracks.items.find(validateTrack);
-	if (track == undefined) {
-		console.log('No track found');
-		throw new Error('No track found');
+	if (track === undefined) {
+		const msg = `No track found after ${maxTries} tries`;
+		console.log(msg);
+		throw new Error(msg);
 	}
 	return {
 		name: track.name,
