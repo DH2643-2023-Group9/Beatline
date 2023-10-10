@@ -106,3 +106,13 @@ button:focus:not(:focus-visible) {
 	width: 1px;
 	white-space: nowrap;
 }
+
+.radioGroupBelow label {
+  display: inline-block;
+  text-align: center;
+  margin: 0 0.2em;
+}
+.radioGroupBelow label input[type="radio"] {
+  display: block;
+  margin: 0.5em auto;
+}
