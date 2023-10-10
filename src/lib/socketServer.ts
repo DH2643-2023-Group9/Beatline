@@ -57,7 +57,7 @@ export function configureServer(server: ViteDevServer) {
 			socket.emit('createRoom', { roomId });
 		});
 
-		socket.on('joinRoom', (data) => {
+		socket.on('joinRoom', async (data) => {
 			const capacity = openRooms.get(data.roomId);
 
 			// Initialize the room in socketsInRooms if it's not already there
@@ -85,7 +85,7 @@ export function configureServer(server: ViteDevServer) {
 			}
 			roomId = data.roomId;
 			socket.join(roomId);
-			socket.to(roomId).emit('joinRoom', { userId, name: data.name });
+			io.sockets.in(roomId).emit('joinRoom', { userId, name: data.name });
 		});
 
 		socket.on('startGame', () => {

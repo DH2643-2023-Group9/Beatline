@@ -3,16 +3,15 @@
 	import type { MainContext } from '../+layout.svelte';
 	import { getContext } from 'svelte';
 
-	const { socket } = getContext<MainContext>('main');
+	const { socket, myName } = getContext<MainContext>('main');
     let roomId = '';
-    let name = '';
 
 	function joinRoom() {
-		if (roomId === '' || name === '') {
+		if (roomId === '' || $myName === '') {
 			alert('Please enter a room ID and name.');
 			return;
 		}
-		socket.emit('joinRoom', { roomId, name });
+		socket.emit('joinRoom', { roomId, name: $myName });
 	}
 
 	socket.on('error', ({error}) => {
@@ -40,7 +39,7 @@
         
 		<label class="block mb-4 text-lg">
 			Your Name:
-			<input type="text" bind:value={name} class="pointer-events-auto input input-secondary mt-1 w-full  text-black"/>
+			<input type="text" bind:value={$myName} class="pointer-events-auto input input-secondary mt-1 w-full  text-black"/>
 		</label>
         
 		<button on:click={joinRoom} class="pointer-events-auto btn btn-accent w-full mt-2">Join</button>
