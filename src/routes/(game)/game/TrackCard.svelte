@@ -1,12 +1,13 @@
 <script lang="ts">
 	import type { TrackData } from '$lib/spotify';
 	export let track: TrackData;
+	export let flipped: boolean = false;
 	export let minimized: boolean;
 	export let extraClasses = '';
 </script>
 
 <label class="m-2 h-fit swap swap-flip text-9xl pointer-events-auto {extraClasses}">
-	<input type="checkbox" class="hidden" />
+	<input type="checkbox" class="hidden" checked={flipped}/>
 	<!-- This is hidden assuming you do not want the checkbox to show -->
 	<div class="swap-on w-full h-full rounded-xl overflow-hidden bg-neutral-900">
 		<img src={track.image.url} alt="Album Artwork" />
