@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import type { MainContext } from '../+layout.svelte';
 	import { getContext } from 'svelte';
 
 	const { socket, myName } = getContext<MainContext>('main');
-    let roomId = '';
+    let roomId = $page.url.searchParams.get('roomId') || '';
+	const urlName = $page.url.searchParams.get('name');
+	if (urlName !== null) {
+		$myName = urlName;
+	}
 
 	function joinRoom() {
 		if (roomId === '' || $myName === '') {
