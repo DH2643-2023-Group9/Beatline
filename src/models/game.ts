@@ -1,10 +1,12 @@
 import { getTrackData, type TrackData } from '$lib/spotify';
+import type { PlayerInfo } from '../routes/(game)/+layout.svelte';
 
 export type Ability = 'shuffle' | 'nope!' | 'continue';
 
 export type Player = {
 	name: string;
 	id: string;
+	host: boolean;
 	abilities: Ability[];
 };
 
@@ -55,14 +57,13 @@ export class GameModel {
 	scoreBuffer = 0;
 	isActive = false;
 
-
 	/**
 	 * @param interval The year interval to sample tracks from
 	 * @param limit The limit for turns/score
 	 * @param limitType The type for the limit. Either 'rounds' or 'score'
 	 */
 	constructor(interval: number[], limit: number, limitType: LimitType) {
-        if (interval.length !== 2) throw new Error('Interval must be an array of length 2');
+		if (interval.length !== 2) throw new Error('Interval must be an array of length 2');
 		this.limit = limit;
 		this.limitType = limitType;
 		this.interval = interval;
@@ -73,7 +74,20 @@ export class GameModel {
 	 * These values will need to be set manually later.
 	 */
 	static initDefault(): GameModel {
-		return new GameModel([0, 0], 0, 'rounds');
+		return new GameModel([0, 0], 5, 'rounds');
+	}
+
+	reset() {
+		this.currentRound = 0;
+		this.currentTeam = 0;
+		this.currentTrack = undefined;
+		this.scoreBuffer = 0;
+		this.isActive = false;
+		this.teams.forEach((team) => {
+			team.score = 0;
+			team.currentPlayerIndex = 0;
+			team.timeline = [];
+		});
 	}
 
 	addToTeam(team: number, player: Player) {
@@ -86,12 +100,18 @@ export class GameModel {
 
 	setLimit(limit: number, type: LimitType) {
 		this.limit = limit;
-		this.limitType = type
+		this.limitType = type;
 	}
 
-    /**
-     * @returns The winning team, if any
-     */
+	getAllPlayerInfo(): PlayerInfo[] {
+		return this.teams.flatMap((team, i) =>
+			team.players.map((player) => ({ id: player.id, name: player.name, team: i, host: false }))
+		);
+	}
+
+	/**
+	 * @returns The winning team, if any
+	 */
 	getWinner(): Team | undefined {
 		if (this.limitType === 'score') {
 			return this.teams.find((team) => team.score >= this.limit);
