@@ -54,16 +54,17 @@
 
 {#if currentTurn}
 	<div class="min-h-screen flex flex-col overflow-hidden">
+		<div class="text-white text-center text-4xl p-2 rounded">
+			<h2>It's {currentTurn.player.name}'s turn!</h2>
+		</div>
+
 		<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
-			<div class="text-black bg-yellow-300 p-2 rounded">
-				<h2>It's {currentTurn.player.name}'s turn!</h2>
-			</div>
-			<TrackCard track={currentTurn.track} minimized={false} />
+			<TrackCard extraClasses="w-1/6 h-1/5" track={currentTurn.track} minimized={false} />
 		</div>
 		<!-- Team Information -->
 		<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0 text-3xl text-center">
 			<!-- Team Red Information -->
-			<div class="rounded-md bg-gradient-to-r from-red-800 via-sky-200 to-red-600 p-1">
+			<div class="rounded-md bg-gradient-to-r from-red-800 via-sky-200 to-red-600 p-1 space-x-6 space-y-6">
 				<div class=" h-full w-full bg-gray-800">
 					<h2>{teams[0].name}</h2>
 					<p>Score: {teams[0].score}</p>
@@ -77,7 +78,7 @@
 			</div>
 
 			<!-- Team Blue Information -->
-			<div class="rounded-md bg-gradient-to-r from-blue-800 via-sky-200 to-cyan-600 p-1">
+			<div class="rounded-md bg-gradient-to-r from-blue-800 via-sky-200 to-cyan-600 p-1 space-x-6 space-y-6">
 				<div class=" h-full w-full bg-gray-800">
 					<h2>{teams[1].name}</h2>
 					<p>Score: {teams[1].score}</p>
@@ -124,9 +125,9 @@
 								<div
 									class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
 								/>
-								<Card>
+								<TrackCard extraClasses='w-40' minimized={true} track={track}>
 									<p>{player.name} guessed {guessedYear}.</p>
-								</Card>
+								</TrackCard>
 							</div>
 						</div>
 					{/each}

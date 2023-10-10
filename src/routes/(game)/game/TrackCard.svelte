@@ -2,10 +2,10 @@
 	import type { TrackData } from '$lib/spotify';
 	export let track: TrackData;
 	export let minimized: boolean;
-	export let extraclasses = '';
+	export let extraClasses = '';
 </script>
 
-<label class="m-2 h-fit swap swap-flip text-9xl pointer-events-auto {extraclasses}">
+<label class="m-2 h-fit swap swap-flip text-9xl pointer-events-auto {extraClasses}">
 	<input type="checkbox" class="hidden" />
 	<!-- This is hidden assuming you do not want the checkbox to show -->
 	<div class="swap-on w-full h-full rounded-xl overflow-hidden bg-neutral-900">
