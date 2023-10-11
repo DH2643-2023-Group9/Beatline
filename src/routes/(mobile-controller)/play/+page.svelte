@@ -30,7 +30,7 @@
 			console.log('My turn');
 			myTurn = true;
 		} else {
-			myTurn = true;
+			myTurn = false;
 		}
 	});
 </script>

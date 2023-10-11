@@ -116,12 +116,12 @@
 		<!-- Added w-full and items-start -->
 		<div class="flex justify-center items-start">
 			<!-- Left Side (Players List) -->
-			<div class=" flex justify-between p-6">
+			<div class="w-1/3 flex p-6">
 				<!-- Logo -->
 				<Card extraClasses="min-w-[300px]">
 					<h2 class="text-xl font-semibold mb-4">Players</h2>
 					{#each players as player}
-						<li class="mb-2">{player}</li>
+						<li class="mb-2">{player.name}</li>
 					{/each}
 					<button
 						on:click={startGame}

@@ -10,8 +10,10 @@
 	import { error } from '@sveltejs/kit';
 	import { goto } from '$app/navigation';
 	import type { MainContext } from '../+layout.svelte';
+	import TimelineFlip from './TimelineFlip.svelte';
 	if (!$accessToken) throw error(401, 'Lacks access token');
 	let currentTurn: Turn | undefined;
+	let currentTeam: number = 0;
 
 	const { socket, gameModel } = getContext<MainContext>('main');
 
@@ -25,6 +27,8 @@
 	async function nextTurn() {
 		if (!$accessToken) throw error(500, 'Access token is not defined');
 		currentTurn = await gameModel.getCurrentTurn($accessToken);
+		console.log('currentTurn', currentTurn.turn);
+		currentTeam = (currentTeam + 1) % 2
 		teams = gameModel.getTeams();
 		console.log('currentTurn', currentTurn);
 		socket.emit('assignTurn', { userId: currentTurn.player.id });
@@ -60,7 +64,7 @@
 		</div>
 
 		<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
-			<TrackCard extraClasses="w-1/6 h-1/5" track={currentTurn.track} minimized={false} />
+			<TrackCard extraClasses="w-1/6 h-1/5" track={currentTurn.track} minimized={false} playFor10Seconds={true} />
 		</div>
 		<!-- Team Information -->
 		<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0 text-3xl text-center">
@@ -92,47 +96,9 @@
 				</div>
 			</div>
 		</div>
+		
+		<TimelineFlip teams={teams} currentTeam={currentTeam} />
 
-		<!-- Timeline -->
-		<div class="flex-grow flex items-center justify-center p-4">
-			<div class="relative w-3/4 h-full mx-auto">
-				<!-- Adjusted the width to 3/4 and centered it -->
-				<!-- Timeline representation -->
-				<div class="absolute top-1/2 left-0 w-full h-1 bg-gray-300" />
-
-				<!-- Year Markers -->
-				{#each Array(8) as _, i}
-					<!-- Change from 7 to 8 to include 2020 -->
-					<div
-						class="absolute top-1/2 transform -translate-y-1/2 text-center"
-						style="left: {(i / 7) * 100}%"
-					>
-
-						<!-- Marker for the year -->
-						<div class="w-1 h-4 bg-gray-300 dark:bg-gray-700 rounded-full" />
-					</div>
-				{/each}
-
-				<!-- Cards on the timeline -->
-				{#each teams as team}
-					{#each team.timeline as { player, guessedYear, track }}
-						<div
-							class="absolute -top-10 transform -translate-y-full"
-							style="left: {((track.year - 1950) / 70) * 100}%"
-						>
-							<div class="flex items-center">
-								<div
-									class="w-1 h-24 bg-gray-300 dark:bg-gray-700 rounded-full absolute top-0 mt-10"
-								/>
-								<NoFlipCard extraClasses='w-40' minimized={true} track={track}>
-									<p>{player.name} guessed {guessedYear}.</p>
-								</NoFlipCard>
-							</div>
-						</div>
-					{/each}
-				{/each}
-			</div>
-		</div>
 
 		<!-- Interactivity -->
 		<div class="fixed bottom-4 right-4">

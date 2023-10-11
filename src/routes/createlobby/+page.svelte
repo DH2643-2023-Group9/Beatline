@@ -9,13 +9,7 @@
 
 
 	function createLobby() {
-		//just make it so that loading is true for 2 seconds before making it false again
-		loading = true;
-		setTimeout(() => {
-			loading = false;
-			//navigate to lobby
-			goto('/lobby?name=' + lobbyName + '&maxPlayers=' + maxPlayers);
-		}, 2000);
+		goto('/lobby?name=' + lobbyName + '&maxPlayers=' + maxPlayers);
 	}
 
 </script>
