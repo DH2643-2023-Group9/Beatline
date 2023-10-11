@@ -96,7 +96,7 @@
 				</div>
 			</div>
 		</div>
-
+		
 		<TimelineFlip teams={teams} currentTeam={currentTeam} />
 
 
