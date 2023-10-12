@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext } from 'svelte';
-	import type { MainContext, PlayerInfo } from '../+layout.svelte';
+	import type { MainContext } from '../+layout.svelte';
 	import { goto } from '$app/navigation';
 	import Card from '../../Card.svelte';
 	import { PUBLIC_BASE_URL } from '$env/static/public';
@@ -16,13 +16,12 @@
 	}
 
 	const joinURL = `${PUBLIC_BASE_URL}/join`;
+	let teams = gameModel.teams;
 	let maxPlayers = 5;
 	let limit = gameModel.limit;
 	let limitType: LimitType = gameModel.limitType;
-	let players: PlayerInfo[] = gameModel.getAllPlayerInfo();
 	let copied = false;
 	let interval = [1950, 2023];
-	let autoAssign = true;
 	let maxScore = 20;
 
 	socket.on('createRoom', (data) => {
@@ -31,41 +30,28 @@
 
 	socket.on('joinRoom', ({ name, userId }) => {
 		console.log('In `joinRoom`, userId=', userId);
-		players = [...players, { name, id: userId, host: players.length === 0 }];
+		gameModel.addPlayer({
+			name,
+			id: userId,
+			host: gameModel.numberOfPlayers() === 0,
+			abilities: []
+		});
+		teams = gameModel.teams;
 	});
 
 	socket.on('joinTeam', ({ team, userId }) => {
-		players = players.map((player) => {
-			if (player.id === userId) {
-				return { ...player, team };
-			}
-			return player;
-		});
+		console.log(`User ${userId} joined team ${team}`);
+		gameModel.switchTeam(userId, team);
+		teams = gameModel.teams;
 	});
 
 	function startGame() {
-		if (players.length < 2) {
+		if (gameModel.teams.map((t) => t.players.length).some((n) => n < 1)) {
 			alert('You need at least 2 players to start the game');
-			return;
-		}
-		if (!autoAssign && gameModel.teams.some((t) => t.players.length < 1)) {
-			alert('You need at least 1 players per team to start the game');
 			return;
 		}
 		gameModel.interval = interval;
 		gameModel.setLimit(limit, limitType);
-		const teams = gameModel.teams;
-		players.forEach((p) => {
-			console.log('Adding player', p);
-			if (autoAssign) {
-				p.team = teams[0].players.length <= teams[1].players.length ? 0 : 1;
-			}
-			if (p.team === undefined) {
-				alert(`Player ${p.name} is not assigned to a team`);
-				return;
-			}
-			gameModel.addToTeam(p.team || 0, { ...p, abilities: [] });
-		});
 		gameModel.isActive = true;
 		socket.emit('startGame');
 		goto('/game');
@@ -119,9 +105,13 @@
 			<div class="w-1/3 flex p-6">
 				<!-- Logo -->
 				<Card extraClasses="min-w-[300px]">
-					<h2 class="text-xl font-semibold mb-4">Players</h2>
-					{#each players as player}
-						<li class="mb-2">{player.name}</li>
+					{#each teams as {players, name}}
+						<div>
+							<h2 class="text-xl font-semibold mb-4">{name}</h2>
+							{#each players as player}
+								<li class="mb-2">{player.name}</li>
+							{/each}
+						</div>
 					{/each}
 					<button
 						on:click={startGame}

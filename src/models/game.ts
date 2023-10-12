@@ -90,7 +90,27 @@ export class GameModel {
 		});
 	}
 
-	addToTeam(team: number, player: Player) {
+	numberOfPlayers(): number {
+		return this.teams.reduce((acc, team) => acc + team.players.length, 0);
+	}
+
+	addPlayer(player: Player) {
+		const team = this.teams
+			.map((t, i) => ({ l: t.players.length, i }))
+			.sort((a, b) => a.l - b.l)[0].i;
+		this.teams[team].players.push(player);
+	}
+
+	switchTeam(playerId: string, team: number) {
+		let player: Player | undefined;
+		this.teams.forEach((t) => {
+			const index = t.players.findIndex((p) => p.id === playerId);
+			if (index !== -1) {
+				player = t.players[index];
+				t.players.splice(index, 1);
+			}
+		});
+		if (!player) throw new Error('Player not found');
 		this.teams[team].players.push(player);
 	}
 
