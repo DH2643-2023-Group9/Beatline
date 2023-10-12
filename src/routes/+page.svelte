@@ -14,7 +14,7 @@
 	<a
 		data-sveltekit-preload-data="tap"
 		class="btn btn-warning m-1 pointer-events-auto transform transition-transform hover:scale-105"
-		href="/createlobby">Create Lobby</a
+		href="/lobby">Create Lobby</a
 	>
 	<button class="pointer-events-auto btn btn-info flex float-right" on:click={() => (showModal = true)}> How-to-play </button>
 
