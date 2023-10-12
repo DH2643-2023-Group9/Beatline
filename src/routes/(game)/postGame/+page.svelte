@@ -41,6 +41,15 @@
 			goto('/lobby');
 		}, 2000);
 	}
+
+	socket.on('startGame', () => {
+		startGame();
+	});
+
+	socket.on('backToLobby', () => {
+		createLobby();
+	});
+
 </script>
 
 <div class="min-h-screen flex items-center justify-center text-white min-w-1/2 text-2xl text-center">

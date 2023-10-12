@@ -30,12 +30,16 @@
 
 	socket.on('joinRoom', ({ name, userId }) => {
 		console.log('In `joinRoom`, userId=', userId);
+		const host = gameModel.numberOfPlayers() === 0;
 		gameModel.addPlayer({
 			name,
 			id: userId,
-			host: gameModel.numberOfPlayers() === 0,
+			host: host,
 			abilities: []
 		});
+		if (host) {
+			socket.emit('assignHost', { userId });
+		}
 		teams = gameModel.teams;
 	});
 
@@ -43,6 +47,11 @@
 		console.log(`User ${userId} joined team ${team}`);
 		gameModel.switchTeam(userId, team);
 		teams = gameModel.teams;
+	});
+
+	socket.on('startGame', () => {
+		console.log('Game started!');
+		startGame();
 	});
 
 	function startGame() {
@@ -81,8 +90,10 @@
 		<div class="flex justify-center items-center text-xl">
 			<!-- Game Code and Link -->
 			Copy
-			<a class="pointer-events-auto text-purple-400 mr-1 ml-1" target="_blank" href={joinURL + `?roomId=${$roomId}`}
-				>this</a
+			<a
+				class="pointer-events-auto text-purple-400 mr-1 ml-1"
+				target="_blank"
+				href={joinURL + `?roomId=${$roomId}`}>this</a
 			>
 			link, or go to
 			<a class="pointer-events-auto text-purple-400 mr-1 ml-1" href={joinURL}>{joinURL}</a>
@@ -106,7 +117,7 @@
 			<div class="w-1/3 flex p-6">
 				<!-- Logo -->
 				<Card extraClasses="min-w-[300px]">
-					{#each teams as {players, name}}
+					{#each teams as { players, name }}
 						<div>
 							<h2 class="text-xl font-semibold mb-4">{name}</h2>
 							{#each players as player}
@@ -215,11 +226,10 @@
 							/>
 						</div>
 						<button
-						on:click={startGame}
-						class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-						>Start Game</button
-					>
-
+							on:click={startGame}
+							class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+							>Start Game</button
+						>
 					</div>
 				</Card>
 			</div>

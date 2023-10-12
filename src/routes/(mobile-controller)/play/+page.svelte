@@ -5,7 +5,7 @@
 	import EndGame from './EndGame.svelte';
 	import ControllerScreen from './ControllerScreen.svelte';
 
-	const { socket, myName } = getContext<MainContext>('main');
+	const { socket, myName, isHost } = getContext<MainContext>('main');
     
     let gameStarted = false;
     let gameEnded = false;
@@ -14,6 +14,7 @@
 	socket.on('startGame', () => {
 		console.log('Game started!');
 		gameStarted = true;
+		gameEnded = false;
 	});
 
 	socket.on('endGame', () => {
@@ -33,12 +34,19 @@
 			myTurn = false;
 		}
 	});
+
+	socket.on('backToLobby', () => {
+		console.log('Back to lobby');
+		gameStarted = false;
+		gameEnded = false;
+		myTurn = false;
+	});
 </script>
 
 {#if gameEnded}
-    <EndGame {socket}/>
+    <EndGame {socket} isHost={$isHost}/>
 {:else if gameStarted}
-    <ControllerScreen {socket} {myTurn}/>
+    <ControllerScreen {socket} {myTurn} isHost={$isHost}/>
 {:else}
-    <WaitingScreen myName={$myName}/>
+    <WaitingScreen myName={$myName} isHost={$isHost} {socket}/>
 {/if}
