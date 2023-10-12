@@ -24,7 +24,7 @@ export type YearInfo = {
 };
 
 export type Guess = {
-	player: Player;
+	player?: Player;
 	guessedYear: number;
 	track: TrackData;
 };
@@ -74,11 +74,28 @@ export class GameModel {
 		this.interval = interval;
 	}
 
+	async populateTimelines(accessToken: string) {
+		const [t1, t2] = await Promise.allSettled([
+			getTrackData(this.interval[0], this.interval[1], accessToken),
+			getTrackData(this.interval[0], this.interval[1], accessToken)
+		]);
+
+		const addGuess = (t: PromiseSettledResult<TrackData>, team: number) => {
+			if (t.status === 'fulfilled') {
+				const track = t.value;
+				const guess: Guess = { guessedYear: track.year, track };
+				this.teams[team].timeline.push({ year: track.year, guesses: [guess] });
+			}
+		};
+		addGuess(t1, 0);
+		addGuess(t2, 1);
+	}
+
 	/**
 	 * Initialize a new game with default values.
 	 * These values will need to be set manually later.
 	 */
-	static initDefault(): GameModel {
+	static initDefault(accessToken: string): GameModel {
 		return new GameModel([0, 0], 5, 'rounds');
 	}
 
