@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Team } from "$models/game";
-	import NoFlipCard from "./NoFlipCard.svelte";
+	import type { Team } from '$models/game';
+	import NoFlipCard from './NoFlipCard.svelte';
 
 	export let teams: Team[];
 	export let currentTeam: number;
@@ -13,9 +13,11 @@
 	}
 </script>
 
-<label class="w-full p-4 swap swap-flip-h pointer-events-nnone flex flex-col items-center justify-center">
+<label
+	class="w-full p-4 swap swap-flip-h pointer-events-none flex flex-col items-center justify-center"
+>
 	<input type="checkbox" class="hidden" checked={team1} />
-  
+
 	<!-- Default Timeline View (assuming for Team 1 or main view) -->
 	<div class="swap-off relative w-full h-auto mx-auto">
 		<div class="flex items-center justify-center p-4">
@@ -30,22 +32,24 @@
 					</div>
 				{/each}
 
-					{#each teams[0].timeline as { player, guessedYear, track }}
-						<div
-							class="absolute -top-10 transform -translate-y-full"
-							style="left: {((track.year - 1950) / 70) * 100}%"
-						>
-							<div class="flex items-center">
-								<NoFlipCard extraClasses='w-40' minimized={true} track={track}>
+				{#each teams[0].timeline as { year, guesses }}
+					<div
+						class="absolute -top-10 transform -translate-y-full"
+						style="left: {((year - 1950) / 70) * 100}%"
+					>
+						<div class="stack flex -space-x-36">
+							{#each guesses as { track, player, guessedYear }}
+								<NoFlipCard extraClasses="w-40" minimized={true} {track}>
 									<p>{player.name} guessed {guessedYear}.</p>
 								</NoFlipCard>
-							</div>
+							{/each}
 						</div>
-					{/each}
+					</div>
+				{/each}
 			</div>
 		</div>
 	</div>
-  
+
 	<!-- Flipped Timeline View (essentially the same for this example) -->
 	<div class="swap-on relative w-full h-auto mx-auto">
 		<div class="flex items-center justify-center p-4 -translate-y-8">
@@ -60,18 +64,20 @@
 					</div>
 				{/each}
 
-					{#each teams[1].timeline as { player, guessedYear, track }}
-						<div
-							class="absolute -top-10 transform -translate-y-full"
-							style="left: {((track.year - 1950) / 70) * 100}%"
-						>
-							<div class="flex items-center">
-								<NoFlipCard extraClasses='w-40' minimized={true} track={track}>
+				{#each teams[1].timeline as { year, guesses }}
+					<div
+						class="absolute -top-10 transform -translate-y-full"
+						style="left: {((year - 1950) / 70) * 100}%"
+					>
+						<div class="stack flex -space-x-36">
+							{#each guesses as { track, player, guessedYear }}
+								<NoFlipCard extraClasses="w-40" minimized={true} {track}>
 									<p>{player.name} guessed {guessedYear}.</p>
 								</NoFlipCard>
-							</div>
+							{/each}
 						</div>
-					{/each}
+					</div>
+				{/each}
 			</div>
 		</div>
 	</div>

@@ -46,6 +46,11 @@
 			Your Name:
 			<input type="text" bind:value={$myName} class="pointer-events-auto input input-secondary mt-1 w-full  text-black"/>
 		</label>
+
+		<label class="block mb-4 text-lg">
+			Add an image:
+			<input type="file" class="pointer-events-auto input input-secondary mt-1 w-full  text-black" accept="image/*" capture="user">
+		</label>
         
 		<button on:click={joinRoom} class="pointer-events-auto btn btn-accent w-full mt-2">Join</button>
 	</div>

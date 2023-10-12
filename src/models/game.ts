@@ -15,7 +15,12 @@ export type Team = {
 	score: number;
 	players: Player[];
 	currentPlayerIndex: number;
-	timeline: Guess[];
+	timeline: YearInfo[];
+};
+
+export type YearInfo = {
+	year: number;
+	guesses: Guess[];
 };
 
 export type Guess = {
@@ -182,8 +187,8 @@ export class GameModel {
 		};
 
 		// Determine where the guess should be inserted
-		const expectedIndex = timeline.findIndex((g) => currentTrack.year <= g.track.year);
-		const actualIndex = timeline.findIndex((g) => year <= g.track.year);
+		const expectedIndex = timeline.findIndex((g) => currentTrack.year <= g.year);
+		const actualIndex = timeline.findIndex((g) => year <= g.year);
 
 		// Check if the guess was correct
 		const isCorrect = expectedIndex === actualIndex;
@@ -192,9 +197,11 @@ export class GameModel {
 			this.scoreBuffer++;
 			// Insert guess at expected index
 			if (expectedIndex === -1) {
-				timeline.push(guess);
+				timeline.push({ year: currentTrack.year, guesses: [guess] });
+			} else if (timeline[expectedIndex].year !== currentTrack.year) {
+				timeline.splice(expectedIndex, 0, { year: currentTrack.year, guesses: [guess] });
 			} else {
-				timeline.splice(expectedIndex, 0, guess);
+				timeline[expectedIndex].guesses.splice(0, 0, guess);
 			}
 		} else {
 			// If the user has guessed correctly before
