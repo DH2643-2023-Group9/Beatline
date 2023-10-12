@@ -74,13 +74,14 @@
 	<!-- Add flex and flex-col to this container -->
 
 	<!-- Content above the fixed div (stays at the top) -->
-	<div class="position-fixed top-0 left-0 right-0 p-6 flex justify-between">
-		<div class="text-2xl font-bold">Your Game Logo</div>
+	<div class="position-fixed top-0 left-0 right-0 px-5 flex justify-between">
+		<img src={'https://i.imgur.com/5N7JFlA.png'} alt="Beatline" class="w-[200px]" />
+		<img src={'../../static/beatlinepng.png'} alt="Beatline" class="w-[200px]" />
 
 		<div class="flex justify-center items-center text-xl">
 			<!-- Game Code and Link -->
 			Copy
-			<a class="pointer-events-auto text-purple-400 mr-1 ml-1" href={joinURL + `?roomId=${$roomId}`}
+			<a class="pointer-events-auto text-purple-400 mr-1 ml-1" target="_blank" href={joinURL + `?roomId=${$roomId}`}
 				>this</a
 			>
 			link, or go to
@@ -113,11 +114,6 @@
 							{/each}
 						</div>
 					{/each}
-					<button
-						on:click={startGame}
-						class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-						>Start Game</button
-					>
 				</Card>
 			</div>
 
@@ -218,6 +214,12 @@
 								class="pointer-events-auto radio radio-secondary"
 							/>
 						</div>
+						<button
+						on:click={startGame}
+						class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+						>Start Game</button
+					>
+
 					</div>
 				</Card>
 			</div>
