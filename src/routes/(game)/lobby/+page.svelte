@@ -6,6 +6,9 @@
 	import { PUBLIC_BASE_URL } from '$env/static/public';
 	import type { LimitType } from '$models/game';
 	import { error } from '@sveltejs/kit';
+	import Modal from '../../Modal.svelte';
+	let showModal = false;
+
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 
@@ -75,8 +78,10 @@
 
 	<!-- Content above the fixed div (stays at the top) -->
 	<div class="position-fixed top-0 left-0 right-0 px-5 flex justify-between">
-		<img src={'https://i.imgur.com/5N7JFlA.png'} alt="Beatline" class="w-[200px]" />
-		<img src={'../../static/beatlinepng.png'} alt="Beatline" class="w-[200px]" />
+		<img src={'src/lib/assets/beatlinepng.png'} alt="Beatline" class="w-[200px]" />
+
+		
+		
 
 		<div class="flex justify-center items-center text-xl">
 			<!-- Game Code and Link -->
@@ -104,7 +109,6 @@
 		<div class="flex justify-center items-start">
 			<!-- Left Side (Players List) -->
 			<div class="w-1/3 flex p-6">
-				<!-- Logo -->
 				<Card extraClasses="min-w-[300px]">
 					{#each teams as {players, name}}
 						<div>
@@ -119,8 +123,10 @@
 
 			<!-- Right Side (Settings) -->
 			<div class="w-2/3 flex p-6">
+				
 				<!-- Settings -->
 				<Card extraClasses="min-w-[700px]">
+					
 					<h3 class="text-lg font-semibold mb-4">Settings</h3>
 					<div class="space-y-4">
 						<div>
@@ -144,6 +150,7 @@
 						-->
 
 						<div>
+							
 							<label for="players" class="block text-lg font-bold"> Game Settings: </label>
 							<span class="flex items-center justify-evenly">
 								<input
