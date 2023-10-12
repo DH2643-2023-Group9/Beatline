@@ -32,7 +32,7 @@
 	});
 
 	socket.on('joinRoom', ({ name, userId }) => {
-		console.log('In `joinRoom`, userId=', userId);
+		console.log(`User ${name}(${userId}) joined the room`);
 		gameModel.addPlayer({
 			name,
 			id: userId,
