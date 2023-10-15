@@ -71,7 +71,7 @@
 
 			<!-- Team Red Score -->
 			<div class="text-3xl font-semibold text-red-500 text-center">
-				{teams[0].name} team's score: {teams[1].score}
+				{teams[0].name} team's score: {teams[0].score}
 			</div>
 
 			<!-- Team Blue Score -->

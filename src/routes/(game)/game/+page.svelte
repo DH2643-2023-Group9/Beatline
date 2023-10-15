@@ -14,6 +14,7 @@
 	if (!$accessToken) throw error(401, 'Lacks access token');
 	let currentTurn: Turn | undefined;
 	let currentTeam: number = 0;
+	let gameOver: boolean = false;
 
 	const { socket, gameModel } = getContext<MainContext>('main');
 
@@ -36,6 +37,7 @@
 		}, 6000);
 	}
 	async function showLastCard() {
+		gameOver = true;
 		if (!$accessToken) throw error(500, 'Access token is not defined');
 		currentTurn = await gameModel.getCurrentTurn($accessToken);
 	}
@@ -69,12 +71,13 @@
 </script>
 
 {#if currentTurn}
-	<div class="min-h-screen flex flex-col overflow-hidden">
+	<div class="min-h-screen flex flex-col justify-between">
 		<div class="text-white text-center text-4xl p-2 rounded">
-			<h2>It's {currentTurn.player.name}'s turn!</h2>
-		</div>
-
-		<div class="flex justify-center p-4 top-0 left-0 right-0">
+			{#if gameOver}
+				<h1>Game Over!</h1>
+			{:else}
+				<h2>It's {currentTurn.player.name}'s turn!</h2>
+			{/if}
 			<TrackCard
 				extraClasses="w-1/6 h-1/5"
 				track={currentTurn.track}
@@ -83,7 +86,6 @@
 			/>
 		</div>
 
-		
 		<!-- Team Information -->
 		<div class="flex justify-between p-4 fixed top-0 left-0 right-0 text-3xl text-center">
 			<!-- Team Red Information -->
@@ -118,9 +120,8 @@
 				</div>
 			</div>
 		</div>
-		
-		<TimelineFlip teams={teams} currentTeam={currentTeam} />
 
+		<TimelineFlip {teams} {currentTeam} />
 	</div>
 {:else}
 	<div class="flex justify-center w-full h-full">
