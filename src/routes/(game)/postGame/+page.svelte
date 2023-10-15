@@ -26,6 +26,8 @@
 	function startGame() {
 		//navigate to game
 		gameModel.reset();
+		gameModel.isActive = true;
+		socket.emit('startGame');
 		goto('/game');
 	}
 

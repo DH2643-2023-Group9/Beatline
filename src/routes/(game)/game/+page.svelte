@@ -31,6 +31,7 @@
 		console.log('currentTurn', currentTurn.turn);
 		currentTeam = (currentTeam + 1) % 2;
 		teams = gameModel.getTeams();
+		console.log('teams', teams);
 		console.log('currentTurn', currentTurn);
 		setTimeout(() => {
 			if (currentTurn) socket.emit('assignTurn', { userId: currentTurn.player.id });

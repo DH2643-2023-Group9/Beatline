@@ -113,6 +113,8 @@ export class GameModel {
 			team.currentPlayerIndex = 0;
 			team.timeline = [];
 		});
+		console.log('Game reset');
+		console.log(this.teams);
 	}
 
 	numberOfPlayers(): number {
@@ -144,7 +146,7 @@ export class GameModel {
 	}
 
 	setLimit(limit: number, type: LimitType) {
-		this.limit = limit;
+		this.limit = 1;
 		this.limitType = type;
 	}
 
