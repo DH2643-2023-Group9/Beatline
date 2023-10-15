@@ -6,6 +6,7 @@
 	import { PUBLIC_BASE_URL } from '$env/static/public';
 	import type { LimitType } from '$models/game';
 	import { error } from '@sveltejs/kit';
+	
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 
@@ -24,6 +25,8 @@
 	let interval = [1950, 2023];
 	let autoAssign = true;
 	let maxScore = 20;
+	let minScore = 5;
+	let selectedOption = 'byRounds';
 
 	socket.on('createRoom', (data) => {
 		roomId.set(data.roomId);
@@ -82,6 +85,18 @@
 	}
 
 	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
+
+	function handleRadioChange(event: Event) {
+		selectedOption = (event.target as HTMLInputElement).id;
+	}
+
+	function getClass(key: String) {
+    if (selectedOption === key) {
+      return 'radio radio-secondary';
+    } else {
+      return 'radio';
+    }
+  }
 </script>
 
 <div class="min-h-screen flex flex-col">
@@ -101,6 +116,7 @@
 		</div>
 	</div>
 
+	
 	<!-- Center the content vertically -->
 	<div class="flex-grow flex items-center justify-center">
 			<!-- Added w-full and items-start -->
@@ -124,70 +140,156 @@
 			<div class="w-2/3 flex p-6">
 				<!-- Settings -->
 				<Card extraClasses="min-w-[700px]">
-					<h3 class="text-lg font-semibold mb-4">Settings</h3>
+					
 					<div class="space-y-4">
-						<div>
-							<label for="players" class="block text-sm font-medium"
-								>Number of Players</label
-							>
-							<input
-								id="players"
-								type="number"
-								bind:value={maxPlayers}
-								class="mt-1 block w-full rounded-md border-gray-300 bg-inherit"
-							/>
-						</div>
 						
-						<!-- 
-							<div class="pointer-events-auto dropdown">
-							<label tabindex="0" class="btn m-1">Game Settings</label>
-							<ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 text-black rounded-box w-52">
-							  <li><a>Play by rounds</a></li>
-							  <li><a>Play by score</a></li>
-							</ul>
-						  </div>
-						-->
 
 						<div>
-							<label for="players" class="block text-lg font-bold"> Game Settings: </label>
+							<label 
+								for="players" 
+								class="block text-lg font-bold"> 
+								Game Settings: 
+							</label>
 							  <span class="flex items-center justify-evenly">
-								<input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" checked />
-								<input type="radio" name="radio-1" class="pointer-events-auto radio radio-secondary" />
-							  </span>
-							  <span class="flex items-center justify-evenly">
-								<label for="radio-1" class="block text-sm font-medium ">By rounds</label>
-								<label for="radio-1" class="block text-sm font-medium ">By score</label>
+								<label 
+									for="radio-1" 
+									class="block text-sm font-bold flex flex-col text-justify items-center">
+									<input 
+										type="radio" 
+										id="byRounds" 
+										name="radio-1" 
+										class="pointer-events-auto radio radio-secondary " 
+										bind:group={selectedOption} 
+										value={'byRounds'}   
+									/>
+									By rounds
+								</label>
+
+								<label 
+									for="radio-2" 
+									class="block text-sm font-bold flex flex-col text-justify items-center">
+									<input 
+										type="radio" 
+										id="byScore" 
+										name="radio-1" 
+										class="pointer-events-auto radio radio-secondary " 
+										bind:group={selectedOption} 
+										value={'byScore'} 
+									/>
+									By score
+								</label>
+								
 							  </span>
 							  
 							  
 						</div>
 						
+						{#if selectedOption === 'byRounds'}
 						<div>
-							<label for="players" class="block text-sm font-medium"> Number of Rounds </label>
-							<input type="range" class="pointer-events-auto range range-secondary bg-neutral" min="6" max="12" step="2" bind:value={limit}>
-							<div class="w-full flex justify-between text-xs px-2">
+							<label 
+								for="byRounds" 
+								id="byRounds" 
+								class="block text-sm font-bold"> 
+								Number of Rounds 
+							</label>
+							<input 
+								type="range" 
+									class="pointer-events-auto range range-secondary bg-neutral" 
+									min="6" 
+									max="12" 
+									step="2" 
+									bind:value={limit}
+							/>
+							<div 
+								class="w-full flex justify-between text-xs font-bold px-2">
 								<span>6</span>
 								<span>8</span>
 								<span>10</span>
 								<span>12</span>
-							  </div>							  
+							</div>							  
 						</div>
+						{/if}
+						
+						{#if selectedOption === 'byScore'}
+							<div>
+								<label 
+									for="byScore" 
+									id="byScore" 
+									class="block text-sm font-bold"> 
+									Max Score 
+								</label>
+								<input 
+									type="range" 
+									class="pointer-events-auto range range-secondary bg-neutral" 
+									min="5" 
+									max="20" 
+									step="5" 
+									bind:value={minScore}
+								/>
+								<div class="w-full flex justify-between text-xs font-bold px-2">
+									<span>5</span>
+									<span>10</span>
+									<span>15</span>
+									<span>20</span>
+								</div>
+							</div>	
+						{/if}
+						
 
 						<div>
-							<label for="players" class="block text-sm font-medium"> Max Score </label>
-							<input type="range" class="pointer-events-auto range range-secondary bg-neutral" min="5" max="20" step="5" bind:value={maxScore}>
-							<div class="w-full flex justify-between text-xs px-2">
-								<span>5</span>
-								<span>10</span>
-								<span>15</span>
-								<span>20</span>
-							  </div>
+							<label 
+								for="radio-2" 
+								class="block text-lg font-bold"> 
+								Difficulty: 
+							</label>
+							<span 
+								class="flex items-center justify-evenly">
+								<label 
+									for="radio-2" 
+									class="block text-sm font-medium text-justify flex flex-col items-center">
+									<input 
+									type="radio" 
+									name="radio-2" 
+									class="pointer-events-auto radio radio-secondary" 
+									checked />
+									Easy
+								</label>
+								<label 
+									for="radio-2" 
+									class="block text-sm font-medium text-justify flex flex-col items-center">
+									<input 
+									type="radio" 
+									name="radio-2" 
+									class="pointer-events-auto radio radio-secondary" />
+									Medium
+									</label>
+								<label 
+									for="radio-2" 
+									class="block text-sm font-medium text-justify flex flex-col items-center">
+									<input 
+									type="radio" 
+									name="radio-2" 
+									class="pointer-events-auto radio radio-secondary" />
+									Hard
+								</label>
+								</span>
 						</div>
 
-						<div>
-							<label for="players" class="block text-sm font-medium"> Difficulty </label>
-							  <input type="radio" name="radio-2" class="pointer-events-auto radio radio-secondary" checked />
-							  <input type="radio" name="radio-2" class="pointer-events-auto radio radio-secondary" />
+						<div class="range_container">
+							<div class="sliders_control">
+								<input id="fromSlider" type="range" value="10" min="0" max="100"/>
+								<input id="toSlider" type="range" value="40" min="0" max="100"/>
+							</div>
+							<div class="form_control">
+								<div class="form_control_container">
+									<div class="form_control_container__time">Min</div>
+									<input class="form_control_container__time__input" type="number" id="fromInput" value="10" min="0" max="100"/>
+								</div>
+								<div class="form_control_container">
+									<div class="form_control_container__time">Max</div>
+									<input class="form_control_container__time__input" type="number" id="toInput" value="40" min="0" max="100"/>
+								</div>
+							</div>
 						</div>
 						
 					</div>

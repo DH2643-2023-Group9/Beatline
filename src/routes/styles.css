@@ -143,3 +143,4 @@ button:focus:not(:focus-visible) {
 .swap-flip-h input:indeterminate ~ .swap-indeterminate {
 	transform: rotateX(0deg);
 }
+
