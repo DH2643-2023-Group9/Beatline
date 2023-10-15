@@ -4,6 +4,7 @@
 
 	export let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 	export let myTurn: boolean;
+	export let isHost: boolean;
 
 	let answer: number;
 	const startYear = 1950;

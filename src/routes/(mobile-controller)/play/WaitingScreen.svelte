@@ -1,5 +1,15 @@
 <script lang="ts">
+	import type { ClientToServerEvents, ServerToClientEvents } from "$lib/socketServer";
+	import type { Socket } from "socket.io-client";
+
 	export let myName: string; // Accept the player name as a prop
+	export let isHost: boolean;
+	export let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
+
+	function startGame() {
+		socket.emit("startGame")
+	}
+
 </script>
 
 <!-- Main Content of the Waiting Screen -->
@@ -15,4 +25,7 @@
 		<!-- Optional: You can add a spinner or any loading animation below -->
         <div class="loading loading-dots loading-xl"></div>
 	</div>
+	{#if isHost}
+		<button class="btn btn-primary mt-4 pointer-events-auto" on:click={startGame}>Start Game</button>
+	{/if}
 </div>

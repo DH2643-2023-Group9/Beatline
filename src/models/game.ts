@@ -6,6 +6,7 @@ export type Ability = 'shuffle' | 'nope!' | 'continue';
 export type Player = {
 	name: string;
 	id: string;
+	image?: File;
 	host: boolean;
 	abilities: Ability[];
 };
@@ -15,11 +16,16 @@ export type Team = {
 	score: number;
 	players: Player[];
 	currentPlayerIndex: number;
-	timeline: Guess[];
+	timeline: YearInfo[];
+};
+
+export type YearInfo = {
+	year: number;
+	guesses: Guess[];
 };
 
 export type Guess = {
-	player: Player;
+	player?: Player;
 	guessedYear: number;
 	track: TrackData;
 };
@@ -69,11 +75,28 @@ export class GameModel {
 		this.interval = interval;
 	}
 
+	async populateTimelines(accessToken: string) {
+		const [t1, t2] = await Promise.allSettled([
+			getTrackData(this.interval[0], this.interval[1], accessToken),
+			getTrackData(this.interval[0], this.interval[1], accessToken)
+		]);
+
+		const addGuess = (t: PromiseSettledResult<TrackData>, team: number) => {
+			if (t.status === 'fulfilled') {
+				const track = t.value;
+				const guess: Guess = { guessedYear: track.year, track };
+				this.teams[team].timeline.push({ year: track.year, guesses: [guess] });
+			}
+		};
+		addGuess(t1, 0);
+		addGuess(t2, 1);
+	}
+
 	/**
 	 * Initialize a new game with default values.
 	 * These values will need to be set manually later.
 	 */
-	static initDefault(): GameModel {
+	static initDefault(accessToken: string): GameModel {
 		return new GameModel([0, 0], 5, 'rounds');
 	}
 
@@ -90,7 +113,27 @@ export class GameModel {
 		});
 	}
 
-	addToTeam(team: number, player: Player) {
+	numberOfPlayers(): number {
+		return this.teams.reduce((acc, team) => acc + team.players.length, 0);
+	}
+
+	addPlayer(player: Player) {
+		const team = this.teams
+			.map((t, i) => ({ l: t.players.length, i }))
+			.sort((a, b) => a.l - b.l)[0].i;
+		this.teams[team].players.push(player);
+	}
+
+	switchTeam(playerId: string, team: number) {
+		let player: Player | undefined;
+		this.teams.forEach((t) => {
+			const index = t.players.findIndex((p) => p.id === playerId);
+			if (index !== -1) {
+				player = t.players[index];
+				t.players.splice(index, 1);
+			}
+		});
+		if (!player) throw new Error('Player not found');
 		this.teams[team].players.push(player);
 	}
 
@@ -162,8 +205,8 @@ export class GameModel {
 		};
 
 		// Determine where the guess should be inserted
-		const expectedIndex = timeline.findIndex((g) => currentTrack.year <= g.track.year);
-		const actualIndex = timeline.findIndex((g) => year <= g.track.year);
+		const expectedIndex = timeline.findIndex((g) => currentTrack.year <= g.year);
+		const actualIndex = timeline.findIndex((g) => year <= g.year);
 
 		// Check if the guess was correct
 		const isCorrect = expectedIndex === actualIndex;
@@ -172,9 +215,11 @@ export class GameModel {
 			this.scoreBuffer++;
 			// Insert guess at expected index
 			if (expectedIndex === -1) {
-				timeline.push(guess);
+				timeline.push({ year: currentTrack.year, guesses: [guess] });
+			} else if (timeline[expectedIndex].year !== currentTrack.year) {
+				timeline.splice(expectedIndex, 0, { year: currentTrack.year, guesses: [guess] });
 			} else {
-				timeline.splice(expectedIndex, 0, guess);
+				timeline[expectedIndex].guesses.splice(0, 0, guess);
 			}
 		} else {
 			// If the user has guessed correctly before

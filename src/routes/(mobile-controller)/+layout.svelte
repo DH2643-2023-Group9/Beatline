@@ -7,13 +7,23 @@
 	export type MainContext = {
 		socket: Socket<ServerToClientEvents, ClientToServerEvents>;
 		myName: Writable<string>;
+		isHost: Writable<boolean>;
 	};
 </script>
 
 <script lang="ts">
+	const socket = io();
+	const isHost = writable(false);
+
 	setContext<MainContext>('main', {
-		socket: io(),
+		socket,
 		myName: writable(''),
+		isHost: isHost
+	});
+
+	socket.on('assignHost', () => {
+		console.log('I am the host');
+		$isHost = true;
 	});
 </script>
 

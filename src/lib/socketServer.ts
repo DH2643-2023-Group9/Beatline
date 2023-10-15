@@ -6,13 +6,15 @@ type Event<T> = (data: T) => void;
 
 export interface ClientToServerEvents {
 	createRoom: Event<{ capacity: number; roomId: string }>;
-	joinRoom: Event<{ roomId: string; name: string }>;
+	joinRoom: Event<{ roomId: string; name: string}>;
 	startGame: () => void;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number }>;
 	endGame: () => void;
 	joinTeam: Event<{ team: number }>;
 	error: Event<{ error: string }>;
+	backToLobby: () => void;
+	assignHost: Event<{ userId: string }>;
 }
 
 export interface ServerToClientEvents {
@@ -22,8 +24,10 @@ export interface ServerToClientEvents {
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number; userId: string }>;
 	endGame: () => void;
-	joinTeam: Event<{ team: number, userId: string }>;
+	joinTeam: Event<{ team: number; userId: string }>;
 	error: Event<{ error: string }>;
+	backToLobby: () => void;
+	assignHost: () => void;
 }
 
 export function configureServer(server: ViteDevServer) {
@@ -91,7 +95,7 @@ export function configureServer(server: ViteDevServer) {
 		socket.on('startGame', () => {
 			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId} started game`);
-			io.to(roomId).emit('startGame');
+			socket.to(roomId).emit('startGame');
 			openRooms.delete(roomId);
 		});
 
@@ -113,10 +117,29 @@ export function configureServer(server: ViteDevServer) {
 			socket.to(roomId).emit('submitAnswer', { answer, userId });
 		});
 
-		socket.on('joinTeam', ({team}) => {
+		socket.on('joinTeam', ({ team }) => {
 			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId}: User ${userId} joined team ${team}`);
-			socket.to(roomId).emit('joinTeam', {team, userId});
+			socket.to(roomId).emit('joinTeam', { team, userId });
+		});
+
+		socket.on('backToLobby', () => {
+			if (!roomId) return noRoomId();
+			console.log(`Room ${roomId}: Back to lobby`);
+			socket.to(roomId).emit('backToLobby');
+		});
+
+		socket.on('assignHost', ({ userId }) => {
+			if (!roomId) return noRoomId();
+			const reciever = io.sockets.sockets.get(userId);
+			if (reciever === undefined) {
+				const msg = `User ${userId} is not connected`;
+				console.log(msg);
+				socket.emit('error', { error: msg });
+				return;
+			}
+			console.log(`Room ${roomId}: User ${userId} is now host`);
+			reciever.emit('assignHost');
 		});
 
 		socket.on('disconnect', () => {

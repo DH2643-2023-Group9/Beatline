@@ -119,7 +119,7 @@ button:focus:not(:focus-visible) {
 
 .swap-flip-h {
 	transform-style: preserve-3d;
-	perspective: 16em;
+	perspective: 64em;
 }
 
 .swap-flip-h .swap-on,
