@@ -34,7 +34,7 @@
                     <div class="stack flex -space-x-36">
                         {#each guesses as { track, player, guessedYear }}
                             <NoFlipCard extraClasses="w-40" minimized={true} {track}>
-                                <p>{player.name} guessed {guessedYear}.</p>
+                                <p>{player?.name} guessed {guessedYear}.</p>
                             </NoFlipCard>
                         {/each}
                     </div>

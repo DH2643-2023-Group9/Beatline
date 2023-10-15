@@ -15,21 +15,23 @@
 	let currentTrack: TrackData = track;
 	afterUpdate(() => {
 		if (track && audio && track !== prevTrack) {
+			audio.pause();
+			audio.currentTime = 0; // Reset to the beginning
+			audio.load();
 			if (flipToShowAnswer) {
 				flippedCard = true;
 				setTimeout(() => {
 					flippedCard = false;
 					currentTrack = track;
+					if (playFor10Seconds && countdown === 0) {
+						playAudioWithCountdown();
+					}
 				}, 3000);
-			}
-			else {
+			} else {
 				currentTrack = track;
-			}
-			audio.pause();
-			audio.currentTime = 0; // Reset to the beginning
-			audio.load();
-			if (playFor10Seconds && countdown === 0) {
-				playAudioWithCountdown();
+				if (playFor10Seconds && countdown === 0) {
+					playAudioWithCountdown();
+				}
 			}
 			prevTrack = track;
 			flipToShowAnswer = true;
@@ -38,16 +40,13 @@
 
 	function playAudioWithCountdown() {
 		countdown = 3;
-		setTimeout(() => {
-			const interval = setInterval(() => {
-				countdown--;
-				console.log(countdown);
-				if (countdown === 0) {
-					clearInterval(interval);
-					playAudioFor10Seconds();
-				}
-			}, 1000);
-		}, 3000);
+		const interval = setInterval(() => {
+			countdown--;
+			if (countdown === 0) {
+				clearInterval(interval);
+				playAudioFor10Seconds();
+			}
+		}, 1000);
 	}
 
 	function playAudioFor10Seconds() {
