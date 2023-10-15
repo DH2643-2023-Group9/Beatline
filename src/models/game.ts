@@ -55,6 +55,7 @@ function createTeam(name: string): Team {
 export class GameModel {
 	limit: number;
 	limitType: LimitType;
+	difficulty: number; 
 	currentRound = 0;
 	currentTeam = 0;
 	currentTrack?: TrackData;
@@ -68,17 +69,18 @@ export class GameModel {
 	 * @param limit The limit for turns/score
 	 * @param limitType The type for the limit. Either 'rounds' or 'score'
 	 */
-	constructor(interval: number[], limit: number, limitType: LimitType) {
+	constructor(interval: number[], limit: number, limitType: LimitType, difficulty:number) {
 		if (interval.length !== 2) throw new Error('Interval must be an array of length 2');
 		this.limit = limit;
 		this.limitType = limitType;
 		this.interval = interval;
+		this.difficulty = difficulty;
 	}
 
 	async populateTimelines(accessToken: string) {
 		const [t1, t2] = await Promise.allSettled([
-			getTrackData(this.interval[0], this.interval[1], accessToken),
-			getTrackData(this.interval[0], this.interval[1], accessToken)
+			getTrackData(this.interval[0], this.interval[1], accessToken, 100),
+			getTrackData(this.interval[0], this.interval[1], accessToken, 100)
 		]);
 
 		const addGuess = (t: PromiseSettledResult<TrackData>, team: number) => {
@@ -96,8 +98,8 @@ export class GameModel {
 	 * Initialize a new game with default values.
 	 * These values will need to be set manually later.
 	 */
-	static initDefault(accessToken: string): GameModel {
-		return new GameModel([0, 0], 5, 'rounds');
+	static initDefault(): GameModel {
+		return new GameModel([0, 0], 5, 'rounds', 100);
 	}
 
 	reset() {
@@ -179,7 +181,7 @@ export class GameModel {
 	 * @returns Information about the current turn
 	 */
 	async getCurrentTurn(accessToken: string): Promise<Turn> {
-		this.currentTrack = await getTrackData(this.interval[0], this.interval[1], accessToken);
+		this.currentTrack = await getTrackData(this.interval[0], this.interval[1], accessToken, 100);
 		const { players, currentPlayerIndex } = this.teams[this.currentTeam];
 		const player = players[currentPlayerIndex];
 		const team = this.teams[this.currentTeam];
