@@ -6,6 +6,7 @@ export type Ability = 'shuffle' | 'nope!' | 'continue';
 export type Player = {
 	name: string;
 	id: string;
+	image?: File;
 	host: boolean;
 	abilities: Ability[];
 };

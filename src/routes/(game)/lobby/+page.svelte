@@ -125,7 +125,11 @@
 						<div>
 							<h2 class="text-xl font-semibold mb-4">{name}</h2>
 							{#each players as player}
-								<li class="mb-2">{player.name}</li>
+								{#if player.host}
+									<li class="mb-2 hover:">{player.name} 👑 (HOST)</li>
+								{:else}
+									<li class="mb-2">{player.name}</li>
+								{/if}
 							{/each}
 						</div>
 					{/each}
@@ -137,7 +141,6 @@
 				
 				<!-- Settings -->
 				<Card extraClasses="min-w-[700px]">
-					
 					<h3 class="text-lg font-semibold mb-4">Settings</h3>
 					<div class="space-y-4">
 						<div>

@@ -68,6 +68,8 @@
 		<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
 			<TrackCard extraClasses="w-1/6 h-1/5" track={currentTurn.track} minimized={false} playFor10Seconds={true} />
 		</div>
+
+		
 		<!-- Team Information -->
 		<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0 text-3xl text-center">
 			<!-- Team Red Information -->
@@ -101,12 +103,6 @@
 		
 		<TimelineFlip teams={teams} currentTeam={currentTeam} />
 
-
-		<!-- Interactivity -->
-		<div class="fixed bottom-4 right-4">
-			<!-- Button to add a new card -->
-			<!-- Utilizing DaisyUI's predefined 'btn' component for a modern aesthetic. -->
-		</div>
 	</div>
 {:else}
 	<div class="flex justify-center w-full h-full">

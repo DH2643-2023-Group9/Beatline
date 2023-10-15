@@ -16,7 +16,7 @@
 			alert('Please enter a room ID and name.');
 			return;
 		}
-		socket.emit('joinRoom', { roomId, name: $myName });
+		socket.emit('joinRoom', { roomId, name: $myName});
 	}
 
 	socket.on('error', ({error}) => {

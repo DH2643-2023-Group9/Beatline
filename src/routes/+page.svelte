@@ -16,7 +16,7 @@
 		class="btn btn-warning m-1 pointer-events-auto transform transition-transform hover:scale-105"
 		href="/lobby">Create Lobby</a
 	>
-	<button class="pointer-events-auto btn btn-info flex float-right" on:click={() => (showModal = true)}> How-to-play </button>
+	<button class="pointer-events-auto btn btn-accent m-1 flex hover:scale-105" on:click={() => (showModal = true)}> How-to-play </button>
 
 	<Modal bind:showModal>
 	</Modal>
