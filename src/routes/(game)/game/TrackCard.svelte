@@ -1,61 +1,69 @@
 <script lang="ts">
-	import type { TrackData } from '$lib/spotify';
-	import { afterUpdate } from 'svelte';
-	export let track: TrackData;
-	export let flipped: boolean = false;
-	export let minimized: boolean;
-	export let extraClasses = '';
-	export let playFor10Seconds: boolean = false;
+    import type { TrackData } from '$lib/spotify';
+    import { afterUpdate } from 'svelte';
 
-	let audio: HTMLAudioElement;
-	let countdown: number = 0;
-	let prevTrack: TrackData | null = null;
-	let flipToShowAnswer: boolean = false;
-	let flippedCard: boolean = false;
-	let currentTrack: TrackData = track;
-	afterUpdate(() => {
-		if (track && audio && track !== prevTrack) {
-			audio.pause();
-			audio.currentTime = 0; // Reset to the beginning
-			audio.load();
-			if (flipToShowAnswer) {
-				flippedCard = true;
-				setTimeout(() => {
-					flippedCard = false;
-					currentTrack = track;
-					if (playFor10Seconds && countdown === 0) {
-						playAudioWithCountdown();
-					}
-				}, 3000);
-			} else {
-				currentTrack = track;
-				if (playFor10Seconds && countdown === 0) {
-					playAudioWithCountdown();
-				}
-			}
-			prevTrack = track;
-			flipToShowAnswer = true;
-		}
-	});
+    export let track: TrackData;
+    export let flipped: boolean = false;
+    export let minimized: boolean;
+    export let extraClasses = '';
+    export let playFor10Seconds: boolean = false;
 
-	function playAudioWithCountdown() {
-		countdown = 3;
-		const interval = setInterval(() => {
-			countdown--;
-			if (countdown === 0) {
-				clearInterval(interval);
-				playAudioFor10Seconds();
-			}
-		}, 1000);
-	}
+    let audio: HTMLAudioElement;
+    let countdown: number = 0;
+    let prevTrack: TrackData | null = null;
+    let flipToShowAnswer: boolean = false;
+    let flippedCard: boolean = false;
+    let currentTrack: TrackData = track;
+    let audioTimeoutId: any = null;  // <- Declare the timeout ID variable
 
-	function playAudioFor10Seconds() {
-		audio.play();
-		setTimeout(() => {
-			audio.pause();
-		}, 10000); // pause after 10 seconds
-	}
+    afterUpdate(() => {
+        if (track && audio && track !== prevTrack) {
+            audio.pause();
+            clearTimeout(audioTimeoutId);  // <- Clear the timeout
+            audio.currentTime = 0; // Reset to the beginning
+            audio.load();
+
+            if (flipToShowAnswer) {
+                flippedCard = true;
+                setTimeout(() => {
+                    flippedCard = false;
+                    currentTrack = track;
+                    if (playFor10Seconds && countdown === 0) {
+                        playAudioWithCountdown();
+                    }
+                }, 3000);
+            } else {
+                currentTrack = track;
+                if (playFor10Seconds && countdown === 0) {
+                    playAudioWithCountdown();
+                }
+            }
+
+            prevTrack = track;
+            flipToShowAnswer = true;
+        }
+    });
+
+    function playAudioWithCountdown() {
+        countdown = 3;
+        const interval = setInterval(() => {
+            countdown--;
+            if (countdown === 0) {
+                clearInterval(interval);
+                playAudioFor10Seconds();
+            }
+        }, 1000);
+    }
+
+    function playAudioFor10Seconds() {
+        audio.play();
+        clearTimeout(audioTimeoutId);  // <- Clear the timeout before setting a new one
+        audioTimeoutId = setTimeout(() => {
+            audio.pause();
+        }, 10000); // pause after 10 seconds
+    }
 </script>
+
 
 <label class="m-2 h-fit swap swap-flip text-9xl pointer-events-none {extraClasses}">
 	<input type="checkbox" class="hidden" checked={flippedCard} />
