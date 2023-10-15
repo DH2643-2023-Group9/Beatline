@@ -85,6 +85,6 @@
 			<!-- Countdown Text -->
 			<p class="font-bold text-5xl m-2 absolute z-10">{countdown}</p>
 		{/if}
-		<img src={'https://i.imgur.com/GCiers3.png'} alt="Beatline" class="w-full h-full" />
+		<img src={'src/lib/assets/beatlineBackground.png'} alt="Beatline" class="w-full h-full" />
 	</div>
 </label>

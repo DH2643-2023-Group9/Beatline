@@ -82,6 +82,8 @@
 				playFor10Seconds={true}
 			/>
 		</div>
+
+		
 		<!-- Team Information -->
 		<div class="flex justify-between p-4 fixed top-0 left-0 right-0 text-3xl text-center">
 			<!-- Team Red Information -->
@@ -116,15 +118,9 @@
 				</div>
 			</div>
 		</div>
-		<div class="flex justify-center bottom-0 absolute left-0 right-0">
-			<TimelineFlip {teams} {currentTeam} />
-		</div>
+		
+		<TimelineFlip teams={teams} currentTeam={currentTeam} />
 
-		<!-- Interactivity -->
-		<div class="fixed bottom-4 right-4">
-			<!-- Button to add a new card -->
-			<!-- Utilizing DaisyUI's predefined 'btn' component for a modern aesthetic. -->
-		</div>
 	</div>
 {:else}
 	<div class="flex justify-center w-full h-full">

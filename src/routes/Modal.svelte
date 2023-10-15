@@ -27,18 +27,18 @@
 				Step 1. Start a lobby
 			</h2>
 			<div>
-				Log in via Spotify and create a lobby and connect your friends via their phones! Watch the game play out on your TV screen while you all relax in the sofa! Once you've started the lobby, the rest can be accessed via your phones.
+				Log in via Spotify and create a lobby and connect your friends via their phones! Watch the game play out on your TV screen while you all relax in the sofa! Once you've started the lobby, the rest can be accessed via your phones. Maximum number of devices is 10! But you can always play several players on one device 😊
 			</div>
 			<h2 class="text-2xl">
 				Step 2. Join!
 			</h2>
 			<div>
 				Once everyone has joined, let the host start the game by clicking Start Game on their phone.
-				When started, you'll see an individual timeline for each team. You'll have a set amount of time to identify in which timeperiod that song fits in! The more correct answers you get, the harder it will become!
+				When started, you'll see an individual timeline for each team. You'll have a set amount of time to identify in which inteval that song fits in! The more correct answers you get, the harder it will become!
 			</div>
 
 			<h2 class="text-2xl">
-				Step 3. Have fun?
+				Step 3. Have fun!
 			</h2>
 
 			<div>

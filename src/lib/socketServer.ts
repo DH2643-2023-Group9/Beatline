@@ -6,7 +6,7 @@ type Event<T> = (data: T) => void;
 
 export interface ClientToServerEvents {
 	createRoom: Event<{ capacity: number; roomId: string }>;
-	joinRoom: Event<{ roomId: string; name: string }>;
+	joinRoom: Event<{ roomId: string; name: string}>;
 	startGame: () => void;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number }>;
