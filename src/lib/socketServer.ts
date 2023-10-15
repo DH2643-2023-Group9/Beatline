@@ -114,7 +114,7 @@ export function configureServer(server: ViteDevServer) {
 		socket.on('submitAnswer', ({ answer }) => {
 			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId} submitted answer ${answer}`);
-			socket.to(roomId).emit('submitAnswer', { answer, userId });
+			io.to(roomId).emit('submitAnswer', { answer, userId });
 		});
 
 		socket.on('joinTeam', ({ team }) => {

@@ -41,7 +41,6 @@
 		setTimeout(() => {
 			const interval = setInterval(() => {
 				countdown--;
-				console.log(countdown);
 				if (countdown === 0) {
 					clearInterval(interval);
 					playAudioFor10Seconds();

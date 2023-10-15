@@ -4,7 +4,7 @@
 	import { fly } from 'svelte/transition';
 	import Profile from '../../Profile.svelte';
 	import TrackCard from './TrackCard.svelte';
-	import NoFlipCard from './NoFlipCard.svelte'
+	import NoFlipCard from './NoFlipCard.svelte';
 	import type { Team, Turn } from '$models/game';
 	import { accessToken } from '$stores/tokenStore';
 	import { error } from '@sveltejs/kit';
@@ -28,10 +28,16 @@
 		if (!$accessToken) throw error(500, 'Access token is not defined');
 		currentTurn = await gameModel.getCurrentTurn($accessToken);
 		console.log('currentTurn', currentTurn.turn);
-		currentTeam = (currentTeam + 1) % 2
+		currentTeam = (currentTeam + 1) % 2;
 		teams = gameModel.getTeams();
 		console.log('currentTurn', currentTurn);
-		socket.emit('assignTurn', { userId: currentTurn.player.id });
+		setTimeout(() => {
+			if (currentTurn) socket.emit('assignTurn', { userId: currentTurn.player.id });
+		}, 6000);
+	}
+	async function showLastCard() {
+		if (!$accessToken) throw error(500, 'Access token is not defined');
+		currentTurn = await gameModel.getCurrentTurn($accessToken);
 	}
 
 	socket.on('submitAnswer', ({ answer, userId }) => {
@@ -44,9 +50,12 @@
 		gameModel.advance();
 		const winner = gameModel.getWinner();
 		if (winner) {
-			gameModel.isActive = false;
-			socket.emit('endGame');
-			goto('/postGame');
+			showLastCard();
+			setTimeout(() => {
+				gameModel.isActive = false;
+				socket.emit('endGame');
+				goto('/postGame');
+			}, 3000);
 		} else {
 			nextTurn();
 		}
@@ -65,13 +74,20 @@
 			<h2>It's {currentTurn.player.name}'s turn!</h2>
 		</div>
 
-		<div class="flex justify-center p-4 position-fixed top-0 left-0 right-0">
-			<TrackCard extraClasses="w-1/6 h-1/5" track={currentTurn.track} minimized={false} playFor10Seconds={true} />
+		<div class="flex justify-center p-4 top-0 left-0 right-0">
+			<TrackCard
+				extraClasses="w-1/6 h-1/5"
+				track={currentTurn.track}
+				minimized={false}
+				playFor10Seconds={true}
+			/>
 		</div>
 		<!-- Team Information -->
-		<div class="flex justify-between p-4 position-fixed top-0 left-0 right-0 text-3xl text-center">
+		<div class="flex justify-between p-4 fixed top-0 left-0 right-0 text-3xl text-center">
 			<!-- Team Red Information -->
-			<div class="rounded-md bg-gradient-to-r from-red-800 via-sky-200 to-red-600 p-1 space-x-6 space-y-6">
+			<div
+				class="rounded-md bg-gradient-to-r from-red-800 via-sky-200 to-red-600 p-1 space-x-6 space-y-6"
+			>
 				<div class=" h-full w-full bg-gray-800">
 					<h2>{teams[0].name}</h2>
 					<p>Score: {teams[0].score}</p>
@@ -85,7 +101,9 @@
 			</div>
 
 			<!-- Team Blue Information -->
-			<div class="rounded-md bg-gradient-to-r from-blue-800 via-sky-200 to-cyan-600 p-1 space-x-6 space-y-6">
+			<div
+				class="rounded-md bg-gradient-to-r from-blue-800 via-sky-200 to-cyan-600 p-1 space-x-6 space-y-6"
+			>
 				<div class=" h-full w-full bg-gray-800">
 					<h2>{teams[1].name}</h2>
 					<p>Score: {teams[1].score}</p>
@@ -98,9 +116,9 @@
 				</div>
 			</div>
 		</div>
-		
-		<TimelineFlip teams={teams} currentTeam={currentTeam} />
-
+		<div class="flex justify-center bottom-0 absolute left-0 right-0">
+			<TimelineFlip {teams} {currentTeam} />
+		</div>
 
 		<!-- Interactivity -->
 		<div class="fixed bottom-4 right-4">

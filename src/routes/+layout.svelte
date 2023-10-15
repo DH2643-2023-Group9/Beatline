@@ -14,7 +14,7 @@
 	});
 </script>
 
-<div class="app">
+<div class="app overflow-hidden">
 	{#if typeof window !== 'undefined' && !['/join', '/play'].includes(window.location.pathname)}
 		<Background />
 	{/if}
