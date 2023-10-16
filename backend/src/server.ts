@@ -1,7 +1,7 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { configureServer } from '../../src/lib/socketServer';
+import { configureServer } from './socketioServer';
 
 const PORT = 3001;
 

@@ -2,7 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { Server } from 'socket.io';
 import type { ViteDevServer } from 'vite';
 import { defineConfig } from 'vitest/config';
-const { configureServer } = await import('./src/lib/socketServer');
+const { configureServer } = await import('../shared/socketServer');
 
 const webSocketServer = {
 	name: 'webSocketServer',
