@@ -25,7 +25,7 @@
 	const serverURL = PUBLIC_REACT_APP_SOCKET_SERVER || 'http://localhost:3001';
 
 	setContext<MainContext>('main', {
-		socket: io(serverURL),
+		socket: io(),
 		roomId: writable<string>(randomRoomId()),
 		gameModel: GameModel.initDefault(),
 	})
