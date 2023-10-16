@@ -9,7 +9,9 @@
 	import Modal from '../../Modal.svelte';
 	import { getPlayListData, getPlaylistId } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
-	let showModal = false;
+	import RangeSlider from "svelte-range-slider-pips";
+	let values = [1920, 1930];
+	let currentYear: number=new Date().getFullYear();
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 	let randomImageOffset = Math.floor(Math.random() * 10);
@@ -31,6 +33,11 @@
 	let playlistInput = '';
 	let minScore = 5;
 	let selectedOption = 'byRounds';
+
+	let min = 0;
+	let max = 100;
+	let valueMin = 25;
+	let valueMax = 75;
 
 	socket.on('createRoom', (data) => {
 		$roomId = data.roomId;
@@ -115,6 +122,18 @@
 			return 'radio';
 		}
 	}
+
+  function handleChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const newValue = parseFloat(target.value);
+
+    if (target.id === "slider-min") {
+      valueMin = newValue;
+    } else if (target.id === "slider-max") {
+      valueMax = newValue;
+    }
+  }
+
 </script>
 
 <div class="min-h-screen flex flex-col">
@@ -272,18 +291,22 @@
 						{/if}
 
 						<div>
-							<label for="radio-2" class="block text-lg font-bold"> Difficulty: </label>
-							<span class="flex items-center justify-evenly">
-								<label
-									for="radio-2"
-									class="block text-sm font-medium text-justify flex flex-col items-center"
-								>
-									<input
-										type="radio"
-										name="radio-2"
-										class="pointer-events-auto radio radio-secondary"
-										checked
-									/>
+							
+							<label 
+								for="radio-2" 
+								class="block text-lg font-bold"> 
+								Difficulty: 
+							</label>
+							<span 
+								class="flex items-center justify-evenly">
+								<label 
+									for="radio-2" 
+									class="block text-sm font-medium text-justify flex flex-col items-center">
+									<input 
+									type="radio" 
+									name="radio-2" 
+									class="pointer-events-auto radio radio-secondary" 
+									checked />
 									Easy
 								</label>
 								<label
@@ -311,36 +334,26 @@
 							</span>
 						</div>
 
-						<div class="range_container">
-							<div class="sliders_control">
-								<input id="fromSlider" type="range" value="10" min="0" max="100" />
-								<input id="toSlider" type="range" value="40" min="0" max="100" />
-							</div>
-							<div class="form_control">
-								<div class="form_control_container">
-									<div class="form_control_container__time">Min</div>
-									<input
-										class="form_control_container__time__input"
-										type="number"
-										id="fromInput"
-										value="10"
-										min="0"
-										max="100"
-									/>
-								</div>
-								<div class="form_control_container">
-									<div class="form_control_container__time">Max</div>
-									<input
-										class="form_control_container__time__input"
-										type="number"
-										id="toInput"
-										value="40"
-										min="0"
-										max="100"
-									/>
-								</div>
-							</div>
-						</div>
+						
+	
+	<div class=" slider pointer-events-auto ">
+
+		<RangeSlider 
+			id="sliderInRange" 
+			float 
+			class="range range-secondary" 
+			pips
+			all="label"
+			bind:values 
+			min={1930}
+			max={2030}
+			step={10}
+			
+		/>
+		
+		
+						
+
 						<button
 							on:click={startGame}
 							class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
@@ -358,4 +371,26 @@
 
 <style>
 	/* You can add any additional styles or override default Tailwind styles here */
+	:root {
+    --range-slider:            hsl(var(--s));
+    --range-handle-inactive:   hsl(0, 0%, 99%);
+    --range-handle:            hsl(var(--sc));
+    --range-handle-focus:      hsl(var(--sf));
+    --range-handle-border:     hsl(var(--sc));
+    --range-range-inactive:    hsl(var(--s));
+    --range-range:             hsl(244.1, 63.2%, 54.1%);
+    --range-float-inactive:    hsl(180, 4.6%, 61.8%);
+    --range-float:             hsl(244.1, 63.2%, 54.1%);
+    --range-float-text:        hsl(0, 0%, 100%);
+
+    --range-pip:               hsl(210, 14.3%, 53.3%);
+    --range-pip-text:          hsl(210, 14.3%, 53.3%);
+    --range-pip-active:        hsl(180, 25.4%, 24.7%);
+    --range-pip-active-text:   hsl(180, 25.4%, 24.7%);
+    --range-pip-hover:         hsl(180, 25.4%, 24.7%);
+    --range-pip-hover-text:    hsl(180, 25.4%, 24.7%);
+    --range-pip-in-range:      hsl(180, 25.4%, 24.7%);
+    --range-pip-in-range-text: hsl(180, 25.4%, 24.7%);
+  }
 </style>
+
