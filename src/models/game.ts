@@ -1,4 +1,4 @@
-import { getTrackData, type TrackData } from '$lib/spotify';
+import { getTrackData, sampleFromPlaylist, type PlaylistData, type TrackData } from '$lib/spotify';
 import type { PlayerInfo } from '../routes/(game)/+layout.svelte';
 
 export type Ability = 'shuffle' | 'nope!' | 'continue';
@@ -63,6 +63,9 @@ export class GameModel {
 	interval: number[];
 	scoreBuffer = 0;
 	isActive = false;
+	playlist?: PlaylistData;
+	usedIds: string[] = [];
+	usedPlaylistOffsets: number[] = [];
 
 	/**
 	 * @param interval The year interval to sample tracks from
@@ -77,10 +80,29 @@ export class GameModel {
 		this.difficulty = difficulty;
 	}
 
+	/**
+	 * Sample a random track from either the configured interval, or a specified playlist.
+	 */
+	async getRandomTrack(accessToken: string): Promise<TrackData> {
+		if (this.playlist) {
+			const { track, offset, invalidOffsets } = await sampleFromPlaylist(
+				this.playlist,
+				accessToken,
+				this.usedPlaylistOffsets
+			);
+			this.usedPlaylistOffsets.push(offset);
+			this.usedPlaylistOffsets.push(...invalidOffsets);
+			return track;
+		}
+		const track = await getTrackData(this.interval[0], this.interval[1], accessToken);
+		this.usedIds.push(track.id);
+		return track;
+	}
+
 	async populateTimelines(accessToken: string) {
 		const [t1, t2] = await Promise.allSettled([
-			getTrackData(this.interval[0], this.interval[1], accessToken, 100),
-			getTrackData(this.interval[0], this.interval[1], accessToken, 100)
+			this.getRandomTrack(accessToken),
+			this.getRandomTrack(accessToken)
 		]);
 
 		const addGuess = (t: PromiseSettledResult<TrackData>, team: number) => {
@@ -181,7 +203,7 @@ export class GameModel {
 	 * @returns Information about the current turn
 	 */
 	async getCurrentTurn(accessToken: string): Promise<Turn> {
-		this.currentTrack = await getTrackData(this.interval[0], this.interval[1], accessToken, 100);
+		this.currentTrack = await this.getRandomTrack(accessToken);
 		const { players, currentPlayerIndex } = this.teams[this.currentTeam];
 		const player = players[currentPlayerIndex];
 		const team = this.teams[this.currentTeam];

@@ -7,8 +7,9 @@
 	import type { LimitType } from '$models/game';
 	import { error } from '@sveltejs/kit';
 	import Modal from '../../Modal.svelte';
+	import { getPlayListData, getPlaylistId } from '$lib/spotify';
+	import { accessToken } from '$stores/tokenStore';
 	let showModal = false;
-
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 
@@ -26,6 +27,7 @@
 	let copied = false;
 	let interval = [1950, 2023];
 	let maxScore = 20;
+	let playlistInput = '';
 	let minScore = 5;
 	let selectedOption = 'byRounds';
 
@@ -81,6 +83,16 @@
 		}
 	}
 
+	async function setPlaylist() {
+		const playlistId = await getPlaylistId(playlistInput);
+		if (!$accessToken) {
+			const err = 'Missing Spotify access token';
+			alert(err);
+			goto('/spotify/newToken');
+			return;
+		}
+		gameModel.playlist = await getPlayListData(playlistId, $accessToken);
+	}
 	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
 
 	function handleRadioChange(event: Event) {
@@ -102,9 +114,6 @@
 	<!-- Content above the fixed div (stays at the top) -->
 	<div class="position-fixed top-0 left-0 right-0 px-5 flex justify-between">
 		<img src={'src/lib/assets/beatlinepng.png'} alt="Beatline" class="w-[200px]" />
-
-		
-		
 
 		<div class="flex justify-center items-center text-xl">
 			<!-- Game Code and Link -->
@@ -153,7 +162,6 @@
 
 			<!-- Right Side (Settings) -->
 			<div class="w-2/3 flex p-6">
-				
 				<!-- Settings -->
 				<Card extraClasses="min-w-[700px]">
 					
@@ -161,6 +169,15 @@
 						
 
 						<div>
+							<input
+								type="text"
+								class="pointer-events-auto input input-bordered text-black"
+								placeholder="Enter a Spotify Playlist ID/link"
+								bind:value={playlistInput}
+							/>
+							<button class="btn btn-primary pointer-events-auto" on:click={setPlaylist}
+								>Submit playlist</button
+							>
 							<label 
 								for="players" 
 								class="block text-lg font-bold"> 
