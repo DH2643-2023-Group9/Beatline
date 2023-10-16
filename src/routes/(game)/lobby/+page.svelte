@@ -12,6 +12,7 @@
 	let showModal = false;
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
+	let randomImageOffset = Math.floor(Math.random() * 10);
 
 	if (gameModel.isActive) {
 		const msg = 'You dun goofed. The game is already start';
@@ -35,14 +36,22 @@
 		$roomId = data.roomId;
 	});
 
-	socket.on('joinRoom', ({ name, userId }) => {
+	socket.on('joinRoom', ({ name, userId, image }) => {
 		console.log(`User ${name}(${userId}) joined the room`);
 		const host = gameModel.numberOfPlayers() === 0;
+		let profile;
+		if (!image) {
+			randomImageOffset = (randomImageOffset + 1) % 10;
+			profile = { defaultId: randomImageOffset };
+		} else {
+			profile = { data: URL.createObjectURL(new Blob([new Uint8Array(image)])) };
+		}
 		gameModel.addPlayer({
 			name,
 			id: userId,
 			host: host,
-			abilities: []
+			abilities: [],
+			image: profile
 		});
 		if (host) {
 			socket.emit('assignHost', { userId });
@@ -148,11 +157,21 @@
 						<div>
 							<h2 class="text-xl font-semibold mb-4">{name}</h2>
 							{#each players as player}
-								{#if player.host}
-									<li class="mb-2 hover:">{player.name} 👑 (HOST)</li>
-								{:else}
-									<li class="mb-2">{player.name}</li>
-								{/if}
+								<div class="mb-2">
+									<span>{player.name}</span>
+									{#if player.host}
+										<span>👑 (HOST)</span>
+									{/if}
+									{#if player.image.defaultId}
+										<img
+											src={`src/lib/assets/avatars/${player.image.defaultId}.webp`}
+											alt="Avatar"
+											class="w-8 h-8 rounded-full"
+										/>
+									{:else if player.image.data}
+										<img src={player.image.data} alt="Avatar" class="w-8 h-8 rounded-full" />
+									{/if}
+								</div>
 							{/each}
 						</div>
 					{/each}

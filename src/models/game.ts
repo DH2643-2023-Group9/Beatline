@@ -3,10 +3,15 @@ import type { PlayerInfo } from '../routes/(game)/+layout.svelte';
 
 export type Ability = 'shuffle' | 'nope!' | 'continue';
 
+export type ProfileImage = {
+	data?: string;
+	defaultId?: number;
+}
+
 export type Player = {
 	name: string;
 	id: string;
-	image?: File;
+	image: ProfileImage;
 	host: boolean;
 	abilities: Ability[];
 };

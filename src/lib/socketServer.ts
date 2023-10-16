@@ -6,7 +6,7 @@ type Event<T> = (data: T) => void;
 
 export interface ClientToServerEvents {
 	createRoom: Event<{ capacity: number; roomId: string }>;
-	joinRoom: Event<{ roomId: string; name: string}>;
+	joinRoom: Event<{ roomId: string; name: string, image?: ArrayBuffer}>;
 	startGame: () => void;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number }>;
@@ -19,7 +19,7 @@ export interface ClientToServerEvents {
 
 export interface ServerToClientEvents {
 	createRoom: Event<{ roomId: string }>;
-	joinRoom: Event<{ userId: string; name: string }>;
+	joinRoom: Event<{ userId: string; name: string, image?: ArrayBuffer }>;
 	startGame: () => void;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number; userId: string }>;
@@ -89,7 +89,7 @@ export function configureServer(server: ViteDevServer) {
 			}
 			roomId = data.roomId;
 			socket.join(roomId);
-			io.sockets.in(roomId).emit('joinRoom', { userId, name: data.name });
+			io.sockets.in(roomId).emit('joinRoom', { userId, name: data.name, image: data.image });
 		});
 
 		socket.on('startGame', () => {

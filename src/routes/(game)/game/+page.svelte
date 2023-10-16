@@ -99,6 +99,15 @@
 					<Profile extraClasses="mb-2 border-none">
 						{#each teams[0].players as player}
 							<div class="flex flex-wrap content-end">{player.name}</div>
+							{#if player.image.defaultId}
+								<img
+									src={`src/lib/assets/avatars/${player.image.defaultId}.webp`}
+									alt="Avatar"
+									class="w-8 h-8 rounded-full"
+								/>
+							{:else if player.image.data}
+								<img src={player.image.data} alt="Avatar" class="w-8 h-8 rounded-full" />
+							{/if}
 						{/each}
 					</Profile>
 				</div>
@@ -115,6 +124,15 @@
 					<Profile extraClasses="mb-2 border-none">
 						{#each teams[1].players as player}
 							<div class="flex flex-wrap content-end">{player.name}</div>
+							{#if player.image.defaultId}
+								<img
+									src={`src/lib/assets/avatars/${player.image.defaultId}.webp`}
+									alt="Avatar"
+									class="w-8 h-8 rounded-full"
+								/>
+							{:else if player.image.data}
+								<img src={player.image.data} alt="Avatar" class="w-8 h-8 rounded-full" />
+							{/if}
 						{/each}
 					</Profile>
 				</div>
