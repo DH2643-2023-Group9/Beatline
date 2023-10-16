@@ -99,7 +99,7 @@ export class GameModel {
 			this.usedPlaylistOffsets.push(...invalidOffsets);
 			return track;
 		}
-		const track = await getTrackData(this.interval[0], this.interval[1], accessToken);
+		const track = await getTrackData(this.interval[0], this.interval[1], accessToken, this.difficulty);
 		this.usedIds.push(track.id);
 		return track;
 	}

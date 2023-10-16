@@ -79,14 +79,15 @@ function formatTrackData(track: any): TrackData {
 export async function getTrackData(
 	left: number,
 	right: number,
-	accessToken: string
+	accessToken: string,
+	difficulty: number
 ): Promise<TrackData> {
 	const maxTries = 4;
 	let track: any | undefined;
 	let year = 0;
 	for (let i = 0; i < maxTries && track === undefined; i++) {
 		year = Math.floor(Math.random() * (right - left) + left);
-		const offset = Math.floor(Math.random() * 100);
+		const offset = Math.floor(Math.random() * difficulty);
 		const url = `https://api.spotify.com/v1/search?q=year:${year}&type=track&limit=5&offset=${offset}`;
 		const data = await request(url, accessToken);
 		track = data.tracks.items.find(validateTrack);

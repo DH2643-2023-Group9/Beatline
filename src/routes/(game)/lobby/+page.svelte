@@ -10,7 +10,6 @@
 	import { getPlayListData, getPlaylistId } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
 	import RangeSlider from "svelte-range-slider-pips";
-	let values = [1920, 1930];
 	let currentYear: number=new Date().getFullYear();
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
@@ -28,12 +27,13 @@
 	let limit = gameModel.limit;
 	let limitType: LimitType = gameModel.limitType;
 	let copied = false;
-	let interval = [1950, 2023];
+	let values = gameModel.interval;
+	let testInterval = [1950, 1990];
 	let maxScore = 20;
 	let playlistInput = '';
 	let minScore = 5;
 	let selectedOption = 'byRounds';
-
+	let difficulty = gameModel.difficulty;
 	let min = 0;
 	let max = 100;
 	let valueMin = 25;
@@ -306,7 +306,7 @@
 									type="radio" 
 									name="radio-2" 
 									class="pointer-events-auto radio radio-secondary" 
-									checked />
+									checked={difficulty === 100}  />
 									Easy
 								</label>
 								<label
@@ -317,6 +317,7 @@
 										type="radio"
 										name="radio-2"
 										class="pointer-events-auto radio radio-secondary"
+										checked={difficulty === 500}
 									/>
 									Medium
 								</label>
@@ -328,6 +329,7 @@
 										type="radio"
 										name="radio-2"
 										class="pointer-events-auto radio radio-secondary"
+										checked={difficulty === 1000}
 									/>
 									Hard
 								</label>
