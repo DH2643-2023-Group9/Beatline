@@ -7,8 +7,9 @@
 	import type { LimitType } from '$models/game';
 	import { error } from '@sveltejs/kit';
 	import Modal from '../../Modal.svelte';
+	import { getPlayListData, getPlaylistId } from '$lib/spotify';
+	import { accessToken } from '$stores/tokenStore';
 	let showModal = false;
-
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 
@@ -26,6 +27,7 @@
 	let copied = false;
 	let interval = [1950, 2023];
 	let maxScore = 20;
+	let playlistInput = '';
 	let minScore = 5;
 	let selectedOption = 'byRounds';
 
@@ -81,6 +83,16 @@
 		}
 	}
 
+	async function setPlaylist() {
+		const playlistId = await getPlaylistId(playlistInput);
+		if (!$accessToken) {
+			const err = 'Missing Spotify access token';
+			alert(err);
+			goto('/spotify/newToken');
+			return;
+		}
+		gameModel.playlist = await getPlayListData(playlistId, $accessToken);
+	}
 	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
 
 	function handleRadioChange(event: Event) {
@@ -88,12 +100,12 @@
 	}
 
 	function getClass(key: String) {
-    if (selectedOption === key) {
-      return 'radio radio-secondary';
-    } else {
-      return 'radio';
-    }
-  }
+		if (selectedOption === key) {
+			return 'radio radio-secondary';
+		} else {
+			return 'radio';
+		}
+	}
 </script>
 
 <div class="min-h-screen flex flex-col">
@@ -102,9 +114,6 @@
 	<!-- Content above the fixed div (stays at the top) -->
 	<div class="position-fixed top-0 left-0 right-0 px-5 flex justify-between">
 		<img src={'src/lib/assets/beatlinepng.png'} alt="Beatline" class="w-[200px]" />
-
-		
-		
 
 		<div class="flex justify-center items-center text-xl">
 			<!-- Game Code and Link -->
@@ -128,7 +137,6 @@
 		</div>
 	</div>
 
-	
 	<!-- Center the content vertically -->
 	<div class="flex-grow flex items-center justify-center">
 		<!-- Added w-full and items-start -->
@@ -153,93 +161,86 @@
 
 			<!-- Right Side (Settings) -->
 			<div class="w-2/3 flex p-6">
-				
 				<!-- Settings -->
 				<Card extraClasses="min-w-[700px]">
-					
 					<div class="space-y-4">
-						
-
 						<div>
-							<label 
-								for="players" 
-								class="block text-lg font-bold"> 
-								Game Settings: 
-							</label>
-							  <span class="flex items-center justify-evenly">
-								<label 
-									for="radio-1" 
-									class="block text-sm font-bold flex flex-col text-justify items-center">
-									<input 
-										type="radio" 
-										id="byRounds" 
-										name="radio-1" 
-										class="pointer-events-auto radio radio-secondary " 
-										bind:group={selectedOption} 
-										value={'byRounds'}   
+							<input
+								type="text"
+								class="pointer-events-auto input input-bordered text-black"
+								placeholder="Enter a Spotify Playlist ID/link"
+								bind:value={playlistInput}
+							/>
+							<button class="btn btn-primary pointer-events-auto" on:click={setPlaylist}
+								>Submit playlist</button
+							>
+							<label for="players" class="block text-lg font-bold"> Game Settings: </label>
+							<span class="flex items-center justify-evenly">
+								<label
+									for="radio-1"
+									class="block text-sm font-bold flex flex-col text-justify items-center"
+								>
+									<input
+										type="radio"
+										id="byRounds"
+										name="radio-1"
+										class="pointer-events-auto radio radio-secondary"
+										bind:group={selectedOption}
+										value={'byRounds'}
 									/>
 									By rounds
 								</label>
 
-								<label 
-									for="radio-2" 
-									class="block text-sm font-bold flex flex-col text-justify items-center">
-									<input 
-										type="radio" 
-										id="byScore" 
-										name="radio-1" 
-										class="pointer-events-auto radio radio-secondary " 
-										bind:group={selectedOption} 
-										value={'byScore'} 
+								<label
+									for="radio-2"
+									class="block text-sm font-bold flex flex-col text-justify items-center"
+								>
+									<input
+										type="radio"
+										id="byScore"
+										name="radio-1"
+										class="pointer-events-auto radio radio-secondary"
+										bind:group={selectedOption}
+										value={'byScore'}
 									/>
 									By score
 								</label>
-								
-							  </span>
-							  
-							  
+							</span>
 						</div>
-						
+
 						{#if selectedOption === 'byRounds'}
-						<div>
-							<label 
-								for="byRounds" 
-								id="byRounds" 
-								class="block text-sm font-bold"> 
-								Number of Rounds 
-							</label>
-							<input 
-								type="range" 
-									class="pointer-events-auto range range-secondary bg-neutral" 
-									min="6" 
-									max="12" 
-									step="2" 
+							<div>
+								<label for="byRounds" id="byRounds" class="block text-sm font-bold">
+									Number of Rounds
+								</label>
+								<input
+									type="range"
+									class="pointer-events-auto range range-secondary bg-neutral"
+									min="6"
+									max="12"
+									step="2"
 									bind:value={limit}
-							/>
-							<div 
-								class="w-full flex justify-between text-xs font-bold px-2">
-								<span>6</span>
-								<span>8</span>
-								<span>10</span>
-								<span>12</span>
-							</div>							  
-						</div>
+								/>
+								<div class="w-full flex justify-between text-xs font-bold px-2">
+									<span>6</span>
+									<span>8</span>
+									<span>10</span>
+									<span>12</span>
+								</div>
+							</div>
 						{/if}
-						
+
 						{#if selectedOption === 'byScore'}
 							<div>
-								<label 
-									for="byScore" 
-									id="byScore" 
-									class="block text-sm font-bold"> 
-									Max Score 
+								<label for="byScore" id="byScore" class="block text-sm font-bold">
+									Max Score
 								</label>
-								<input 
-									type="range" 
-									class="pointer-events-auto range range-secondary bg-neutral" 
-									min="5" 
-									max="20" 
-									step="5" 
+								<input
+									type="range"
+									class="pointer-events-auto range range-secondary bg-neutral"
+									min="5"
+									max="20"
+									step="5"
 									bind:value={minScore}
 								/>
 								<div class="w-full flex justify-between text-xs font-bold px-2">
@@ -248,62 +249,76 @@
 									<span>15</span>
 									<span>20</span>
 								</div>
-							</div>	
+							</div>
 						{/if}
-						
 
 						<div>
-							<label 
-								for="radio-2" 
-								class="block text-lg font-bold"> 
-								Difficulty: 
-							</label>
-							<span 
-								class="flex items-center justify-evenly">
-								<label 
-									for="radio-2" 
-									class="block text-sm font-medium text-justify flex flex-col items-center">
-									<input 
-									type="radio" 
-									name="radio-2" 
-									class="pointer-events-auto radio radio-secondary" 
-									checked />
+							<label for="radio-2" class="block text-lg font-bold"> Difficulty: </label>
+							<span class="flex items-center justify-evenly">
+								<label
+									for="radio-2"
+									class="block text-sm font-medium text-justify flex flex-col items-center"
+								>
+									<input
+										type="radio"
+										name="radio-2"
+										class="pointer-events-auto radio radio-secondary"
+										checked
+									/>
 									Easy
 								</label>
-								<label 
-									for="radio-2" 
-									class="block text-sm font-medium text-justify flex flex-col items-center">
-									<input 
-									type="radio" 
-									name="radio-2" 
-									class="pointer-events-auto radio radio-secondary" />
+								<label
+									for="radio-2"
+									class="block text-sm font-medium text-justify flex flex-col items-center"
+								>
+									<input
+										type="radio"
+										name="radio-2"
+										class="pointer-events-auto radio radio-secondary"
+									/>
 									Medium
-									</label>
-								<label 
-									for="radio-2" 
-									class="block text-sm font-medium text-justify flex flex-col items-center">
-									<input 
-									type="radio" 
-									name="radio-2" 
-									class="pointer-events-auto radio radio-secondary" />
+								</label>
+								<label
+									for="radio-2"
+									class="block text-sm font-medium text-justify flex flex-col items-center"
+								>
+									<input
+										type="radio"
+										name="radio-2"
+										class="pointer-events-auto radio radio-secondary"
+									/>
 									Hard
 								</label>
-								</span>
+							</span>
 						</div>
 
 						<div class="range_container">
 							<div class="sliders_control">
-								<input id="fromSlider" type="range" value="10" min="0" max="100"/>
-								<input id="toSlider" type="range" value="40" min="0" max="100"/>
+								<input id="fromSlider" type="range" value="10" min="0" max="100" />
+								<input id="toSlider" type="range" value="40" min="0" max="100" />
 							</div>
 							<div class="form_control">
 								<div class="form_control_container">
 									<div class="form_control_container__time">Min</div>
-									<input class="form_control_container__time__input" type="number" id="fromInput" value="10" min="0" max="100"/>
+									<input
+										class="form_control_container__time__input"
+										type="number"
+										id="fromInput"
+										value="10"
+										min="0"
+										max="100"
+									/>
 								</div>
 								<div class="form_control_container">
 									<div class="form_control_container__time">Max</div>
-									<input class="form_control_container__time__input" type="number" id="toInput" value="40" min="0" max="100"/>
+									<input
+										class="form_control_container__time__input"
+										type="number"
+										id="toInput"
+										value="40"
+										min="0"
+										max="100"
+									/>
 								</div>
 							</div>
 						</div>

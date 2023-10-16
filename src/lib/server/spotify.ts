@@ -7,10 +7,10 @@ export async function requestToken(body: { [key: string]: string }) {
 	const response = await fetch('https://accounts.spotify.com/api/token', {
 		method: 'POST',
 		headers: {
-            Authorization: 'Basic ' + btoa(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET),
-            'Content-Type': 'application/x-www-form-urlencoded',
-            Accept: 'application/json'
-        },
+			Authorization: 'Basic ' + btoa(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET),
+			'Content-Type': 'application/x-www-form-urlencoded',
+			Accept: 'application/json'
+		},
 		body: new URLSearchParams(body)
 	});
 
