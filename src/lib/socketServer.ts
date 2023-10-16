@@ -1,6 +1,8 @@
 import type { ViteDevServer } from 'vite';
-import { Server } from 'socket.io';
+import type { Server } from 'socket.io';
 import { randomRoomId } from './misc';
+import type { Server as HttpServer } from 'http';
+
 
 type Event<T> = (data: T) => void;
 
@@ -30,10 +32,7 @@ export interface ServerToClientEvents {
 	assignHost: () => void;
 }
 
-export function configureServer(server: ViteDevServer) {
-	if (!server.httpServer) return;
-
-	const io = new Server<ClientToServerEvents, ServerToClientEvents>(server.httpServer);
+export function configureServer(io: Server<ClientToServerEvents, ServerToClientEvents>){
 
 	const openRooms = new Map<string, number>();
 
@@ -114,7 +113,7 @@ export function configureServer(server: ViteDevServer) {
 		socket.on('submitAnswer', ({ answer }) => {
 			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId} submitted answer ${answer}`);
-			socket.to(roomId).emit('submitAnswer', { answer, userId });
+			io.to(roomId).emit('submitAnswer', { answer, userId });
 		});
 
 		socket.on('joinTeam', ({ team }) => {

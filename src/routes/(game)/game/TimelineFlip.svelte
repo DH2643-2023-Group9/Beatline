@@ -4,7 +4,7 @@
 
 	export let teams: Team[];
 	export let currentTeam: number;
-	let team1: boolean = true;
+	let team1: boolean = currentTeam === 0;
 
 	$: {
 		setTimeout(() => {

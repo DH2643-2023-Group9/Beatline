@@ -1,4 +1,4 @@
-import { getTrackData, type TrackData } from '$lib/spotify';
+import { getTrackData, sampleFromPlaylist, type PlaylistData, type TrackData } from '$lib/spotify';
 import type { PlayerInfo } from '../routes/(game)/+layout.svelte';
 
 export type Ability = 'shuffle' | 'nope!' | 'continue';
@@ -55,6 +55,7 @@ function createTeam(name: string): Team {
 export class GameModel {
 	limit: number;
 	limitType: LimitType;
+	difficulty: number; 
 	currentRound = 0;
 	currentTeam = 0;
 	currentTrack?: TrackData;
@@ -62,23 +63,46 @@ export class GameModel {
 	interval: number[];
 	scoreBuffer = 0;
 	isActive = false;
+	playlist?: PlaylistData;
+	usedIds: string[] = [];
+	usedPlaylistOffsets: number[] = [];
 
 	/**
 	 * @param interval The year interval to sample tracks from
 	 * @param limit The limit for turns/score
 	 * @param limitType The type for the limit. Either 'rounds' or 'score'
 	 */
-	constructor(interval: number[], limit: number, limitType: LimitType) {
+	constructor(interval: number[], limit: number, limitType: LimitType, difficulty:number) {
 		if (interval.length !== 2) throw new Error('Interval must be an array of length 2');
 		this.limit = limit;
 		this.limitType = limitType;
 		this.interval = interval;
+		this.difficulty = difficulty;
+	}
+
+	/**
+	 * Sample a random track from either the configured interval, or a specified playlist.
+	 */
+	async getRandomTrack(accessToken: string): Promise<TrackData> {
+		if (this.playlist) {
+			const { track, offset, invalidOffsets } = await sampleFromPlaylist(
+				this.playlist,
+				accessToken,
+				this.usedPlaylistOffsets
+			);
+			this.usedPlaylistOffsets.push(offset);
+			this.usedPlaylistOffsets.push(...invalidOffsets);
+			return track;
+		}
+		const track = await getTrackData(this.interval[0], this.interval[1], accessToken);
+		this.usedIds.push(track.id);
+		return track;
 	}
 
 	async populateTimelines(accessToken: string) {
 		const [t1, t2] = await Promise.allSettled([
-			getTrackData(this.interval[0], this.interval[1], accessToken),
-			getTrackData(this.interval[0], this.interval[1], accessToken)
+			this.getRandomTrack(accessToken),
+			this.getRandomTrack(accessToken)
 		]);
 
 		const addGuess = (t: PromiseSettledResult<TrackData>, team: number) => {
@@ -96,8 +120,8 @@ export class GameModel {
 	 * Initialize a new game with default values.
 	 * These values will need to be set manually later.
 	 */
-	static initDefault(accessToken: string): GameModel {
-		return new GameModel([0, 0], 5, 'rounds');
+	static initDefault(): GameModel {
+		return new GameModel([0, 0], 5, 'rounds', 100);
 	}
 
 	reset() {
@@ -179,7 +203,7 @@ export class GameModel {
 	 * @returns Information about the current turn
 	 */
 	async getCurrentTurn(accessToken: string): Promise<Turn> {
-		this.currentTrack = await getTrackData(this.interval[0], this.interval[1], accessToken);
+		this.currentTrack = await this.getRandomTrack(accessToken);
 		const { players, currentPlayerIndex } = this.teams[this.currentTeam];
 		const player = players[currentPlayerIndex];
 		const team = this.teams[this.currentTeam];

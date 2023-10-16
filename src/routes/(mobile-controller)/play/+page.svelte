@@ -17,6 +17,13 @@
 		gameEnded = false;
 	});
 
+	socket.on('submitAnswer', ({ answer, userId }) => {
+		console.log('Answer submitted!');
+		myTurn = false;
+		console.log(myTurn);
+		
+	});
+
 	socket.on('endGame', () => {
 		console.log('Game ended!');
 		gameEnded = true;
