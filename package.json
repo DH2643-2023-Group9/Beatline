@@ -45,6 +45,8 @@
 	"type": "module",
 	"dependencies": {
 		"animejs": "^3.2.1",
-		"postcss-import": "^15.1.0"
+		"postcss-import": "^15.1.0",
+		"svelte-range-slider-pips": "^2.2.3",
+		"yootils": "^0.3.1"
 	}
 }
