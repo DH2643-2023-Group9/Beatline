@@ -9,7 +9,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-       origin: "http://localhost:5173",  // Adjust to your frontend's origin, e.g., the Vite server URL
+       origin: "http://localhost:5173", "https://beatline.vercel.app/",  // Adjust to your frontend's origin, e.g., the Vite server URL
        methods: ["GET", "POST"]
     }
  });
