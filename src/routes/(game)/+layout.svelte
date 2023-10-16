@@ -20,9 +20,12 @@
 	import { randomRoomId } from '$lib/misc';
 	import { GameModel } from '$models/game';
 	import type { ClientToServerEvents, ServerToClientEvents } from '$lib/socketServer';
+	import { PUBLIC_REACT_APP_SOCKET_SERVER } from '$env/static/public';
+
+	const serverURL = PUBLIC_REACT_APP_SOCKET_SERVER || 'http://localhost:3001';
 
 	setContext<MainContext>('main', {
-		socket: io(),
+		socket: io(serverURL),
 		roomId: writable<string>(randomRoomId()),
 		gameModel: GameModel.initDefault(),
 	})

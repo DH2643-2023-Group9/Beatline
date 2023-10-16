@@ -1,11 +1,21 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import { Server } from 'socket.io';
+import type { ViteDevServer } from 'vite';
 import { defineConfig } from 'vitest/config';
 const { configureServer } = await import('./src/lib/socketServer');
 
 const webSocketServer = {
 	name: 'webSocketServer',
-	configureServer
+	configureServer: (server: ViteDevServer) => {
+		if (!server.httpServer) return;
+		const io = new Server(server.httpServer);
+
+		 configureServer(io);
+	}
+
 };
+
+
 
 export default defineConfig({
 	plugins: [sveltekit(), webSocketServer],
