@@ -338,7 +338,6 @@
 							<RangeSlider
 								id="sliderInRange"
 								float
-								class="range range-secondary"
 								pips
 								all="label"
 								bind:values
