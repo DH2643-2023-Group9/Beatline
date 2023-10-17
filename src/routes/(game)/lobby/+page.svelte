@@ -329,7 +329,7 @@
 										type="radio"
 										name="radio-2"
 										class="pointer-events-auto radio radio-secondary"
-										checked={difficulty === 1000}
+										checked={difficulty === 999}
 									/>
 									Hard
 								</label>
