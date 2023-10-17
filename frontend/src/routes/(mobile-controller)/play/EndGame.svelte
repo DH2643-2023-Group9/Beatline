@@ -20,13 +20,14 @@
 	<div class=" p-8 rounded-lg shadow-md text-center space-y-4">
 		<h1 class="text-2xl font-semibold">Game Over</h1>
 		<p class="text-gray-600">Thank you for playing!</p>
-		{#if isHost}
+		<!-- TODO Fix so that restart actually works -->
+		<!-- {#if isHost}
 			<button class="btn btn-primary pointer-events-auto" on:click={restartGame}>Restart Game</button>
 			<button class="btn btn-secondary pointer-events-auto" on:click={toLobby}>Back to Lobby</button>
 		{:else}
 			<p class="text-gray-600">Please wait for the host to restart the game.</p>
 			<div class="loading loading-dots loading-xl"></div>
-		{/if}
+		{/if} -->
 		
 	</div>
 </div>

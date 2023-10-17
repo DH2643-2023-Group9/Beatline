@@ -9,8 +9,8 @@
 	import Modal from '../../Modal.svelte';
 	import { getPlayListData, getPlaylistId } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
-	import RangeSlider from "svelte-range-slider-pips";
-	let currentYear: number=new Date().getFullYear();
+	import RangeSlider from 'svelte-range-slider-pips';
+	let currentYear: number = new Date().getFullYear();
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 	let randomImageOffset = Math.floor(Math.random() * 10);
@@ -27,8 +27,8 @@
 	let limit = gameModel.limit;
 	let limitType: LimitType = gameModel.limitType;
 	let copied = false;
-	let values = gameModel.interval;
-	let testInterval = [1950, 1990];
+	let testInterval = [1960, 2020];
+	let values = testInterval;
 	let maxScore = 20;
 	let playlistInput = '';
 	let minScore = 5;
@@ -44,7 +44,6 @@
 	});
 
 	socket.on('joinRoom', ({ name, userId, image }) => {
-		console.log(`User ${name}(${userId}) joined the room`);
 		const host = gameModel.numberOfPlayers() === 0;
 		let profile;
 		if (!image) {
@@ -67,13 +66,11 @@
 	});
 
 	socket.on('joinTeam', ({ team, userId }) => {
-		console.log(`User ${userId} joined team ${team}`);
 		gameModel.switchTeam(userId, team);
 		teams = gameModel.teams;
 	});
 
 	socket.on('startGame', () => {
-		console.log('Game started!');
 		startGame();
 	});
 
@@ -82,8 +79,8 @@
 			alert('You need at least 2 players to start the game');
 			return;
 		}
-		
-		if (values[0] > values[1]) {
+
+		if (values[0] >= values[1]) {
 			alert('Invalid interval');
 			return;
 		}
@@ -128,17 +125,16 @@
 		}
 	}
 
-  function handleChange(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const newValue = parseFloat(target.value);
+	function handleChange(event: Event) {
+		const target = event.target as HTMLInputElement;
+		const newValue = parseFloat(target.value);
 
-    if (target.id === "slider-min") {
-      valueMin = newValue;
-    } else if (target.id === "slider-max") {
-      valueMax = newValue;
-    }
-  }
-
+		if (target.id === 'slider-min') {
+			valueMin = newValue;
+		} else if (target.id === 'slider-max') {
+			valueMax = newValue;
+		}
+	}
 </script>
 
 <div class="min-h-screen flex flex-col">
@@ -146,8 +142,9 @@
 
 	<!-- Content above the fixed div (stays at the top) -->
 	<div class="position-fixed top-0 left-0 right-0 px-5 flex justify-between">
-		<img src={'beatlinepng.png'} alt="Beatline" class="w-[200px]" />
-
+		<a class="pointer-events-auto" href="/">
+			<img src={'beatlinepng.png'} alt="Beatline" class="w-[200px]" />
+		</a>
 		<div class="flex justify-center items-center text-xl">
 			<!-- Game Code and Link -->
 			Copy
@@ -176,7 +173,7 @@
 		<div class="flex justify-center items-start">
 			<!-- Left Side (Players List) -->
 			<div class="w-1/3 flex p-6">
-				<Card extraClasses="min-w-[300px]">
+				<Card extraClasses="min-w-[300px] rounded-xl">
 					{#each teams as { players, name }}
 						<div>
 							<h2 class="text-xl font-semibold mb-4">{name}</h2>
@@ -205,7 +202,7 @@
 			<!-- Right Side (Settings) -->
 			<div class="w-2/3 flex p-6">
 				<!-- Settings -->
-				<Card extraClasses="min-w-[700px]">
+				<Card extraClasses="min-w-[700px] rounded-xl">
 					<div class="space-y-4">
 						<div>
 							<input
@@ -296,22 +293,18 @@
 						{/if}
 
 						<div>
-							
-							<label 
-								for="radio-2" 
-								class="block text-lg font-bold"> 
-								Difficulty: 
-							</label>
-							<span 
-								class="flex items-center justify-evenly">
-								<label 
-									for="radio-2" 
-									class="block text-sm font-medium text-justify flex flex-col items-center">
-									<input 
-									type="radio" 
-									name="radio-2" 
-									class="pointer-events-auto radio radio-secondary" 
-									checked={difficulty === 100}  />
+							<label for="radio-2" class="block text-lg font-bold"> Difficulty: </label>
+							<span class="flex items-center justify-evenly">
+								<label
+									for="radio-2"
+									class="block text-sm font-medium text-justify flex flex-col items-center"
+								>
+									<input
+										type="radio"
+										name="radio-2"
+										class="pointer-events-auto radio radio-secondary"
+										checked={difficulty === 100}
+									/>
 									Easy
 								</label>
 								<label
@@ -341,33 +334,27 @@
 							</span>
 						</div>
 
-						
-	
-	<div class=" slider pointer-events-auto ">
+						<div class=" slider pointer-events-auto">
+							<RangeSlider
+								id="sliderInRange"
+								float
+								class="range range-secondary"
+								pips
+								all="label"
+								bind:values
+								min={1930}
+								max={2030}
+								step={10}
+							/>
 
-		<RangeSlider 
-			id="sliderInRange" 
-			float 
-			class="range range-secondary" 
-			pips
-			all="label"
-			bind:values 
-			min={1930}
-			max={2030}
-			step={10}
-			
-		/>
-		
-		
-						
-
-						<button
-							on:click={startGame}
-							class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-							>Start Game</button
-						>
-					</div>
-				</Card>
+							<button
+								on:click={startGame}
+								class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+								>Start Game</button
+							>
+						</div>
+					</div></Card
+				>
 			</div>
 		</div>
 	</div>
@@ -379,25 +366,24 @@
 <style>
 	/* You can add any additional styles or override default Tailwind styles here */
 	:root {
-    --range-slider:            hsl(var(--s));
-    --range-handle-inactive:   hsl(0, 0%, 99%);
-    --range-handle:            hsl(var(--sc));
-    --range-handle-focus:      hsl(var(--sf));
-    --range-handle-border:     hsl(var(--sc));
-    --range-range-inactive:    hsl(var(--s));
-    --range-range:             hsl(244.1, 63.2%, 54.1%);
-    --range-float-inactive:    hsl(180, 4.6%, 61.8%);
-    --range-float:             hsl(244.1, 63.2%, 54.1%);
-    --range-float-text:        hsl(0, 0%, 100%);
+		--range-slider: hsl(var(--s));
+		--range-handle-inactive: hsl(0, 0%, 99%);
+		--range-handle: hsl(var(--sc));
+		--range-handle-focus: hsl(var(--sf));
+		--range-handle-border: hsl(var(--sc));
+		--range-range-inactive: hsl(var(--s));
+		--range-range: hsl(244.1, 63.2%, 54.1%);
+		--range-float-inactive: hsl(180, 4.6%, 61.8%);
+		--range-float: hsl(244.1, 63.2%, 54.1%);
+		--range-float-text: hsl(0, 0%, 100%);
 
-    --range-pip:               hsl(210, 14.3%, 53.3%);
-    --range-pip-text:          hsl(210, 14.3%, 53.3%);
-    --range-pip-active:        hsl(180, 25.4%, 24.7%);
-    --range-pip-active-text:   hsl(180, 25.4%, 24.7%);
-    --range-pip-hover:         hsl(180, 25.4%, 24.7%);
-    --range-pip-hover-text:    hsl(180, 25.4%, 24.7%);
-    --range-pip-in-range:      hsl(180, 25.4%, 24.7%);
-    --range-pip-in-range-text: hsl(180, 25.4%, 24.7%);
-  }
+		--range-pip: hsl(210, 14.3%, 53.3%);
+		--range-pip-text: hsl(210, 14.3%, 53.3%);
+		--range-pip-active: hsl(180, 25.4%, 24.7%);
+		--range-pip-active-text: hsl(180, 25.4%, 24.7%);
+		--range-pip-hover: hsl(180, 25.4%, 24.7%);
+		--range-pip-hover-text: hsl(180, 25.4%, 24.7%);
+		--range-pip-in-range: hsl(180, 25.4%, 24.7%);
+		--range-pip-in-range-text: hsl(180, 25.4%, 24.7%);
+	}
 </style>
-

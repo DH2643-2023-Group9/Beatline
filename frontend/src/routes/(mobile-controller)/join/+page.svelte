@@ -28,7 +28,6 @@
 
 	socket.on('joinRoom', ({ name, userId }) => {
 		// Handle successful join. Might update some UI or set some internal state.
-		console.log(`User ${name}(${userId}) joined the room`);
 		if (userId === socket.id) {
 			// Got confirmation that we joined the room
 			goto('/play');

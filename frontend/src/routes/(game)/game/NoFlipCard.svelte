@@ -6,7 +6,6 @@
 </script>
 
 <label class="m-2 h-fit swap swap-flip text-9xl pointer-events-none {extraClasses}">
-	<input type="checkbox" class="hidden" />
 	<!-- This is hidden assuming you do not want the checkbox to show -->
 	<div class="swap-off w-full h-full rounded-xl overflow-hidden bg-neutral-900">
 		<img src={track.image.url} alt="Album Artwork" />
@@ -18,8 +17,5 @@
 				</p>
 			{/if}
 		</div>
-	</div>
-	<div class="swap-on w-full h-full rounded-xl overflow-hidden bg-neutral-800">
-		<img src={'src/lib/assets/beatlinepng.png'} alt="Beatline" class="w-full h-full" />
 	</div>
 </label>

@@ -25,7 +25,6 @@
 	});
 
 	socket.on('assignHost', () => {
-		console.log('I am the host');
 		$isHost = true;
 	});
 </script>

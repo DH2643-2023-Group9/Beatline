@@ -29,10 +29,8 @@
 	async function nextTurn() {
 		if (!$accessToken) throw error(500, 'Access token is not defined');
 		currentTurn = await gameModel.getCurrentTurn($accessToken);
-		console.log('currentTurn', currentTurn.turn);
 		currentTeam = (currentTeam + 1) % 2;
 		teams = gameModel.getTeams();
-		console.log('currentTurn', currentTurn);
 		setTimeout(() => {
 			if (currentTurn) socket.emit('assignTurn', { userId: currentTurn.player.id });
 		}, 6000);
@@ -45,7 +43,6 @@
 
 	socket.on('submitAnswer', ({ answer, userId }) => {
 		if (currentTurn && userId !== currentTurn.player.id) {
-			console.log(`Recieved answer from user ${userId} but it's ${currentTurn.player.id}'s turn!`);
 			socket.emit('error', { error: 'It is not your turn!!!' });
 			return;
 		}
@@ -99,7 +96,7 @@
 		<TimelineFlip {teams} {currentTeam} />
 	</div>
 {:else}
-	<div class="flex justify-center w-full h-full">
+	<div class="flex w-full h-full justify-center items-center min-h-screen">
 		<span class="loading loading-spinner loading-lg text-secondary" />
 	</div>
 {/if}

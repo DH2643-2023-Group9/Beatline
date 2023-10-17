@@ -24,7 +24,7 @@
 	</main>
 
 	<footer>
-		<p>Beatline™ is a registered trademark.</p>
+		<p>🎉 Beatline is a cool site 🎉</p>
 	</footer>
 </div>
 

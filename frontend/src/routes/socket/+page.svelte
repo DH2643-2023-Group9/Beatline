@@ -7,7 +7,6 @@
 
 	socket.on('eventFromServer', (message: string) => {
 		recieved = message;
-		console.log('Recieved:', message);
 	});
 
 	socket.on('echo', (message) => {
@@ -15,7 +14,6 @@
 	});
 
 	function send() {
-		console.log(`Sending ${text}`);
 		socket.emit('echo', text);
 	}
 </script>

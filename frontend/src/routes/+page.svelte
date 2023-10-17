@@ -10,51 +10,47 @@
 </script>
 
 <div class="background relative">
-	<!-- Centered Create Lobby button -->
-	<a
-		data-sveltekit-preload-data="tap"
-		class="btn btn-warning m-1 pointer-events-auto transform transition-transform hover:scale-105"
-		href="/lobby">Create Lobby</a
-	>
-	<button class="pointer-events-auto btn btn-accent m-1 flex hover:scale-105" on:click={() => (showModal = true)}> How-to-play </button>
+	<!-- Headline above the button -->
+	<img src={'beatlinepng.png'} alt="Beatline" class="w-1/3 h-auto" />
 
-	<Modal bind:showModal>
-	</Modal>
+	<button
+		class="pointer-events-auto btn btn-wide btn-accent m-1 transform transition-transform hover:scale-105 mb-4"
+		on:click={() => (showModal = true)}
+	>
+		How to Play
+	</button>
+
+	<Modal bind:showModal />
+
 	{#if !$accessToken}
 		<a
 			data-sveltekit-preload-data="tap"
-			class="btn btn-accent m-1 pointer-events-auto"
+			class="btn btn-wide btn-warning m-1 pointer-events-auto transform transition-transform hover:scale-105 hover:no-underline"
 			href="/spotify/newToken"
-			>Connect to Spotify
+		>
+			Connect to Spotify
 		</a>
 	{:else}
-		<button class="btn btn-accent m-1 pointer-events-auto" on:click={accessToken.refresh}>
-			Refresh Token
-		</button>
+		<a
+			data-sveltekit-preload-data="tap"
+			class="btn btn-wide btn-warning m-1 pointer-events-auto transform transition-transform hover:scale-105 hover:no-underline"
+			href="/lobby"
+		>
+			Create Lobby
+		</a>
 	{/if}
-
-	<!-- User profile button -->
-	<div class="flex items-start justify-end pointer-events-auto w-full absolute top-0 right-0">
-		<div class="dropdown dropdown-end m-6">
-			<label tabindex="0" class="mb-3 cursor-pointer">
-				<div class="avatar transform transition-transform hover:scale-105 hover:shadow-lg">
-					<div class="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-						<img src="favicon.png" alt="User Avatar" />
-					</div>
-				</div>
-			</label>
-			<ul
-				tabindex="0"
-				class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52 text-black"
-			>
-				<li><a>Item 1</a></li>
-				<li><a>Item 2</a></li>
-			</ul>
-		</div>
-	</div>
 </div>
 
 <style>
+	.tooltip {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+
+	.btn[disabled] {
+		cursor: not-allowed;
+	}
 	.background {
 		height: 100vh;
 		display: flex;

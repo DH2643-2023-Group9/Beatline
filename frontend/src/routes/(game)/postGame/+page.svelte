@@ -26,7 +26,7 @@
 	function startGame() {
 		//navigate to game
 		gameModel.reset();
-		goto('/game');
+		goto('/lobby');
 	}
 
 	function goToMain() {
@@ -34,30 +34,20 @@
 		goto('/');
 	}
 
-	function createLobby() {
-		//just make it so that loading is true for 2 seconds before making it false again
-		loading = true;
-		gameModel.reset();
-		setTimeout(() => {
-			loading = false;
-			//navigate to lobby
-			goto('/lobby');
-		}, 2000);
-	}
-
 	socket.on('startGame', () => {
 		startGame();
 	});
 
 	socket.on('backToLobby', () => {
-		createLobby();
+		gameModel.reset();
+		goto('/lobby');
 	});
 </script>
 
 <div
 	class="min-h-screen flex items-center justify-center text-white min-w-1/2 text-2xl text-center"
 >
-	<Card extraClasses="">
+	<Card extraClasses="rounded-xl">
 		<div class="space-y-7">
 			<h1 class="justify-center text-5xl">Post-Game</h1>
 
@@ -81,8 +71,9 @@
 		</div>
 
 		<!-- svelte-ignore a11y-missing-attribute -->
-		<ul class="menu menu-horizontal bg-transparent justify-between p-6 bg-[#303638]">
-			<li>
+		<ul class="menu menu-horizontal bg-transparent p-6 bg-[#303638]">
+			<!-- TODO Fix so that restart actually works -->
+			<!-- <li>
 				<button
 					on:click={startGame}
 					class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
@@ -93,14 +84,13 @@
 			</li>
 			<li>
 				<button
-					on:click={createLobby}
+					on:click={startGame}
 					class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
 			 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg
 			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:text-[#6200EA] hover:border-[#6200EA]"
 					>Change Settings</button
 				>
-			</li>
-			<li>
+			</li> -->
 				<button
 					on:click={goToMain}
 					class="pointer-events-auto btn btn-info w-full text-white bg-[#303638] border-[#303638]
@@ -108,7 +98,6 @@
 			 dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 hover:text-[#00bcd4] hover:border-[#00bcd4]"
 					>Back to Menu</button
 				>
-			</li>
 		</ul>
 	</Card>
 </div>
