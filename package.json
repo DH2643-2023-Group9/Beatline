@@ -1,5 +1,0 @@
-{
-  "devDependencies": {
-    "@sveltejs/adapter-node": "^1.3.1"
-  }
-}
