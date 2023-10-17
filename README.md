@@ -1,5 +1,11 @@
 # Beatline 🎉🎉
 
+## Important Information to the Person Grading This Project ⚠️
+This app relies heavily on Spotify's web API which has a couple of consequences: 
+- To use it, you need a Spotify account
+- Since we only have a development license for the API, we need to add the emails of users manually
+  - If you want to try the game, you can contact Samuel at samuelfa@kth.se or by your preferred means so he can add your Spotify email.
+
 ## Overview
 
 Beatline is a game about placing songs on a time line! Play it with your friends and show them that YOU are the song master.
