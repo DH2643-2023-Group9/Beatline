@@ -146,7 +146,7 @@
 
 	<!-- Content above the fixed div (stays at the top) -->
 	<div class="position-fixed top-0 left-0 right-0 px-5 flex justify-between">
-		<img src={'src/lib/assets/beatlinepng.png'} alt="Beatline" class="w-[200px]" />
+		<img src={'beatlinepng.png'} alt="Beatline" class="w-[200px]" />
 
 		<div class="flex justify-center items-center text-xl">
 			<!-- Game Code and Link -->
@@ -188,7 +188,7 @@
 									{/if}
 									{#if player.image.defaultId}
 										<img
-											src={`src/lib/assets/avatars/${player.image.defaultId}.webp`}
+											src={`avatars/${player.image.defaultId}.webp`}
 											alt="Avatar"
 											class="w-8 h-8 rounded-full"
 										/>

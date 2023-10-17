@@ -19,7 +19,7 @@
                 <div class="flex flex-wrap content-end">{player.name}</div>
                 {#if player.image.defaultId}
                     <img
-                        src={`src/lib/assets/avatars/${player.image.defaultId}.webp`}
+                        src={`avatars/${player.image.defaultId}.webp`}
                         alt="Avatar"
                         class="w-8 h-8 rounded-full"
                     />
