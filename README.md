@@ -70,4 +70,7 @@ After your setup is complete, you can visit `http://localhost` in your browser t
 
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) to know who did what in this project
 
+## Grading
+
+We aim for grade C and we sent the google grading criteria in canvas
 
