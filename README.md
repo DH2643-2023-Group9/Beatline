@@ -47,9 +47,7 @@ Ensure you have the following installed:
     touch .env
     ```
 
-    Open `.env` file and insert the environment variables (If you dont have them ask us!)
-
-    Make sure to save your changes.
+    Open `.env` file and insert the environment variables (I sent them on canvas)
 
 3. **Build and Run with Docker**
 
