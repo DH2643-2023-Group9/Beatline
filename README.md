@@ -29,7 +29,7 @@ Ensure you have the following installed:
 
     First, clone the repository to your local machine. Open your terminal and run:
     ```bash
-    git@github.com:DH2643-2023-Group9/Beatline.git
+    git clone git@github.com:DH2643-2023-Group9/Beatline.git
     ```
 
     Navigate to the project directory:
