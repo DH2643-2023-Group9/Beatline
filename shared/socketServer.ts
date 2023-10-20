@@ -2,44 +2,45 @@ import type { Server } from 'socket.io';
 import { randomRoomId } from './misc';
 
 type Event<T> = (data: T) => void;
+type EmptyEvent = () => void;
 
 export interface ClientToServerEvents {
 	createRoom: Event<{ capacity: number; roomId: string }>;
 	joinRoom: Event<{ roomId: string; name: string}>;
-	startGame: () => void;
+	startGame: EmptyEvent;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number }>;
-	endGame: () => void;
+	endGame: EmptyEvent;
 	joinTeam: Event<{ team: number }>;
 	error: Event<{ error: string }>;
-	backToLobby: () => void;
+	backToLobby: EmptyEvent;
 	assignHost: Event<{ userId: string }>;
 }
 
 export interface ServerToClientEvents {
 	createRoom: Event<{ roomId: string }>;
 	joinRoom: Event<{ userId: string; name: string, image?: ArrayBuffer }>;
-	startGame: () => void;
+	startGame: EmptyEvent;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number; userId: string }>;
-	endGame: () => void;
+	endGame: EmptyEvent;
 	joinTeam: Event<{ team: number; userId: string }>;
 	error: Event<{ error: string }>;
-	backToLobby: () => void;
-	assignHost: () => void;
+	backToLobby: EmptyEvent;
+	assignHost: EmptyEvent;
 	playerDisconnected: Event<{ userId: string }>;
+	lobbyDisconnected: EmptyEvent;
 }
 
 export function configureServer(io: Server<ClientToServerEvents, ServerToClientEvents>){
-
 	const openRooms = new Map<string, number>();
-
 	const socketsInRooms = new Map<string, Set<string>>(); // roomId -> Set of socket ids
 
 	io.on('connection', (socket) => {
 		console.log(`Socket ${socket.id} connected`);
 
 		const userId = socket.id;
+		let isLobby = false;
 		let roomId: string | undefined;
 
 		function noRoomId(): void {
@@ -53,6 +54,7 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 				roomId = randomRoomId();
 			}
 			console.log(`Socket ${userId} created room ${roomId}`);
+			isLobby = true;
 			openRooms.set(roomId, data.capacity);
 			socket.join(roomId);
 			socket.emit('createRoom', { roomId });
@@ -141,7 +143,12 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 
 		socket.on('disconnect', () => {
 			console.log(`Socket ${socket.id}  disconnected`);
-			if (roomId) {
+			if (isLobby && roomId) {
+				console.log(`Lobby ${roomId} disconnected`);
+				openRooms.delete(roomId);
+				socketsInRooms.delete(roomId);
+				io.to(roomId).emit('lobbyDisconnected');
+			} else if (roomId) {
 				console.log(`Room ${roomId}: Sending playerDisconnected event for player ${userId}`);
 				io.to(roomId).emit('playerDisconnected', { userId });
 			}

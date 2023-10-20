@@ -21,8 +21,9 @@
 	import type { ClientToServerEvents, ServerToClientEvents } from '$shared/socketServer';
 	import { PUBLIC_REACT_APP_SOCKET_SERVER } from '$env/static/public';
 
-	const serverURL = PUBLIC_REACT_APP_SOCKET_SERVER || 'http://localhost:3001';
-	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(serverURL);
+	const serverURL = PUBLIC_REACT_APP_SOCKET_SERVER;
+	const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
+		serverURL === 'dev' ? io() : io(serverURL);
 	const gameModel = GameModel.initDefault();
 
 	setContext<MainContext>('main', {
