@@ -63,7 +63,7 @@
 
 	socket.on('playerDisconnected', ({ userId }) => {
 		gameModel.removePlayer(userId);
-
+		teams = gameModel.getTeams();
 	});
 
 	onMount(async () => {

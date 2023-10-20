@@ -7,7 +7,6 @@
 	export let difficulty: number;
 	export let limitType: LimitType;
 	export let interval: number[];
-	console.log(limitType)
 </script>
 
 <div>

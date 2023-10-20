@@ -1,13 +1,13 @@
 import { getTrackData, sampleFromPlaylist, type PlaylistData, type TrackData } from '$lib/spotify';
-import { writable } from 'svelte/store';
 import type { PlayerInfo } from '../routes/(game)/+layout.svelte';
+import { range } from '$lib/utils';
 
 export type Ability = 'shuffle' | 'nope!' | 'continue';
 
 export type ProfileImage = {
 	data?: string;
 	defaultId?: number;
-}
+};
 
 export type Player = {
 	name: string;
@@ -61,7 +61,7 @@ function createTeam(name: string): Team {
 export class GameModel {
 	limit: number;
 	limitType: LimitType;
-	difficulty: number; 
+	difficulty: number;
 	currentRound = 0;
 	currentTeam = 0;
 	currentTrack?: TrackData;
@@ -71,14 +71,14 @@ export class GameModel {
 	isActive = false;
 	playlist?: PlaylistData;
 	usedIds: string[] = [];
-	usedPlaylistOffsets: number[] = [];
+	availablePlaylistOffsets: number[] = [];
 
 	/**
 	 * @param interval The year interval to sample tracks from
 	 * @param limit The limit for turns/score
 	 * @param limitType The type for the limit. Either 'rounds' or 'score'
 	 */
-	constructor(interval: number[], limit: number, limitType: LimitType, difficulty:number) {
+	constructor(interval: number[], limit: number, limitType: LimitType, difficulty: number) {
 		if (interval.length !== 2) throw new Error('Interval must be an array of length 2');
 		this.limit = limit;
 		this.limitType = limitType;
@@ -91,16 +91,19 @@ export class GameModel {
 	 */
 	async getRandomTrack(accessToken: string): Promise<TrackData> {
 		if (this.playlist) {
-			const { track, offset, invalidOffsets } = await sampleFromPlaylist(
+			const track = await sampleFromPlaylist(
 				this.playlist,
 				accessToken,
-				this.usedPlaylistOffsets
+				this.availablePlaylistOffsets
 			);
-			this.usedPlaylistOffsets.push(offset);
-			this.usedPlaylistOffsets.push(...invalidOffsets);
 			return track;
 		}
-		const track = await getTrackData(this.interval[0], this.interval[1], accessToken, this.difficulty);
+		const track = await getTrackData(
+			this.interval[0],
+			this.interval[1],
+			accessToken,
+			this.difficulty
+		);
 		this.usedIds.push(track.id);
 		return track;
 	}
@@ -166,7 +169,7 @@ export class GameModel {
 						t.players[0].host = true;
 						return;
 					}
-				})
+				});
 			}
 		});
 	}
@@ -287,5 +290,10 @@ export class GameModel {
 		this.scoreBuffer = 0;
 		this.currentTeam = (this.currentTeam + 1) % this.teams.length;
 		if (this.currentTeam === 0) this.currentRound++;
+	}
+
+	setPlaylist(playlist: PlaylistData) {
+		this.playlist = playlist;
+		this.availablePlaylistOffsets = range(0, playlist.numTracks - 1);
 	}
 }

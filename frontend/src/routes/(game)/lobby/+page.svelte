@@ -112,7 +112,8 @@
 			alert(`Invalid playlist link: '${playlistInput}'`);
 			return;
 		}
-		gameModel.playlist = await getPlayListData(playlistId, $accessToken);
+		const playlist = await getPlayListData(playlistId, $accessToken);
+		gameModel.setPlaylist(playlist);
 		startGame();
 	}
 	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
@@ -184,7 +185,7 @@
 			<div class="w-2/3 p-6">
 				<!-- Settings -->
 				<Card extraClasses="min-w-[700px] rounded-xl space-y-4 flex flex-col">
-					<div class="w-full">
+					<div class="w-full space-y-4">
 						<GameSettings bind:limit bind:limitType bind:interval bind:difficulty />
 						<button
 							on:click={startGame}

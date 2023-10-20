@@ -122,35 +122,36 @@ export async function getPlayListData(id: string, accessToken: string): Promise<
 
 /**
  * Given a playlist ID, returns a random track from the playlist.
+ * 
+ * Modifies the `validOffsets` array by removing the offset of the selected track and any invalid tracks.
  * @param playlist The playlist to sample from
  * @param accessToken Spotify access token
- * @param excludedOffsets An array of offsets to exclude from the random selection
+ * @param validOffsets Array of valid offsets to sample from
  */
 export async function sampleFromPlaylist(
 	playlist: PlaylistData,
 	accessToken: string,
-	excludedOffsets?: number[]
-): Promise<{ track: TrackData; offset: number; invalidOffsets: number[] }> {
-	if (excludedOffsets && excludedOffsets.length >= playlist.numTracks) {
+	validOffsets: number[]
+): Promise<TrackData> {
+	if (validOffsets.length == 0) {
 		throw new Error('All tracks in playlist have been used');
 	}
 	const maxTries = 10;
-	const invalidOffsets: number[] = [];
-	let offset = Math.floor(Math.random() * playlist.numTracks);
+	console.log('valid offsets', validOffsets)
 	for (let i = 0; i < maxTries; i++) {
-		while (excludedOffsets && excludedOffsets.includes(offset) && invalidOffsets.includes(offset)) {
-			offset = Math.floor(Math.random() * playlist.numTracks);
-		}
-		const url = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?offset=${offset}`;
+		const index = Math.floor(Math.random() * validOffsets.length);
+		const offset = validOffsets[index];
+		const url = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?offset=${offset}&limit=1`;
 		const res = await request(url, accessToken);
+		console.log('res', res)
 		const track = res.items[0].track;
+		validOffsets.splice(index, 1);
 		if (!validateTrack(track)) {
 			continue;
 		}
-		return { track: formatTrackData(track), offset, invalidOffsets };
+		return formatTrackData(track);
 	}
 	const err = `No track found after ${maxTries} tries`;
-	console.log(err);
 	throw new Error(err);
 }
 

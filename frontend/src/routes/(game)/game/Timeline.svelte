@@ -25,10 +25,9 @@
                         class="absolute top-1/2 transform -translate-y-1/2 text-center"
                         style="left: {(index / (timelineLength - 1)) * 100}%"
                     >
-                        <div class="w-1 h-4 bg-gray-300 dark:bg-gray-700 rounded-full" />
+                        <div class="w-1 h-4 bg-gray-300 dark:bg-gray-300 rounded-full" />
                     </div>
                 {/each}
-
             {#each team.timeline as { year, guesses }, index}
                 <div
                     class="absolute -top-10 transform -translate-y-full"
