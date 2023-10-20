@@ -19,11 +19,7 @@
     <div class="flex items-center justify-center p-4 {translate}">
         <div class="relative w-3/4 h-auto mx-auto">
             <!-- Render the timeline line only if more than one card -->
-            {#if timelineLength > 1}
-                <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-300" />
-            {/if}
-
-            {#if timelineLength > 1}
+            <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-300" />
                 {#each team.timeline as { year, guesses }, index}
                     <div
                         class="absolute top-1/2 transform -translate-y-1/2 text-center"
@@ -32,7 +28,6 @@
                         <div class="w-1 h-4 bg-gray-300 dark:bg-gray-700 rounded-full" />
                     </div>
                 {/each}
-            {/if}
 
             {#each team.timeline as { year, guesses }, index}
                 <div
