@@ -51,7 +51,6 @@ async function request(url: string, accessToken: string, method = 'GET'): Promis
 	});
 	if (!res.ok) {
 		const msg = `Error when performing Spotify request: ${await res.text()}`;
-		console.log(msg);
 		throw new Error(msg);
 	}
 	return res.json();
@@ -91,13 +90,9 @@ export async function getTrackData(
 		const url = `https://api.spotify.com/v1/search?q=year:${year}&type=track&limit=5&offset=${offset}`;
 		const data = await request(url, accessToken);
 		track = data.tracks.items.find(validateTrack);
-		if (track === undefined) {
-			console.log('No track found, got', data);
-		}
 	}
 	if (track === undefined) {
 		const msg = `No track found after ${maxTries} tries`;
-		console.log(msg);
 		throw new Error(msg);
 	}
 	return formatTrackData(track);
@@ -137,13 +132,11 @@ export async function sampleFromPlaylist(
 		throw new Error('All tracks in playlist have been used');
 	}
 	const maxTries = 10;
-	console.log('valid offsets', validOffsets)
 	for (let i = 0; i < maxTries; i++) {
 		const index = Math.floor(Math.random() * validOffsets.length);
 		const offset = validOffsets[index];
 		const url = `https://api.spotify.com/v1/playlists/${playlist.id}/tracks?offset=${offset}&limit=1`;
 		const res = await request(url, accessToken);
-		console.log('res', res)
 		const track = res.items[0].track;
 		validOffsets.splice(index, 1);
 		if (!validateTrack(track)) {

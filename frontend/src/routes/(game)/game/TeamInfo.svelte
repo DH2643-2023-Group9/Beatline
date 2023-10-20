@@ -16,7 +16,8 @@
 
         <Profile extraClasses="mb-2 border-none">
             {#each team.players as player}
-                <div class="flex flex-wrap content-end">{player.name}</div>
+                <div class="grid grid-cols-2 space-x-4">
+                <span>{player.name}</span>
                 {#if player.image.defaultId}
                     <img
                         src={`avatars/${player.image.defaultId}.webp`}
@@ -26,6 +27,7 @@
                 {:else if player.image.data}
                     <img src={player.image.data} alt="Avatar" class="w-8 h-8 rounded-full" />
                 {/if}
+                </div>
             {/each}
         </Profile>
     </div>

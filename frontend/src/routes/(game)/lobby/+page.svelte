@@ -3,16 +3,14 @@
 	import type { MainContext } from '../+layout.svelte';
 	import { goto } from '$app/navigation';
 	import Card from '../../Card.svelte';
-	import { PUBLIC_BASE_URL } from '$env/static/public';
-	import type { LimitType } from '$models/game';
 	import { error } from '@sveltejs/kit';
 	import Modal from '../../Modal.svelte';
 	import { getPlayListData, getPlaylistId } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
 	import GameSettings from './GameSettings.svelte';
+	import LobbyHeader from './LobbyHeader.svelte';
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
-	const currentYear: number = new Date().getFullYear();
 	let randomImageOffset = Math.floor(Math.random() * 10);
 
 	if (gameModel.isActive) {
@@ -21,12 +19,10 @@
 		error(500, msg);
 	}
 
-	const joinURL = `${PUBLIC_BASE_URL}/join`;
 	let teams = gameModel.teams;
 	let maxPlayers = 5;
 	let limit = gameModel.limit;
-	let limitType: LimitType = gameModel.limitType;
-	let copied = false;
+	let limitType = gameModel.limitType;
 	let interval = [1960, 2020];
 	let playlistInput = '';
 	let difficulty = gameModel.difficulty;
@@ -80,22 +76,12 @@
 			alert('Invalid interval');
 			return;
 		}
-		interval[1] = Math.min(interval[1], currentYear);
+		interval[1] = Math.min(interval[1], new Date().getFullYear());
 		gameModel.interval = interval;
 		gameModel.setLimit(limit, limitType);
 		gameModel.isActive = true;
 		socket.emit('startGame');
 		goto('/game');
-	}
-
-	async function copyGameCode() {
-		try {
-			await navigator.clipboard.writeText($roomId || '');
-			copied = true;
-			setTimeout(() => (copied = false), 2000);
-		} catch (error) {
-			console.error('Failed to copy:', error);
-		}
 	}
 
 	async function startWithPlaylist() {
@@ -116,39 +102,12 @@
 		gameModel.setPlaylist(playlist);
 		startGame();
 	}
+
 	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
 </script>
 
 <div class="min-h-screen flex flex-col">
-	<!-- Add flex and flex-col to this container -->
-
-	<!-- Content above the fixed div (stays at the top) -->
-	<div class="position-fixed top-0 left-0 right-0 px-5 flex justify-between">
-		<a class="pointer-events-auto" href="/">
-			<img src={'beatlinepng.png'} alt="Beatline" class="w-[200px]" />
-		</a>
-		<div class="flex justify-center items-center text-xl">
-			<!-- Game Code and Link -->
-			Copy
-			<a
-				class="pointer-events-auto text-purple-400 mr-1 ml-1"
-				target="_blank"
-				href={joinURL + `?roomId=${$roomId}`}>this</a
-			>
-			link, or go to
-			<a class="pointer-events-auto text-purple-400 mr-1 ml-1" href={joinURL}>{joinURL}</a>
-			and enter code
-			<span
-				class="pointer-events-auto cursor-pointer text-purple-400 ml-1"
-				role="mark"
-				on:click={copyGameCode}
-			>
-				{$roomId}
-			</span>
-			{#if copied}<span class="text-green-500 mr-1 ml-1">(Copied!)</span>{/if}.
-		</div>
-	</div>
-
+	<LobbyHeader roomId={$roomId} />
 	<!-- Center the content vertically -->
 	<div class="flex-grow flex items-center justify-center">
 		<!-- Added w-full and items-start -->
@@ -160,12 +119,10 @@
 						<div>
 							<h2 class="text-xl font-semibold mb-4">{name}</h2>
 							{#each players as player}
-								<div class="mb-2">
+								<div class="mb-2 flex flex-row space-x-2 items-center">
+									<span>{player.host ? '👑' : ''}</span>
 									<span>{player.name}</span>
-									{#if player.host}
-										<span>👑 (HOST)</span>
-									{/if}
-									{#if player.image.defaultId}
+									{#if player.image.defaultId !== undefined}
 										<img
 											src={`avatars/${player.image.defaultId}.webp`}
 											alt="Avatar"
