@@ -13,7 +13,7 @@
 <div>
 	<label for="players" class="block text-lg font-bold"> Game Settings: </label>
 	<span class="flex items-center justify-evenly">
-		<label for="radio-1" class="block text-sm font-bold flex flex-col text-justify items-center">
+		<label for="radio-1" class="text-sm font-bold flex flex-col text-justify items-center">
 			<input
 				type="radio"
 				id="byRounds"
@@ -25,7 +25,7 @@
 			By rounds
 		</label>
 
-		<label for="radio-2" class="block text-sm font-bold flex flex-col text-justify items-center">
+		<label for="radio-2" class="text-sm font-bold flex flex-col text-justify items-center">
 			<input
 				type="radio"
 				id="byScore"
@@ -80,7 +80,7 @@
 <div>
 	<label for="radio-2" class="block text-lg font-bold"> Difficulty: </label>
 	<span class="flex items-center justify-evenly">
-		<label for="radio-2" class="block text-sm font-medium text-justify flex flex-col items-center">
+		<label for="radio-2" class="text-sm font-medium text-justify flex flex-col items-center">
 			<input
 				type="radio"
 				name="radio-2"
@@ -89,7 +89,7 @@
 			/>
 			Easy
 		</label>
-		<label for="radio-2" class="block text-sm font-medium text-justify flex flex-col items-center">
+		<label for="radio-2" class="text-sm font-medium text-justify flex flex-col items-center">
 			<input
 				type="radio"
 				name="radio-2"
@@ -98,7 +98,7 @@
 			/>
 			Medium
 		</label>
-		<label for="radio-2" class="block text-sm font-medium text-justify flex flex-col items-center">
+		<label for="radio-2" class="text-sm font-medium text-justify flex flex-col items-center">
 			<input
 				type="radio"
 				name="radio-2"
