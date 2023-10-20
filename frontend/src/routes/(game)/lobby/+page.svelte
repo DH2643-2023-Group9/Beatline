@@ -9,9 +9,7 @@
 	import Modal from '../../Modal.svelte';
 	import { getPlayListData, getPlaylistId } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
-	import RangeSlider from 'svelte-range-slider-pips';
-	import { range } from '$lib/utils';
-	
+	import GameSettings from './GameSettings.svelte';
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
 	const currentYear: number = new Date().getFullYear();
@@ -29,13 +27,9 @@
 	let limit = gameModel.limit;
 	let limitType: LimitType = gameModel.limitType;
 	let copied = false;
-	let testInterval = [1960, 2020];
-	let values = testInterval;
+	let interval = [1960, 2020];
 	let playlistInput = '';
-	let selectedOption = 'byRounds';
 	let difficulty = gameModel.difficulty;
-	let valueMin = 25;
-	let valueMax = 75;
 
 	socket.on('createRoom', (data) => {
 		$roomId = data.roomId;
@@ -82,12 +76,12 @@
 			alert('You need at least 2 players to start the game');
 			return;
 		}
-		if (values[0] >= values[1]) {
+		if (interval[0] >= interval[1]) {
 			alert('Invalid interval');
 			return;
 		}
-		values[1] = Math.min(values[1], currentYear);
-		gameModel.interval = values;
+		interval[1] = Math.min(interval[1], currentYear);
+		gameModel.interval = interval;
 		gameModel.setLimit(limit, limitType);
 		gameModel.isActive = true;
 		socket.emit('startGame');
@@ -104,40 +98,24 @@
 		}
 	}
 
-	async function setPlaylist() {
-		const playlistId = await getPlaylistId(playlistInput);
-		if (!$accessToken) {
-			const err = 'Missing Spotify access token';
-			alert(err);
-			goto('/spotify/newToken');
+	async function startWithPlaylist() {
+		let playlistId;
+		try {
+			playlistId = await getPlaylistId(playlistInput);
+			if (!$accessToken) {
+				const err = 'Missing Spotify access token';
+				alert(err);
+				goto('/spotify/newToken');
+				return;
+			}
+		} catch (err) {
+			alert(`Invalid playlist link: '${playlistInput}'`);
 			return;
 		}
 		gameModel.playlist = await getPlayListData(playlistId, $accessToken);
+		startGame();
 	}
 	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
-
-	function handleRadioChange(event: Event) {
-		selectedOption = (event.target as HTMLInputElement).id;
-	}
-
-	function getClass(key: String) {
-		if (selectedOption === key) {
-			return 'radio radio-secondary';
-		} else {
-			return 'radio';
-		}
-	}
-
-	function handleChange(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const newValue = parseFloat(target.value);
-
-		if (target.id === 'slider-min') {
-			valueMin = newValue;
-		} else if (target.id === 'slider-max') {
-			valueMax = newValue;
-		}
-	}
 </script>
 
 <div class="min-h-screen flex flex-col">
@@ -203,158 +181,31 @@
 			</div>
 
 			<!-- Right Side (Settings) -->
-			<div class="w-2/3 flex p-6">
+			<div class="w-2/3 p-6">
 				<!-- Settings -->
-				<Card extraClasses="min-w-[700px] rounded-xl">
-					<div class="space-y-4">
-						<div>
-							<input
-								type="text"
-								class="pointer-events-auto input input-bordered text-black"
-								placeholder="Enter a Spotify Playlist ID/link"
-								bind:value={playlistInput}
-							/>
-							<button class="btn btn-primary pointer-events-auto" on:click={setPlaylist}
-								>Submit playlist</button
-							>
-							<label for="players" class="block text-lg font-bold"> Game Settings: </label>
-							<span class="flex items-center justify-evenly">
-								<label
-									for="radio-1"
-									class="block text-sm font-bold flex flex-col text-justify items-center"
-								>
-									<input
-										type="radio"
-										id="byRounds"
-										name="radio-1"
-										class="pointer-events-auto radio radio-secondary"
-										bind:group={selectedOption}
-										value={'byRounds'}
-									/>
-									By rounds
-								</label>
-
-								<label
-									for="radio-2"
-									class="block text-sm font-bold flex flex-col text-justify items-center"
-								>
-									<input
-										type="radio"
-										id="byScore"
-										name="radio-1"
-										class="pointer-events-auto radio radio-secondary"
-										bind:group={selectedOption}
-										value={'byScore'}
-									/>
-									By score
-								</label>
-							</span>
-						</div>
-
-						{#if selectedOption === 'byRounds'}
-							<div>
-								<label for="byRounds" id="byRounds" class="block text-sm font-bold">
-									Number of Rounds
-								</label>
-								<input
-									type="range"
-									class="pointer-events-auto range range-secondary bg-neutral"
-									min="6"
-									max="20"
-									step="2"
-									bind:value={limit}
-								/>
-								<div class="w-full flex justify-between text-xs font-bold px-2">
-									{#each range(6, 20, 2) as round}
-										<span>{round}</span>
-									{/each}
-								</div>
-							</div>
-						{/if}
-
-						{#if selectedOption === 'byScore'}
-							<div>
-								<label for="byScore" id="byScore" class="block text-sm font-bold">
-									Max Score
-								</label>
-								<input
-									type="range"
-									class="pointer-events-auto range range-secondary bg-neutral"
-									min="6"
-									max="20"
-									step="2"
-									bind:value={limit}
-								/>
-								<div class="w-full flex justify-between text-xs font-bold px-2">
-									{#each range(6, 20, 2) as score}
-										<span>{score}</span>
-									{/each}
-								</div>
-							</div>
-						{/if}
-
-						<div>
-							<label for="radio-2" class="block text-lg font-bold"> Difficulty: </label>
-							<span class="flex items-center justify-evenly">
-								<label
-									for="radio-2"
-									class="block text-sm font-medium text-justify flex flex-col items-center"
-								>
-									<input
-										type="radio"
-										name="radio-2"
-										class="pointer-events-auto radio radio-secondary"
-										checked={difficulty === 100}
-									/>
-									Easy
-								</label>
-								<label
-									for="radio-2"
-									class="block text-sm font-medium text-justify flex flex-col items-center"
-								>
-									<input
-										type="radio"
-										name="radio-2"
-										class="pointer-events-auto radio radio-secondary"
-										checked={difficulty === 500}
-									/>
-									Medium
-								</label>
-								<label
-									for="radio-2"
-									class="block text-sm font-medium text-justify flex flex-col items-center"
-								>
-									<input
-										type="radio"
-										name="radio-2"
-										class="pointer-events-auto radio radio-secondary"
-										checked={difficulty === 1000}
-									/>
-									Hard
-								</label>
-							</span>
-						</div>
-
-						<div class=" slider pointer-events-auto">
-							<RangeSlider
-								id="sliderInRange"
-								float
-								pips
-								all="label"
-								bind:values
-								min={1930}
-								max={2030}
-								step={10}
-							/>
-
-							<button
-								on:click={startGame}
-								class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
-								>Start Game</button
-							>
-						</div>
-					</div></Card
-				>
+				<Card extraClasses="min-w-[700px] rounded-xl space-y-4 flex flex-col">
+					<div class="w-full">
+						<GameSettings bind:limit bind:limitType bind:interval bind:difficulty />
+						<button
+							on:click={startGame}
+							class="pointer-events-auto btn btn-info w-full text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+							>Start Game</button
+						>
+					</div>
+					<div class="divider before:bg-neutral after:bg-neutral">OR</div>
+					<div class="w-full flex flex-row justify-center">
+						<input
+							type="text"
+							class="pointer-events-auto input input-bordered text-black join-item w-1/2 mr-4"
+							placeholder="Enter a Spotify playlist ID / link"
+							bind:value={playlistInput}
+						/>
+						<button
+							class="pointer-events-auto btn btn-info text-white bg-gradient-to-r from-[#6200EA] via-[#EC407A] to-[#ffae00] hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-pink-300 dark:focus:ring-pink-800 shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80 font-medium rounded-r-lg text-sm px-5 py-2.5 text-center mr-2 mb-2"
+							on:click={startWithPlaylist}>Start With Playlist</button
+						>
+					</div>
+				</Card>
 			</div>
 		</div>
 	</div>

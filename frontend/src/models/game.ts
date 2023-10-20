@@ -127,7 +127,7 @@ export class GameModel {
 	 * These values will need to be set manually later.
 	 */
 	static initDefault(): GameModel {
-		return new GameModel([0, 0], 5, 'rounds', 100);
+		return new GameModel([0, 0], 6, 'rounds', 100);
 	}
 
 	reset() {
