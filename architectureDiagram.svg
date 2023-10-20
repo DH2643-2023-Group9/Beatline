@@ -1,0 +1,667 @@
+<svg version="1.1" baseProfile="full" width="1787.8" height="1268.0" viewbox="0 0 1787.75 1268" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events">
+		<desc >#.m: fill=#cfe2f3
+	#.vm: fill=#fff2cc
+	#.v: fill=#f4cccc
+	
+	[&lt;m&gt; Model]
+	[&lt;vm&gt; Viewmodel (View often included)]
+	[&lt;v&gt; View]
+	
+	[&lt;m&gt; Token Store (Spotify access managment)]
+	
+	[&lt;vm&gt; Home] -&gt; [&lt;v&gt; Modal (about)]
+	[Token Store (Spotify access managment)] &lt;--[&lt;label&gt;setTokens]--  [&lt;vm&gt; spotify/newToken (handle token callback)]
+	
+	[Token Store (Spotify access managment)] &lt;--[&lt;label&gt;subscribe, notify]--&gt; [Home]
+	[subscribe, notify]--&gt; [Game Layout]
+	[Token Store (Spotify access managment)] &lt;--[&lt;label&gt;refreshTokens]-- [Game Layout]
+	
+	[Game Layout|
+		[&lt;m&gt; GameModel]
+	    [&lt;vm&gt; Lobby]
+	    [&lt;vm&gt; Game]
+	    [&lt;vm&gt; PostGame]
+	    
+	    [GameModel] &lt;- [&lt;label&gt; getTeams, addplayer, switchTeam, setLimit] -&gt; [Lobby]
+	    [GameModel] &lt;- [&lt;label&gt; getTeams, populateTimelines, getCurrentTurn, advance, submitGuess, getWinner]-&gt; [Game]
+	    [GameModel] &lt;- [&lt;label&gt; getTeams, reset] -&gt; [PostGame]
+	    
+	    [Lobby] -&gt; [&lt;v&gt; Modal (about)]
+	    [Lobby] -[&lt;label&gt;send:teams]-&gt; [&lt;v&gt; TeamInfo]
+	    [Game] -[&lt;label&gt;send:teams]         
+	    [Game] -[&lt;label&gt;send:track]-&gt; [&lt;v&gt; TrackCard]
+	    [Game] -[&lt;label&gt;send:teams, send:currentTeam]-&gt; [&lt;v&gt; Timeline]
+	]
+	
+	
+	[Mobile Layout|
+		[&lt;vm&gt; Join] &lt;-[&lt;label&gt;bind:imageBytes]-&gt; [&lt;v&gt; CameraInput]
+	    [&lt;vm&gt; Play] -[&lt;label&gt;send:myName, send:isHost, send:startGame]-&gt; [&lt;v&gt; WaitingScreen]
+	    [Play] &lt;--[&lt;label&gt;startGame()]-- [WaitingScreen]
+	    [&lt;vm&gt; Play] -[&lt;label&gt;send:socket, send:myTurn, send:isHost]-&gt; [&lt;vm&gt; ControllerScreen]
+	    [&lt;vm&gt; Play] -[&lt;label&gt;send:isHost]-&gt; [&lt;v&gt; EndGameScreen]
+	]
+	
+	
+	[&lt;table&gt;Game Events|
+		createRoom | startGame || assignHost | assignTurn || endGame | backToLobby
+	]
+	[&lt;pipe&gt;Socket Server]
+	[&lt;table&gt;Player Events|
+		joinRoom | startGame (if host) || submitAnswer | backToLobby (if host)
+	]
+	
+	[Game Layout] --[Game Events] --&gt; [Socket Server]
+	[Game Layout] &lt;-- [Socket Server]
+	[Socket Server] --&gt; [Mobile Layout]
+	[Socket Server] &lt;-- [Player Events] -- [Mobile Layout]
+	
+	
+	</desc>
+	<g stroke-width="1.0" text-align="left" font="12pt Helvetica, Arial, sans-serif" font-size="12pt" font-family="Helvetica" font-weight="normal" font-style="normal">
+			<g font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" stroke-width="3.0" stroke-linejoin="round" stroke-linecap="round" stroke="#33322E">
+				<g stroke="transparent" fill="transparent">
+					<rect x="0.0" y="0.0" height="1268.0" width="1787.8" stroke="none"></rect>
+				</g>
+			<g transform="translate(8, 8)" fill="#33322E">
+					<g transform="translate(20, 20)" fill="#33322E" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal">
+						<path d="M402.3 358.5 L402.25 564 L402.25 623.8333333333334 L402.3 623.8 " fill="none"></path>
+					<path d="M396.9 617.2 L402.3 623.8 L407.6 617.2 L402.3 630.5 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M491.4 27.8 L166.75 51 L166.75 71 L166.8 71.0 " fill="none"></path>
+						</g>
+					<path d="M485.1 33.6 L491.4 27.8 L484.3 22.9 L498.0 27.3 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M166.8 102.0 L166.75 122 L166.75 327.5 L166.8 327.5 " fill="none"></path>
+						</g>
+					<g stroke-dasharray="6 6">
+							<path d="M662.5 37.7 L662.5 51 L662.5 71 L662.5 71.0 " fill="none"></path>
+						</g>
+					<path d="M667.8 44.3 L662.5 37.7 L657.2 44.3 L662.5 31.0 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M590.5 96.3 L402.25 122 L402.25 320.8333333333333 L402.3 320.8 " fill="none"></path>
+						</g>
+					<path d="M396.9 314.2 L402.3 320.8 L407.6 314.2 L402.3 327.5 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M734.5 93.9 L1010 122 L1015.4478312881238 135.7990912856775 L1015.4 135.8 " fill="none"></path>
+						</g>
+					<path d="M1008.0 131.6 L1015.4 135.8 L1018.0 127.6 L1017.9 142.0 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M833.6 28.9 L1117.25 51 L1117.25 71 L1117.3 71.0 " fill="none"></path>
+						</g>
+					<path d="M840.7 24.1 L833.6 28.9 L839.9 34.7 L827.0 28.3 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M1117.3 102.0 L1117.25 122 L1115.4400452488687 142 L1115.4 142.0 " fill="none"></path>
+						</g>
+					<g stroke-dasharray="6 6">
+							<path d="M876.9 544.0 L855 564 L855 584 L855.0 584.0 " fill="none"></path>
+						</g>
+					<g stroke-dasharray="6 6">
+							<path d="M855.0 708.0 L855 728 L1029.1537833353914 753.5209878571989 L1029.2 753.5 " fill="none"></path>
+						</g>
+					<path d="M1021.8 757.8 L1029.2 753.5 L1023.3 747.3 L1035.8 754.5 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M1167.6 550.3 L1172.25 564 L1172.25 646 L1172.25 646 L1172.25 728 L1172.25 728 L1129.9964788732395 748 L1130.0 748.0 " fill="none"></path>
+						</g>
+					<path d="M1174.8 554.9 L1167.6 550.3 L1164.7 558.3 L1165.5 544.0 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M1051.8 779.0 L993.25 799 L993.25 865.5 L993.25 865.5 L993.25 932 L993.25 932 L1003.3181358548627 946.5213497906674 L1003.3 946.5 " fill="none"></path>
+						</g>
+					<path d="M995.1 944.1 L1003.3 946.5 L1003.9 938.0 L1007.1 952.0 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M1149.0 781.2 L1201.25 799 L1201.25 819 L1201.3 819.0 " fill="none"></path>
+						</g>
+					<path d="M1157.0 778.3 L1149.0 781.2 L1153.6 788.4 L1142.7 779.0 Z"></path>
+					<g stroke-dasharray="6 6">
+							<path d="M1201.3 912.0 L1201.25 932 L1187.3833333333334 952 L1187.4 952.0 " fill="none"></path>
+						</g>
+					<g data-name="Model">
+							<g fill="#cfe2f3" stroke="#33322E" data-name="Model">
+								<rect x="0.0" y="0.0" height="31.0" width="62.0" data-name="Model"></rect>
+							</g>
+						<g transform="translate(0, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Model">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Model">
+									<text x="23.0" y="13.5" stroke="none" text-anchor="middle" data-name="Model">Model</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Viewmodel (View often included)">
+							<g fill="#fff2cc" stroke="#33322E" data-name="Viewmodel (View often included)">
+								<rect x="102.0" y="0.0" height="31.0" width="264.0" data-name="Viewmodel (View often included)"></rect>
+							</g>
+						<g transform="translate(102, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Viewmodel (View often included)">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Viewmodel (View often included)">
+									<text x="124.0" y="13.5" stroke="none" text-anchor="middle" data-name="Viewmodel (View often included)">Viewmodel (View often included)</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="View">
+							<g fill="#f4cccc" stroke="#33322E" data-name="View">
+								<rect x="406.0" y="0.0" height="31.0" width="52.0" data-name="View"></rect>
+							</g>
+						<g transform="translate(406, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="View">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="View">
+									<text x="18.0" y="13.5" stroke="none" text-anchor="middle" data-name="View">View</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Token Store (Spotify access managment)">
+							<g fill="#cfe2f3" stroke="#33322E" data-name="Token Store (Spotify access managment)">
+								<rect x="498.0" y="0.0" height="31.0" width="329.0" data-name="Token Store (Spotify access managment)"></rect>
+							</g>
+						<g transform="translate(498, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Token Store (Spotify access managment)">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Token Store (Spotify access managment)">
+									<text x="156.5" y="13.5" stroke="none" text-anchor="middle" data-name="Token Store (Spotify access managment)">Token Store (Spotify access managment)</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Home">
+							<g fill="#fff2cc" stroke="#33322E" data-name="Home">
+								<rect x="372.3" y="327.5" height="31.0" width="60.0" data-name="Home"></rect>
+							</g>
+						<g transform="translate(372.25, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Home">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Home">
+									<text x="22.0" y="13.5" stroke="none" text-anchor="middle" data-name="Home">Home</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Modal (about)">
+							<g fill="#f4cccc" stroke="#33322E" data-name="Modal (about)">
+								<rect x="341.8" y="630.5" height="31.0" width="121.0" data-name="Modal (about)"></rect>
+							</g>
+						<g transform="translate(341.75, 630.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Modal (about)">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Modal (about)">
+									<text x="52.5" y="13.5" stroke="none" text-anchor="middle" data-name="Modal (about)">Modal (about)</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="setTokens">
+							
+						<g transform="translate(119.75, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="setTokens">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="setTokens">
+									<text x="39.0" y="13.5" stroke="none" text-anchor="middle" data-name="setTokens">setTokens</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="spotify/newToken (handle token callback)">
+							<g fill="#fff2cc" stroke="#33322E" data-name="spotify/newToken (handle token callback)">
+								<rect x="1.3" y="327.5" height="31.0" width="331.0" data-name="spotify/newToken (handle token callback)"></rect>
+							</g>
+						<g transform="translate(1.25, 327.5)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="spotify/newToken (handle token callback)">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="spotify/newToken (handle token callback)">
+									<text x="157.5" y="13.5" stroke="none" text-anchor="middle" data-name="spotify/newToken (handle token callback)">spotify/newToken (handle token callback)</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="subscribe, notify">
+							
+						<g transform="translate(590.5, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="subscribe, notify">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="subscribe, notify">
+									<text x="64.0" y="13.5" stroke="none" text-anchor="middle" data-name="subscribe, notify">subscribe, notify</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Game Layout">
+							<g fill="#eee8d5" stroke="#33322E" data-name="Game Layout">
+								<rect x="472.3" y="142.0" height="402.0" width="1250.0" data-name="Game Layout"></rect>
+							<path d="M472.3 173.0 L1722.3 173.0" fill="none" data-name="Game Layout"></path>
+							</g>
+						<g transform="translate(472.25, 142)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Game Layout">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Game Layout">
+									<text x="617.0" y="13.5" stroke="none" text-anchor="middle" data-name="Game Layout">Game Layout</text>
+								
+								</g>
+							</g>
+						<g transform="translate(472.25, 173)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Layout">
+								<g transform="translate(8, 8)" fill="#33322E" data-name="Game Layout">
+									<g transform="translate(20, 20)" fill="#33322E" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Layout">
+										<path d="M639.8 19.5 L171.5 51 L171.5 71 L171.5 71.0 " fill="none" data-name="Game Layout"></path>
+									<path d="M633.6 25.3 L639.8 19.5 L632.8 14.7 L646.5 19.1 Z" data-name="Game Layout"></path>
+									<path d="M171.5 102.0 L171.5 122 L171.5 135.33333333333334 L171.5 135.3 " fill="none" data-name="Game Layout"></path>
+									<path d="M166.2 128.7 L171.5 135.3 L176.8 128.7 L171.5 142.0 Z" data-name="Game Layout"></path>
+									<path d="M700.0 37.7 L700 51 L700 71 L700.0 71.0 " fill="none" data-name="Game Layout"></path>
+									<path d="M705.3 44.3 L700.0 37.7 L694.7 44.3 L700.0 31.0 Z" data-name="Game Layout"></path>
+									<path d="M700.0 102.0 L700 122 L700 135.33333333333334 L700.0 135.3 " fill="none" data-name="Game Layout"></path>
+									<path d="M694.7 128.7 L700.0 135.3 L705.3 128.7 L700.0 142.0 Z" data-name="Game Layout"></path>
+									<path d="M760.1 20.5 L1125.5 51 L1125.5 71 L1125.5 71.0 " fill="none" data-name="Game Layout"></path>
+									<path d="M767.2 15.8 L760.1 20.5 L766.3 26.4 L753.5 20.0 Z" data-name="Game Layout"></path>
+									<path d="M1125.5 102.0 L1125.5 122 L1125.5 135.33333333333334 L1125.5 135.3 " fill="none" data-name="Game Layout"></path>
+									<path d="M1120.2 128.7 L1125.5 135.3 L1130.8 128.7 L1125.5 142.0 Z" data-name="Game Layout"></path>
+									<path d="M162.8 173.0 L151.5 193 L151.5 206.33333333333334 L151.5 206.3 " fill="none" data-name="Game Layout"></path>
+									<path d="M146.2 199.7 L151.5 206.3 L156.8 199.7 L151.5 213.0 Z" data-name="Game Layout"></path>
+									<path d="M203.5 163.4 L365.25 193 L397.08098591549293 213 L397.1 213.0 " fill="none" data-name="Game Layout"></path>
+									<path d="M421.8 244.0 L421.75 264 L421.75 277.3333333333333 L421.8 277.3 " fill="none" data-name="Game Layout"></path>
+									<path d="M416.4 270.7 L421.8 277.3 L427.1 270.7 L421.8 284.0 Z" data-name="Game Layout"></path>
+									<path d="M670.0 162.2 L472.25 193 L443.7992957746479 213 L443.8 213.0 " fill="none" data-name="Game Layout"></path>
+									<path d="M700.0 173.0 L700 193 L700 213 L700.0 213.0 " fill="none" data-name="Game Layout"></path>
+									<path d="M700.0 244.0 L700 264 L700 277.3333333333333 L700.0 277.3 " fill="none" data-name="Game Layout"></path>
+									<path d="M694.7 270.7 L700.0 277.3 L705.3 270.7 L700.0 284.0 Z" data-name="Game Layout"></path>
+									<path d="M730.0 162.5 L914.5 193 L914.5 213 L914.5 213.0 " fill="none" data-name="Game Layout"></path>
+									<path d="M914.5 244.0 L914.5 264 L914.5 277.3333333333333 L914.5 277.3 " fill="none" data-name="Game Layout"></path>
+									<path d="M909.2 270.7 L914.5 277.3 L919.8 270.7 L914.5 284.0 Z" data-name="Game Layout"></path>
+									<g data-name="GameModel">
+											<g fill="#cfe2f3" stroke="#33322E" data-name="GameModel">
+												<rect x="646.5" y="0.0" height="31.0" width="107.0" data-name="GameModel"></rect>
+											</g>
+										<g transform="translate(646.5, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="GameModel">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="GameModel">
+													<text x="45.5" y="13.5" stroke="none" text-anchor="middle" data-name="GameModel">GameModel</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="Lobby">
+											<g fill="#fff2cc" stroke="#33322E" data-name="Lobby">
+												<rect x="139.5" y="142.0" height="31.0" width="64.0" data-name="Lobby"></rect>
+											</g>
+										<g transform="translate(139.5, 142)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Lobby">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Lobby">
+													<text x="24.0" y="13.5" stroke="none" text-anchor="middle" data-name="Lobby">Lobby</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="Game">
+											<g fill="#fff2cc" stroke="#33322E" data-name="Game">
+												<rect x="670.0" y="142.0" height="31.0" width="60.0" data-name="Game"></rect>
+											</g>
+										<g transform="translate(670, 142)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Game">
+													<text x="22.0" y="13.5" stroke="none" text-anchor="middle" data-name="Game">Game</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="PostGame">
+											<g fill="#fff2cc" stroke="#33322E" data-name="PostGame">
+												<rect x="1078.0" y="142.0" height="31.0" width="95.0" data-name="PostGame"></rect>
+											</g>
+										<g transform="translate(1078, 142)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="PostGame">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="PostGame">
+													<text x="39.5" y="13.5" stroke="none" text-anchor="middle" data-name="PostGame">PostGame</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="getTeams, addplayer, switchTeam, setLimit">
+											
+										<g transform="translate(0, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="getTeams, addplayer, switchTeam, setLimit">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="getTeams, addplayer, switchTeam, setLimit">
+													<text x="163.5" y="13.5" stroke="none" text-anchor="middle" data-name="getTeams, addplayer, switchTeam, setLimit">getTeams, addplayer, switchTeam, setLimit</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="getTeams, populateTimelines, getCurrentTurn, advance, submitGuess, getWinner">
+											
+										<g transform="translate(383, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="getTeams, populateTimelines, getCurrentTurn, advance, submitGuess, getWinner">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="getTeams, populateTimelines, getCurrentTurn, advance, submitGuess, getWinner">
+													<text x="309.0" y="13.5" stroke="none" text-anchor="middle" data-name="getTeams, populateTimelines, getCurrentTurn, advance, submitGuess, getWinner">getTeams, populateTimelines, getCurrentTurn, advance, submitGuess, getWinner</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="getTeams, reset">
+											
+										<g transform="translate(1057, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="getTeams, reset">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="getTeams, reset">
+													<text x="60.5" y="13.5" stroke="none" text-anchor="middle" data-name="getTeams, reset">getTeams, reset</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="Modal (about)">
+											<g fill="#f4cccc" stroke="#33322E" data-name="Modal (about)">
+												<rect x="91.0" y="213.0" height="31.0" width="121.0" data-name="Modal (about)"></rect>
+											</g>
+										<g transform="translate(91, 213)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Modal (about)">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Modal (about)">
+													<text x="52.5" y="13.5" stroke="none" text-anchor="middle" data-name="Modal (about)">Modal (about)</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="send:teams">
+											
+										<g transform="translate(369.25, 213)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="send:teams">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="send:teams">
+													<text x="44.5" y="13.5" stroke="none" text-anchor="middle" data-name="send:teams">send:teams</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="TeamInfo">
+											<g fill="#f4cccc" stroke="#33322E" data-name="TeamInfo">
+												<rect x="378.8" y="284.0" height="31.0" width="86.0" data-name="TeamInfo"></rect>
+											</g>
+										<g transform="translate(378.75, 284)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TeamInfo">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TeamInfo">
+													<text x="35.0" y="13.5" stroke="none" text-anchor="middle" data-name="TeamInfo">TeamInfo</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="send:track">
+											
+										<g transform="translate(651.5, 213)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="send:track">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="send:track">
+													<text x="40.5" y="13.5" stroke="none" text-anchor="middle" data-name="send:track">send:track</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="TrackCard">
+											<g fill="#f4cccc" stroke="#33322E" data-name="TrackCard">
+												<rect x="653.0" y="284.0" height="31.0" width="94.0" data-name="TrackCard"></rect>
+											</g>
+										<g transform="translate(653, 284)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="TrackCard">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="TrackCard">
+													<text x="39.0" y="13.5" stroke="none" text-anchor="middle" data-name="TrackCard">TrackCard</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="send:teams, send:currentTeam">
+											
+										<g transform="translate(788.5, 213)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="send:teams, send:currentTeam">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="send:teams, send:currentTeam">
+													<text x="118.0" y="13.5" stroke="none" text-anchor="middle" data-name="send:teams, send:currentTeam">send:teams, send:currentTeam</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="Timeline">
+											<g fill="#f4cccc" stroke="#33322E" data-name="Timeline">
+												<rect x="874.0" y="284.0" height="31.0" width="81.0" data-name="Timeline"></rect>
+											</g>
+										<g transform="translate(874, 284)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Timeline">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Timeline">
+													<text x="32.5" y="13.5" stroke="none" text-anchor="middle" data-name="Timeline">Timeline</text>
+												
+												</g>
+											</g>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+					<g data-name="refreshTokens">
+							
+						<g transform="translate(1054.75, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="refreshTokens">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="refreshTokens">
+									<text x="54.5" y="13.5" stroke="none" text-anchor="middle" data-name="refreshTokens">refreshTokens</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Mobile Layout">
+							<g fill="#eee8d5" stroke="#33322E" data-name="Mobile Layout">
+								<rect x="462.8" y="952.0" height="260.0" width="1269.0" data-name="Mobile Layout"></rect>
+							<path d="M462.8 983.0 L1731.8 983.0" fill="none" data-name="Mobile Layout"></path>
+							</g>
+						<g transform="translate(462.75, 952)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Mobile Layout">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Mobile Layout">
+									<text x="626.5" y="13.5" stroke="none" text-anchor="middle" data-name="Mobile Layout">Mobile Layout</text>
+								
+								</g>
+							</g>
+						<g transform="translate(462.75, 983)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Mobile Layout">
+								<g transform="translate(8, 8)" fill="#33322E" data-name="Mobile Layout">
+									<g transform="translate(20, 20)" fill="#33322E" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Mobile Layout">
+										<path d="M72.5 37.7 L72.5 51 L72.5 71 L72.5 71.0 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M77.8 44.3 L72.5 37.7 L67.2 44.3 L72.5 31.0 Z" data-name="Mobile Layout"></path>
+									<path d="M72.5 102.0 L72.5 122 L72.5 135.33333333333334 L72.5 135.3 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M67.2 128.7 L72.5 135.3 L77.8 128.7 L72.5 142.0 Z" data-name="Mobile Layout"></path>
+									<path d="M736.8 17.7 L363.5 51 L363.5 71 L363.5 71.0 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M363.5 102.0 L363.5 122 L433.52910169043435 140.31331941075814 L433.5 140.3 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M425.7 143.8 L433.5 140.3 L428.4 133.5 L440.0 142.0 Z" data-name="Mobile Layout"></path>
+									<g stroke-dasharray="6 6" data-name="Mobile Layout">
+											<path d="M730.3 24.2 L635 51 L635 71 L635.0 71.0 " fill="none" data-name="Mobile Layout"></path>
+										</g>
+									<path d="M725.4 31.1 L730.3 24.2 L722.5 20.9 L736.8 22.4 Z" data-name="Mobile Layout"></path>
+									<g stroke-dasharray="6 6" data-name="Mobile Layout">
+											<path d="M635.0 102.0 L635 122 L558.5211267605633 142 L558.5 142.0 " fill="none" data-name="Mobile Layout"></path>
+										</g>
+									<path d="M785.8 22.4 L887.5 51 L887.5 71 L887.5 71.0 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M887.5 102.0 L887.5 122 L887.5 135.33333333333334 L887.5 135.3 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M882.2 128.7 L887.5 135.3 L892.8 128.7 L887.5 142.0 Z" data-name="Mobile Layout"></path>
+									<path d="M785.8 17.8 L1141 51 L1141 71 L1141.0 71.0 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M1141.0 102.0 L1141 122 L1141 135.33333333333334 L1141.0 135.3 " fill="none" data-name="Mobile Layout"></path>
+									<path d="M1135.7 128.7 L1141.0 135.3 L1146.3 128.7 L1141.0 142.0 Z" data-name="Mobile Layout"></path>
+									<g data-name="Join">
+											<g fill="#fff2cc" stroke="#33322E" data-name="Join">
+												<rect x="48.0" y="0.0" height="31.0" width="49.0" data-name="Join"></rect>
+											</g>
+										<g transform="translate(48, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Join">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Join">
+													<text x="16.5" y="13.5" stroke="none" text-anchor="middle" data-name="Join">Join</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="bind:imageBytes">
+											
+										<g transform="translate(0, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="bind:imageBytes">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="bind:imageBytes">
+													<text x="64.5" y="13.5" stroke="none" text-anchor="middle" data-name="bind:imageBytes">bind:imageBytes</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="CameraInput">
+											<g fill="#f4cccc" stroke="#33322E" data-name="CameraInput">
+												<rect x="15.5" y="142.0" height="31.0" width="114.0" data-name="CameraInput"></rect>
+											</g>
+										<g transform="translate(15.5, 142)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="CameraInput">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="CameraInput">
+													<text x="49.0" y="13.5" stroke="none" text-anchor="middle" data-name="CameraInput">CameraInput</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="Play">
+											<g fill="#fff2cc" stroke="#33322E" data-name="Play">
+												<rect x="736.8" y="0.0" height="31.0" width="49.0" data-name="Play"></rect>
+											</g>
+										<g transform="translate(736.75, 0)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Play">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Play">
+													<text x="16.5" y="13.5" stroke="none" text-anchor="middle" data-name="Play">Play</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="send:myName, send:isHost, send:startGame">
+											
+										<g transform="translate(185, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="send:myName, send:isHost, send:startGame">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="send:myName, send:isHost, send:startGame">
+													<text x="170.5" y="13.5" stroke="none" text-anchor="middle" data-name="send:myName, send:isHost, send:startGame">send:myName, send:isHost, send:startGame</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="WaitingScreen">
+											<g fill="#f4cccc" stroke="#33322E" data-name="WaitingScreen">
+												<rect x="435.8" y="142.0" height="31.0" width="127.0" data-name="WaitingScreen"></rect>
+											</g>
+										<g transform="translate(435.75, 142)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="WaitingScreen">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="WaitingScreen">
+													<text x="55.5" y="13.5" stroke="none" text-anchor="middle" data-name="WaitingScreen">WaitingScreen</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="startGame()">
+											
+										<g transform="translate(582, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="startGame()">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="startGame()">
+													<text x="45.0" y="13.5" stroke="none" text-anchor="middle" data-name="startGame()">startGame()</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="send:socket, send:myTurn, send:isHost">
+											
+										<g transform="translate(728, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="send:socket, send:myTurn, send:isHost">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="send:socket, send:myTurn, send:isHost">
+													<text x="151.5" y="13.5" stroke="none" text-anchor="middle" data-name="send:socket, send:myTurn, send:isHost">send:socket, send:myTurn, send:isHost</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="ControllerScreen">
+											<g fill="#fff2cc" stroke="#33322E" data-name="ControllerScreen">
+												<rect x="814.5" y="142.0" height="31.0" width="146.0" data-name="ControllerScreen"></rect>
+											</g>
+										<g transform="translate(814.5, 142)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="ControllerScreen">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="ControllerScreen">
+													<text x="65.0" y="13.5" stroke="none" text-anchor="middle" data-name="ControllerScreen">ControllerScreen</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="send:isHost">
+											
+										<g transform="translate(1087, 71)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="send:isHost">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="send:isHost">
+													<text x="46.0" y="13.5" stroke="none" text-anchor="middle" data-name="send:isHost">send:isHost</text>
+												
+												</g>
+											</g>
+										</g>
+									<g data-name="EndGameScreen">
+											<g fill="#f4cccc" stroke="#33322E" data-name="EndGameScreen">
+												<rect x="1069.0" y="142.0" height="31.0" width="144.0" data-name="EndGameScreen"></rect>
+											</g>
+										<g transform="translate(1069, 142)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="EndGameScreen">
+												<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="EndGameScreen">
+													<text x="64.0" y="13.5" stroke="none" text-anchor="middle" data-name="EndGameScreen">EndGameScreen</text>
+												
+												</g>
+											</g>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+					<g data-name="Game Events">
+							<g fill="#eee8d5" stroke="#33322E" data-name="Game Events">
+								<rect x="745.0" y="584.0" height="124.0" width="220.0" data-name="Game Events"></rect>
+							<path d="M745.0 615.0 L745.0 615.0" fill="none" data-name="Game Events"></path>
+							<path d="M745.0 615.0 L965.0 615.0" fill="none" data-name="Game Events"></path>
+							<path d="M745.0 646.0 L965.0 646.0" fill="none" data-name="Game Events"></path>
+							<path d="M745.0 677.0 L965.0 677.0" fill="none" data-name="Game Events"></path>
+							<path d="M855.0 615.0 L855.0 708.0" fill="none" data-name="Game Events"></path>
+							<path d="M965.0 615.0 L965.0 708.0" fill="none" data-name="Game Events"></path>
+							</g>
+						<g transform="translate(745, 584)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Game Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Game Events">
+									<text x="102.0" y="13.5" stroke="none" text-anchor="middle" data-name="Game Events">Game Events</text>
+								
+								</g>
+							</g>
+						<g transform="translate(745, 615)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Game Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Game Events">createRoom</text>
+								
+								</g>
+							</g>
+						<g transform="translate(855, 615)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Game Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Game Events">startGame</text>
+								
+								</g>
+							</g>
+						<g transform="translate(745, 646)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Game Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Game Events">assignHost</text>
+								
+								</g>
+							</g>
+						<g transform="translate(855, 646)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Game Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Game Events">assignTurn</text>
+								
+								</g>
+							</g>
+						<g transform="translate(745, 677)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Game Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Game Events">endGame</text>
+								
+								</g>
+							</g>
+						<g transform="translate(855, 677)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Game Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Game Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Game Events">backToLobby</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Socket Server">
+							<g fill="#eee8d5" stroke="#33322E" data-name="Socket Server">
+								<rect x="1035.8" y="748.0" height="31.0" width="123.0" stroke="none" data-name="Socket Server"></rect>
+							<path d="M1035.8 748.0 L1158.8 748.0" fill="none" data-name="Socket Server"></path>
+							<path d="M1035.8 779.0 L1158.8 779.0" fill="none" data-name="Socket Server"></path>
+							<ellipse cx="1158.8" cy="763.5" rx="6.0" ry="15.5" data-name="Socket Server"></ellipse>
+							<path d="M1035.7 779.0 L1035.5 779.0 L1035.2 778.9 L1034.9 778.8 L1034.6 778.7 L1034.3 778.5 L1034.0 778.3 L1033.7 778.1 L1033.4 777.8 L1033.1 777.5 L1032.9 777.1 L1032.6 776.7 L1032.4 776.3 L1032.1 775.9 L1031.9 775.4 L1031.7 774.9 L1031.5 774.3 L1031.3 773.8 L1031.1 773.2 L1030.9 772.5 L1030.7 771.9 L1030.6 771.2 L1030.4 770.6 L1030.3 769.9 L1030.2 769.2 L1030.1 768.4 L1030.0 767.7 L1029.9 766.9 L1029.8 766.2 L1029.8 765.4 L1029.8 764.7 L1029.8 763.9 L1029.8 763.1 L1029.8 762.3 L1029.8 761.6 L1029.8 760.8 L1029.9 760.1 L1030.0 759.3 L1030.1 758.6 L1030.2 757.8 L1030.3 757.1 L1030.4 756.4 L1030.6 755.7 L1030.7 755.1 L1030.9 754.5 L1031.1 753.8 L1031.3 753.2 L1031.5 752.7 L1031.7 752.1 L1031.9 751.6 L1032.1 751.1 L1032.4 750.7 L1032.6 750.3 L1032.9 749.9 L1033.1 749.5 L1033.4 749.2 L1033.7 748.9 L1034.0 748.7 L1034.3 748.5 L1034.6 748.3 L1034.9 748.2 L1035.2 748.1 L1035.5 748.0 L1035.8 748.0" data-name="Socket Server"></path>
+							</g>
+						<g transform="translate(1031.75, 748)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Socket Server">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Socket Server">
+									<text x="53.5" y="13.5" stroke="none" text-anchor="middle" data-name="Socket Server">Socket Server</text>
+								
+								</g>
+							</g>
+						</g>
+					<g data-name="Player Events">
+							<g fill="#eee8d5" stroke="#33322E" data-name="Player Events">
+								<rect x="1033.3" y="819.0" height="93.0" width="336.0" data-name="Player Events"></rect>
+							<path d="M1033.3 850.0 L1033.3 850.0" fill="none" data-name="Player Events"></path>
+							<path d="M1033.3 850.0 L1369.3 850.0" fill="none" data-name="Player Events"></path>
+							<path d="M1033.3 881.0 L1369.3 881.0" fill="none" data-name="Player Events"></path>
+							<path d="M1201.3 850.0 L1201.3 912.0" fill="none" data-name="Player Events"></path>
+							<path d="M1369.3 850.0 L1369.3 912.0" fill="none" data-name="Player Events"></path>
+							</g>
+						<g transform="translate(1033.25, 819)" font-family="Helvetica" font-size="12pt" font-weight="bold" font-style="normal" data-name="Player Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="center" data-name="Player Events">
+									<text x="160.0" y="13.5" stroke="none" text-anchor="middle" data-name="Player Events">Player Events</text>
+								
+								</g>
+							</g>
+						<g transform="translate(1033.25, 850)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Player Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Player Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Player Events">joinRoom</text>
+								
+								</g>
+							</g>
+						<g transform="translate(1201.25, 850)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Player Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Player Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Player Events">startGame (if host)</text>
+								
+								</g>
+							</g>
+						<g transform="translate(1033.25, 881)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Player Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Player Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Player Events">submitAnswer</text>
+								
+								</g>
+							</g>
+						<g transform="translate(1201.25, 881)" font-family="Helvetica" font-size="12pt" font-weight="normal" font-style="normal" data-name="Player Events">
+								<g transform="translate(8, 8)" fill="#33322E" text-align="left" data-name="Player Events">
+									<text x="0.0" y="13.5" stroke="none" data-name="Player Events">backToLobby (if host)</text>
+								
+								</g>
+							</g>
+						</g>
+					</g>
+				</g>
+			</g>
+		</g>
+	</svg>
