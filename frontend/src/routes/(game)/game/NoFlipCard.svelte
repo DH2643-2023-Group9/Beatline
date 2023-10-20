@@ -5,7 +5,7 @@
 	export let extraClasses = '';
 </script>
 
-<label class="m-2 h-fit swap swap-flip text-9xl pointer-events-none {extraClasses}">
+<div class="m-2 h-fit swap swap-flip text-9xl pointer-events-none {extraClasses}">
 	<!-- This is hidden assuming you do not want the checkbox to show -->
 	<div class="swap-off w-full h-full rounded-xl overflow-hidden bg-neutral-900">
 		<img src={track.image.url} alt="Album Artwork" />
@@ -18,4 +18,4 @@
 			{/if}
 		</div>
 	</div>
-</label>
+</div>

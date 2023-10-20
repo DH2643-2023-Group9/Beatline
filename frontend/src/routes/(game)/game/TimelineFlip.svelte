@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Team } from '$models/game';
-	import NoFlipCard from './NoFlipCard.svelte';
 	import Timeline from './Timeline.svelte';
 
 	export let teams: Team[];
@@ -15,13 +14,13 @@
 </script>
 
 <label
-	class="w-full p-4 swap swap-flip-h pointer-events-none flex flex-col items-center justify-center"
+	class="p-4 pb-20 swap swap-flip-h pointer-events-none grid grid-cols-1"
 >
 	<input type="checkbox" class="hidden" checked={team1} />
 
 	<!-- Default Timeline View (assuming for Team 1 or main view) -->
-	<Timeline team={teams[0]} swap='off'/>
+	<Timeline timeline={teams[0].timeline} swap='off' />
 
 	<!-- Flipped Timeline View (essentially the same for this example) -->
-	<Timeline team={teams[1]} swap='on' />
+	<Timeline timeline={teams[1].timeline} swap='on' />
 </label>
