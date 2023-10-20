@@ -41,7 +41,7 @@ function validateTrack(track: any): boolean {
 	);
 }
 
-async function request(url: string, accessToken: string, method: string = 'GET'): Promise<any> {
+async function request(url: string, accessToken: string, method = 'GET'): Promise<any> {
 	const res = await fetch(url, {
 		method,
 		headers: {

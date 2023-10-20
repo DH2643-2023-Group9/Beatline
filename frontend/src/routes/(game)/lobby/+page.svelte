@@ -10,9 +10,11 @@
 	import { getPlayListData, getPlaylistId } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
 	import RangeSlider from 'svelte-range-slider-pips';
-	let currentYear: number = new Date().getFullYear();
+	import { range } from '$lib/utils';
+	
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
+	const currentYear: number = new Date().getFullYear();
 	let randomImageOffset = Math.floor(Math.random() * 10);
 
 	if (gameModel.isActive) {
@@ -29,13 +31,9 @@
 	let copied = false;
 	let testInterval = [1960, 2020];
 	let values = testInterval;
-	let maxScore = 20;
 	let playlistInput = '';
-	let minScore = 5;
 	let selectedOption = 'byRounds';
 	let difficulty = gameModel.difficulty;
-	let min = 0;
-	let max = 100;
 	let valueMin = 25;
 	let valueMax = 75;
 
@@ -65,6 +63,11 @@
 		teams = gameModel.teams;
 	});
 
+	socket.on('playerDisconnected', ({ userId }) => {
+		gameModel.removePlayer(userId);
+		teams = gameModel.teams;
+	});
+
 	socket.on('joinTeam', ({ team, userId }) => {
 		gameModel.switchTeam(userId, team);
 		teams = gameModel.teams;
@@ -79,11 +82,11 @@
 			alert('You need at least 2 players to start the game');
 			return;
 		}
-
 		if (values[0] >= values[1]) {
 			alert('Invalid interval');
 			return;
 		}
+		values[1] = Math.min(values[1], currentYear);
 		gameModel.interval = values;
 		gameModel.setLimit(limit, limitType);
 		gameModel.isActive = true;
@@ -257,15 +260,14 @@
 									type="range"
 									class="pointer-events-auto range range-secondary bg-neutral"
 									min="6"
-									max="12"
+									max="20"
 									step="2"
 									bind:value={limit}
 								/>
 								<div class="w-full flex justify-between text-xs font-bold px-2">
-									<span>6</span>
-									<span>8</span>
-									<span>10</span>
-									<span>12</span>
+									{#each range(6, 20, 2) as round}
+										<span>{round}</span>
+									{/each}
 								</div>
 							</div>
 						{/if}
@@ -278,16 +280,15 @@
 								<input
 									type="range"
 									class="pointer-events-auto range range-secondary bg-neutral"
-									min="5"
+									min="6"
 									max="20"
-									step="5"
-									bind:value={minScore}
+									step="2"
+									bind:value={limit}
 								/>
 								<div class="w-full flex justify-between text-xs font-bold px-2">
-									<span>5</span>
-									<span>10</span>
-									<span>15</span>
-									<span>20</span>
+									{#each range(6, 20, 2) as score}
+										<span>{score}</span>
+									{/each}
 								</div>
 							</div>
 						{/if}

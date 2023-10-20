@@ -1,8 +1,5 @@
-import type { ViteDevServer } from 'vite';
 import type { Server } from 'socket.io';
 import { randomRoomId } from './misc';
-import type { Server as HttpServer } from 'http';
-
 
 type Event<T> = (data: T) => void;
 
@@ -21,7 +18,7 @@ export interface ClientToServerEvents {
 
 export interface ServerToClientEvents {
 	createRoom: Event<{ roomId: string }>;
-	joinRoom: Event<{ userId: string; name: string }>;
+	joinRoom: Event<{ userId: string; name: string, image?: ArrayBuffer }>;
 	startGame: () => void;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number; userId: string }>;
@@ -30,6 +27,7 @@ export interface ServerToClientEvents {
 	error: Event<{ error: string }>;
 	backToLobby: () => void;
 	assignHost: () => void;
+	playerDisconnected: Event<{ userId: string }>;
 }
 
 export function configureServer(io: Server<ClientToServerEvents, ServerToClientEvents>){
@@ -143,6 +141,10 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 
 		socket.on('disconnect', () => {
 			console.log(`Socket ${socket.id}  disconnected`);
+			if (roomId) {
+				console.log(`Room ${roomId}: Sending playerDisconnected event for player ${userId}`);
+				io.to(roomId).emit('playerDisconnected', { userId });
+			}
 		});
 	});
 }

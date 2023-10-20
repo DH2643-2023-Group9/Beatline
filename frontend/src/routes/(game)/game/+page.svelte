@@ -61,6 +61,11 @@
 		}
 	});
 
+	socket.on('playerDisconnected', ({ userId }) => {
+		gameModel.removePlayer(userId);
+
+	});
+
 	onMount(async () => {
 		if ($accessToken === undefined) throw error(500, 'Access token is not defined');
 		await gameModel.populateTimelines($accessToken);

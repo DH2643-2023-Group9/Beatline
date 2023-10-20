@@ -1,4 +1,5 @@
 import { getTrackData, sampleFromPlaylist, type PlaylistData, type TrackData } from '$lib/spotify';
+import { writable } from 'svelte/store';
 import type { PlayerInfo } from '../routes/(game)/+layout.svelte';
 
 export type Ability = 'shuffle' | 'nope!' | 'continue';
@@ -64,7 +65,7 @@ export class GameModel {
 	currentRound = 0;
 	currentTeam = 0;
 	currentTrack?: TrackData;
-	teams = [createTeam('Red'), createTeam('Blue')];
+	teams = [createTeam('Team 1'), createTeam('Team 2')];
 	interval: number[];
 	scoreBuffer = 0;
 	isActive = false;
@@ -151,6 +152,23 @@ export class GameModel {
 			.map((t, i) => ({ l: t.players.length, i }))
 			.sort((a, b) => a.l - b.l)[0].i;
 		this.teams[team].players.push(player);
+	}
+
+	removePlayer(playerId: string) {
+		this.teams.forEach((t) => {
+			const index = t.players.findIndex((p) => p.id === playerId);
+			if (index === -1) return;
+			const newHost = t.players[index].host;
+			t.players.splice(index, 1);
+			if (newHost) {
+				this.teams.forEach((t) => {
+					if (t.players.length > 0) {
+						t.players[0].host = true;
+						return;
+					}
+				})
+			}
+		});
 	}
 
 	switchTeam(playerId: string, team: number) {

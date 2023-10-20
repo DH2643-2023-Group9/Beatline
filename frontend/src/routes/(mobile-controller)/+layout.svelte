@@ -15,7 +15,7 @@
 
 <script lang="ts">
 	const serverURL = PUBLIC_REACT_APP_SOCKET_SERVER || 'http://localhost:3001';
-	const socket = io(serverURL);
+	const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(serverURL);
 	const isHost = writable(false);
 
 	setContext<MainContext>('main', {
