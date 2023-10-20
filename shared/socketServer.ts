@@ -6,7 +6,7 @@ type EmptyEvent = () => void;
 
 export interface ClientToServerEvents {
 	createRoom: Event<{ capacity: number; roomId: string }>;
-	joinRoom: Event<{ roomId: string; name: string}>;
+	joinRoom: Event<{ roomId: string; name: string, image?: ArrayBuffer}>;
 	startGame: EmptyEvent;
 	assignTurn: Event<{ userId: string }>;
 	submitAnswer: Event<{ answer: number }>;
@@ -86,9 +86,12 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 			if (socketsInRoom) {
 				socketsInRoom.add(socket.id); // Add the socket to the room's set
 			}
+			if (data.image) {
+				console.log('image received', data.image);
+			}
 			roomId = data.roomId;
 			socket.join(roomId);
-			io.sockets.in(roomId).emit('joinRoom', { userId, name: data.name });
+			io.sockets.in(roomId).emit('joinRoom', { userId, name: data.name, image: data.image });
 		});
 
 		socket.on('startGame', () => {

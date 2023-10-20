@@ -3,20 +3,19 @@
 	import type { MainContext } from '../+layout.svelte';
 	import { goto } from '$app/navigation';
 	import Card from '../../Card.svelte';
-	import { error } from '@sveltejs/kit';
 	import Modal from '../../Modal.svelte';
 	import { getPlayListData, getPlaylistId } from '$lib/spotify';
 	import { accessToken } from '$stores/tokenStore';
 	import GameSettings from './GameSettings.svelte';
 	import LobbyHeader from './LobbyHeader.svelte';
+	import { parsePlayerImage } from '$lib/utils';
 
 	const { socket, roomId, gameModel } = getContext<MainContext>('main');
-	let randomImageOffset = Math.floor(Math.random() * 10);
 
 	if (gameModel.isActive) {
 		const msg = 'You dun goofed. The game is already start';
 		alert(msg);
-		error(500, msg);
+		goto('/');
 	}
 
 	let teams = gameModel.teams;
@@ -33,19 +32,12 @@
 
 	socket.on('joinRoom', ({ name, userId, image }) => {
 		const host = gameModel.numberOfPlayers() === 0;
-		let profile;
-		if (!image) {
-			randomImageOffset = (randomImageOffset + 1) % 10;
-			profile = { defaultId: randomImageOffset };
-		} else {
-			profile = { data: URL.createObjectURL(new Blob([new Uint8Array(image)])) };
-		}
 		gameModel.addPlayer({
 			name,
 			id: userId,
 			host: host,
 			abilities: [],
-			image: profile
+			image: parsePlayerImage(image),
 		});
 		if (host) {
 			socket.emit('assignHost', { userId });
