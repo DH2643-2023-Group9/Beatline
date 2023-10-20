@@ -1,15 +1,7 @@
 <script lang="ts">
-	import type { ClientToServerEvents, ServerToClientEvents } from "$shared/socketServer";
-	import type { Socket } from "socket.io-client";
-
 	export let myName: string; // Accept the player name as a prop
 	export let isHost: boolean;
-	export let socket: Socket<ServerToClientEvents, ClientToServerEvents>;
-
-	function startGame() {
-		socket.emit("startGame")
-	}
-
+	export let startGame: () => void;
 </script>
 
 <!-- Main Content of the Waiting Screen -->

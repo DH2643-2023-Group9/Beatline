@@ -42,6 +42,10 @@
 		gameEnded = false;
 		myTurn = false;
 	});
+
+	function startGame() {
+		socket.emit('startGame');
+	}
 </script>
 
 {#if gameEnded}
@@ -49,5 +53,5 @@
 {:else if gameStarted}
     <ControllerScreen {socket} {myTurn} isHost={$isHost}/>
 {:else}
-    <WaitingScreen myName={$myName} isHost={$isHost} {socket}/>
+    <WaitingScreen myName={$myName} isHost={$isHost} {startGame}/>
 {/if}
