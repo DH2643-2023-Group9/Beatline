@@ -3,7 +3,6 @@
 	let dropdownOpen = false;
 	import Modal from './Modal.svelte';
 	let showModal = false;
-
 	function toggleDropdown() {
 		dropdownOpen = !dropdownOpen;
 	}

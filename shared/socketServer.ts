@@ -87,7 +87,7 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 				socketsInRoom.add(socket.id); // Add the socket to the room's set
 			}
 			if (data.image) {
-				console.log('image received', data.image);
+				console.log(`Room ${roomId}: Received image from ${userId}`);
 			}
 			roomId = data.roomId;
 			socket.join(roomId);
