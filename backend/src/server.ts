@@ -9,7 +9,7 @@ const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-       origin: ["http://localhost", "http://localhost:3000", "https://beatline.vercel.app/"],
+       origin: ["http://localhost", "http://localhost:3000", "https://beatline.vercel.app/*:*"],
        methods: ["GET", "POST"]
     }
  });
