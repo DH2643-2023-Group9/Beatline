@@ -20,6 +20,7 @@
 
 	let teams = gameModel.teams;
 	let limit = gameModel.limit;
+	let showModal = false;
 	let limitType = gameModel.limitType;
 	let interval = [1960, 2020];
 	let playlistInput = '';
@@ -162,6 +163,9 @@
 	<!-- Other content below the flex container -->
 	<!-- ... your other content ... -->
 </div>
+
+<button class="pointer-events-auto btn btn-accent absolute bottom-4 right-4" on:click={() => showModal = true}>How to Play?</button>
+<Modal bind:showModal />
 
 <style>
 	/* You can add any additional styles or override default Tailwind styles here */
