@@ -18,10 +18,11 @@
 	const socket: Socket<ServerToClientEvents, ClientToServerEvents> =
 		serverURL === 'dev' ? io() : io(serverURL);
 	const isHost = writable(false);
+	const myName = writable('');
 
 	setContext<MainContext>('main', {
 		socket,
-		myName: writable(''),
+		myName,
 		isHost: isHost
 	});
 
@@ -31,7 +32,12 @@
 
 	socket.on('lobbyDisconnected', () => {
 		alert('The lobby has been disconnected 😿');
-		goto('/join');
+		goto(`/join?name=${$myName}`);
+	});
+
+	socket.on('deleteRoom', () => {
+		alert('Game Ended');
+		goto(`/join?name=${$myName}`);
 	});
 </script>
 

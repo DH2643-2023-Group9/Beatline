@@ -17,6 +17,7 @@ export interface ClientToServerEvents {
 	error: Event<{ error: string }>;
 	backToLobby: EmptyEvent;
 	assignHost: Event<{ userId: string }>;
+	deleteRoom: EmptyEvent;
 }
 
 export interface ServerToClientEvents {
@@ -32,6 +33,7 @@ export interface ServerToClientEvents {
 	assignHost: EmptyEvent;
 	playerDisconnected: Event<{ userId: string }>;
 	lobbyDisconnected: EmptyEvent;
+	deleteRoom: EmptyEvent;
 }
 
 export function configureServer(io: Server<ClientToServerEvents, ServerToClientEvents>){
@@ -127,6 +129,19 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 			}
 			console.log(`Room ${roomId}: User ${userId} is now host`);
 			reciever.emit('assignHost');
+		});
+
+		socket.on('deleteRoom', () => {
+			if (!roomId) return noRoomId();
+			if (!rooms.has(roomId)) {
+				const msg = `Room ${roomId} does not exist`;
+				console.log(msg);
+				socket.emit('error', { error: msg });
+				return;
+			}
+			console.log(`Room ${roomId}: Deleting room`);
+			rooms.delete(roomId);
+			io.to(roomId).emit('deleteRoom');
 		});
 
 		socket.on('disconnect', () => {
