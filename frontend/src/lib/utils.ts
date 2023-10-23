@@ -10,7 +10,6 @@ export function range(start: number, stop: number, step = 1): number[] {
 let randomAvatarId = Math.floor(Math.random() * 1000);
 
 export function parsePlayerImage(image: ArrayBuffer | undefined): ProfileImage {
-	console.log('parsePlayerImage', image)
 	if (!image) {
 		randomAvatarId = (randomAvatarId + 1) % 10;
 		return {defaultId: randomAvatarId};

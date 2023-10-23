@@ -22,10 +22,6 @@
 	<main>
 		<slot />
 	</main>
-
-	<footer>
-		<p>🎉 Beatline is a cool site 🎉</p>
-	</footer>
 </div>
 
 <style>

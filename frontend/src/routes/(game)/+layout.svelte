@@ -13,7 +13,7 @@
 </script>
 
 <script lang="ts">
-	import { setContext } from 'svelte';
+	import { onDestroy, setContext } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import { Socket, io } from 'socket.io-client';
 	import { randomRoomId } from '$shared/misc';
@@ -30,7 +30,12 @@
 		socket,
 		roomId: writable<string>(randomRoomId()),
 		gameModel
+	})
+	
+	onDestroy(() => {
+		socket.disconnect();
 	});
+
 </script>
 
 <slot />

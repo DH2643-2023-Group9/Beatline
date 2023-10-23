@@ -4,8 +4,10 @@ import { randomRoomId } from './misc';
 type Event<T> = (data: T) => void;
 type EmptyEvent = () => void;
 
+export const MAX_PLAYERS = 10;
+
 export interface ClientToServerEvents {
-	createRoom: Event<{ capacity: number; roomId: string }>;
+	createRoom: Event<{ roomId: string }>;
 	joinRoom: Event<{ roomId: string; name: string, image?: ArrayBuffer}>;
 	startGame: EmptyEvent;
 	assignTurn: Event<{ userId: string }>;
@@ -15,6 +17,7 @@ export interface ClientToServerEvents {
 	error: Event<{ error: string }>;
 	backToLobby: EmptyEvent;
 	assignHost: Event<{ userId: string }>;
+	deleteRoom: EmptyEvent;
 }
 
 export interface ServerToClientEvents {
@@ -30,11 +33,11 @@ export interface ServerToClientEvents {
 	assignHost: EmptyEvent;
 	playerDisconnected: Event<{ userId: string }>;
 	lobbyDisconnected: EmptyEvent;
+	deleteRoom: EmptyEvent;
 }
 
 export function configureServer(io: Server<ClientToServerEvents, ServerToClientEvents>){
-	const openRooms = new Map<string, number>();
-	const socketsInRooms = new Map<string, Set<string>>(); // roomId -> Set of socket ids
+	const rooms = new Map<string, number>();
 
 	io.on('connection', (socket) => {
 		console.log(`Socket ${socket.id} connected`);
@@ -50,42 +53,27 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 
 		socket.on('createRoom', (data) => {
 			roomId = data.roomId;
-			while (openRooms.has(roomId)) {
+			while (rooms.has(roomId)) {
 				roomId = randomRoomId();
 			}
 			console.log(`Socket ${userId} created room ${roomId}`);
 			isLobby = true;
-			openRooms.set(roomId, data.capacity);
+			rooms.set(roomId, MAX_PLAYERS);
 			socket.join(roomId);
 			socket.emit('createRoom', { roomId });
 		});
 
 		socket.on('joinRoom', async (data) => {
-			const capacity = openRooms.get(data.roomId);
-
-			// Initialize the room in socketsInRooms if it's not already there
-			if (!socketsInRooms.has(data.roomId)) {
-				socketsInRooms.set(data.roomId, new Set());
-			}
-
-			const socketsInRoom = socketsInRooms.get(data.roomId);
-
+			const capacity = rooms.get(data.roomId);
 			if (capacity === undefined) {
 				socket.emit('error', { error: 'Room not found' });
 				return;
 			} else if (capacity === 0) {
 				socket.emit('error', { error: 'Room is full' });
 				return;
-			} else if (socketsInRoom && socketsInRoom.has(userId)) {
-				socket.emit('error', { error: 'You have already joined this room' });
-				return;
 			}
-
+			rooms.set(data.roomId, capacity - 1); // Decrease the available capacity
 			console.log(`Socket ${socket.id} joined room ${data.roomId}`);
-			openRooms.set(data.roomId, capacity - 1); // Decrease the available capacity
-			if (socketsInRoom) {
-				socketsInRoom.add(socket.id); // Add the socket to the room's set
-			}
 			if (data.image) {
 				console.log(`Room ${roomId}: Received image from ${userId}`);
 			}
@@ -98,7 +86,6 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 			if (!roomId) return noRoomId();
 			console.log(`Room ${roomId} started game`);
 			socket.to(roomId).emit('startGame');
-			openRooms.delete(roomId);
 		});
 
 		socket.on('endGame', () => {
@@ -144,14 +131,29 @@ export function configureServer(io: Server<ClientToServerEvents, ServerToClientE
 			reciever.emit('assignHost');
 		});
 
+		socket.on('deleteRoom', () => {
+			if (!roomId) return noRoomId();
+			if (!rooms.has(roomId)) {
+				const msg = `Room ${roomId} does not exist`;
+				console.log(msg);
+				socket.emit('error', { error: msg });
+				return;
+			}
+			console.log(`Room ${roomId}: Deleting room`);
+			rooms.delete(roomId);
+			io.to(roomId).emit('deleteRoom');
+		});
+
 		socket.on('disconnect', () => {
 			console.log(`Socket ${socket.id}  disconnected`);
 			if (isLobby && roomId) {
 				console.log(`Lobby ${roomId} disconnected`);
-				openRooms.delete(roomId);
-				socketsInRooms.delete(roomId);
+				rooms.delete(roomId);
 				io.to(roomId).emit('lobbyDisconnected');
-			} else if (roomId) {
+			} else if (roomId && rooms.has(roomId)) {
+				const capacity = rooms.get(roomId);
+				if (capacity === undefined) return;
+				rooms.set(roomId, capacity + 1);
 				console.log(`Room ${roomId}: Sending playerDisconnected event for player ${userId}`);
 				io.to(roomId).emit('playerDisconnected', { userId });
 			}
