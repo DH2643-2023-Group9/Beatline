@@ -19,7 +19,6 @@
 	}
 
 	let teams = gameModel.teams;
-	let maxPlayers = 5;
 	let limit = gameModel.limit;
 	let limitType = gameModel.limitType;
 	let interval = [1960, 2020];
@@ -95,7 +94,7 @@
 		startGame();
 	}
 
-	socket.emit('createRoom', { capacity: maxPlayers, roomId: $roomId });
+	socket.emit('createRoom', { roomId: $roomId });
 </script>
 
 <div class="min-h-screen flex flex-col">
