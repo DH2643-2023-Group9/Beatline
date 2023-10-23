@@ -16,6 +16,7 @@
 	let currentTurn: Turn | undefined;
 	let currentTeam: number = 0;
 	let gameOver: boolean = false;
+	let userGuess: string = '';
 
 	const { socket, gameModel } = getContext<MainContext>('main');
 
@@ -32,7 +33,10 @@
 		currentTeam = (currentTeam + 1) % 2;
 		teams = gameModel.getTeams();
 		setTimeout(() => {
-			if (currentTurn) socket.emit('assignTurn', { userId: currentTurn.player.id });
+			if (currentTurn) {
+				userGuess = '';
+				socket.emit('assignTurn', { userId: currentTurn.player.id });
+			}
 		}, 6000);
 	}
 	async function showLastCard() {
@@ -46,6 +50,7 @@
 			socket.emit('error', { error: 'It is not your turn!!!' });
 			return;
 		}
+		userGuess = currentTurn?.player.name + ' guessed: ' + answer;
 		gameModel.submitGuess(answer);
 		gameModel.advance();
 		const winner = gameModel.getWinner();
@@ -74,15 +79,17 @@
 </script>
 
 {#if currentTurn}
-	<div class="min-h-screen flex flex-col justify-between">
+	<div class="min-h-screen flex flex-col justify-between max-h-screen">
 		<div class="text-white text-center text-4xl p-2 rounded">
 			{#if gameOver}
 				<h1>Game Over!</h1>
+			{:else if userGuess !== ''}
+				<h1>{userGuess}</h1>
 			{:else}
 				<h2>It's {currentTurn.player.name}'s turn!</h2>
 			{/if}
 			<TrackCard
-				extraClasses="w-1/6 h-1/5"
+				extraClasses="w-44 h-80"
 				track={currentTurn.track}
 				minimized={false}
 				playFor10Seconds={true}
