@@ -31,6 +31,7 @@
 
 	function goToMain() {
 		gameModel.reset();
+		socket.emit('deleteRoom');
 		goto('/');
 	}
 
