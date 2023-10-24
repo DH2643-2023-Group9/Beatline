@@ -19,6 +19,10 @@
 			alert('Please enter a room ID and name.');
 			return;
 		}
+		if( $myName.length > 12 ) {
+			alert('Name must be less than 12 characters.');
+			return;
+		}
 		socket.emit('joinRoom', { roomId, name: $myName, image: imageBytes?.buffer });
 	}
 
